@@ -3,9 +3,10 @@ function Brick(x, y) {
     this.y = y;
     this.color = 10;
     this.isStuck = false;
+    // TODO: It's the shape that is falling, not the brick
     this.fall = function() {
         if (frameCount % 10 === 0) {
-            this.y += 20;
+            this.y += gridSize;
         }
 
         return this;
@@ -14,7 +15,7 @@ function Brick(x, y) {
     this.show = function() {
         noStroke();
         fill(this.color);
-        rect(this.x, this.y, 20, 20);
+        rect(this.x, this.y, gridSize, gridSize);
     };
 
     return this;

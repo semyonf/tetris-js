@@ -1,7 +1,7 @@
 function Game() {
     this.staticBricks = [];
     this.currentShape = new Shape();
-    this.continue = function() {
+    this.continue = function () {
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
@@ -15,13 +15,12 @@ function Game() {
             this.transformShape(action, collisions);
         }
 
-        this.refreshStaticBricks();
+        this.showStaticBricks();
     };
 
-    // TODO: Implement a collision detection mechanism
-    this.checkCollisions = function() {
+    this.checkCollisions = function () {
         var self = this,
-            collisionSides = {
+            collisions = {
                 left: false,
                 right: false,
                 bottom: false
@@ -78,65 +77,91 @@ function Game() {
             return false;
         }
 
-        for (var i = 0; i < 4; ++i) {
-            var brick = this.currentShape.bricks[i];
+        // TODO: Refactor to eliminate the label
+        iterateBricks:
+            for (var i = 0; i < 4; ++i) {
+                var brick = this.currentShape.bricks[i];
 
-            switch (true) {
-                case brickTouchedLeftWall(brick):
-                case brickTouchedLeftStatic(brick):
-                    collisionSides.left = true;
-                    break;
+                switch (true) {
+                    case brickTouchedGround(brick):
+                    case brickTouchedStatic(brick):
+                        collisions.bottom = true;
+                        this.currentShape.isFrozen = true;
 
-                case brickTouchedRightWall(brick):
-                case brickTouchedRightStatic(brick):
-                    collisionSides.right = true;
-                    break;
+                        break iterateBricks;
+                    case brickTouchedLeftWall(brick):
+                    case brickTouchedLeftStatic(brick):
+                        collisions.left = true;
+                    case brickTouchedRightWall(brick):
+                    case brickTouchedRightStatic(brick):
+                        collisions.right = true;
 
-                case brickTouchedGround(brick):
-                case brickTouchedStatic(brick):
-                    this.currentShape.isFrozen = true;
-                    collisionSides.bottom = true;
-                    break;
+                        break;
 
-                default: break;
+                    default:
+                        break;
+                }
             }
-        }
 
-        return collisionSides;
+        return collisions;
     };
 
-    this.refreshStaticBricks = function() {
+    this.showStaticBricks = function () {
         for (var i = 0; i < this.staticBricks.length; i++) {
             this.staticBricks[i].show();
         }
     };
 
-    this.getUserAction = function() {
-        var transformation;
+    this.getUserAction = function () {
+        var action;
+
         switch (true) {
             case keyIsDown(UP_ARROW):
-                transformation = 'rotate';
+                action = 'rotate';
+
                 break;
             case keyIsDown(LEFT_ARROW):
-                transformation = 'moveleft';
+                action = 'moveleft';
+
                 break;
             case keyIsDown(DOWN_ARROW):
-                transformation = 'drop';
+                action = 'drop';
+
                 break;
             case keyIsDown(RIGHT_ARROW):
-                transformation = 'moveright';
+                action = 'moveright';
+
+                break;
+
+            default:
                 break;
         }
 
-        if (frameCount % 10 === 0) {
-            // TODO: transformation should be some sort of enum
-            return transformation;
+        // TODO: there should be a better way to restrict user input rate
+        if (frameCount % 5 === 0) {
+            // TODO: action should be implemented as an enum-like thing
+            return action;
+        } else {
+            return null;
         }
     };
 
-    this.transformShape = function(transformationKind) {
-        // TODO: Perform transformation on a temporary imaginary shape and apply to the real one if it's legal.
-        this.currentShape.applyMovement(transformationKind);
+    this.transformShape = function (action, collisions) {
+        // TODO: Implement
+        this.shapeCanNotBeRotated = function () {
+            return false;
+        };
+
+        switch (true) {
+            case action === 'moveright' && collisions.right:
+            case action === 'moveleft' && collisions.left:
+            case action === 'rotate' && this.shapeCanNotBeRotated():
+                break;
+            default:
+                this.currentShape.applyMovement(action);
+
+                break;
+        }
     };
 
     return this;

@@ -1,13 +1,15 @@
-var game = new Game();
+var game;
+var gridSize = 20;
 
 function setup() {
-    createCanvas(300, 200);
-    frameRate(50);
+    createCanvas(500, 500);
+    frameRate(30);
     background(75);
+    game = new Game();
 }
 
 function draw() {
-    // background(75, 100);
-    background(75);
+    background(75, 100);
+    // background(75);
     game.continue();
 }

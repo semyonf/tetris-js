@@ -99,8 +99,8 @@ function randInt(max, min) {
 }
 
 function Shape() {
-    this.x = window.width / 2;
-    this.y = 20;
+    this.x = width / 2; // TODO: Make sure it's also a multiple of 20
+    this.y = gridSize;
     this.isFrozen = false;
     this.color = randInt(3);
     this.type = randInt(6);
@@ -109,6 +109,18 @@ function Shape() {
     this.applyMovement = function (direction) {
         switch (direction) {
             // TODO: Implement 'drop' case
+            case 'rotate':
+                if (this.type.name !== 'O') {
+                    if (this.orientaion === 3) {
+                        this.orientaion = 0;
+                    } else {
+                        ++this.orientaion;
+                    }
+
+                    this.applyOrientation();
+                }
+
+                break;
 
             case 'moveright':
             case 'moveleft':
@@ -121,17 +133,6 @@ function Shape() {
                 }
 
                 break;
-
-            case 'rotate':
-                if (this.type.name !== 'O') {
-                    if (this.orientaion === 3) {
-                        this.orientaion = 0;
-                    } else {
-                        ++this.orientaion;
-                    }
-                    this.applyOrientation();
-                }
-                break;
         }
 
         for (var i = 0; i < 4; ++i) {
@@ -142,7 +143,6 @@ function Shape() {
             }
         }
     };
-
     this.applyOrientation = function () {
         var resultMatrix = math.multiply(
             shapeData.types[this.type].matrix,
