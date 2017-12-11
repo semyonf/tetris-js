@@ -1,8 +1,8 @@
-var matrices = {
+var shapeData = {
     types: [
         {
             name: 'I',
-            points: [
+            matrix: [
                 [0, -1],
                 [0, 1],
                 [0, 2]
@@ -10,7 +10,7 @@ var matrices = {
         },
         {
             name: 'O',
-            points: [
+            matrix: [
                 [0, 1],
                 [1, 0],
                 [1, 1]
@@ -18,7 +18,7 @@ var matrices = {
         },
         {
             name: 'Z',
-            points: [
+            matrix: [
                 [0, -1],
                 [-1, 0],
                 [1, -1]
@@ -26,7 +26,7 @@ var matrices = {
         },
         {
             name: 'S',
-            points: [
+            matrix: [
                 [-1, -1],
                 [0, -1],
                 [1, 0]
@@ -34,7 +34,7 @@ var matrices = {
         },
         {
             name: 'T',
-            points: [
+            matrix: [
                 [1, 0],
                 [-1, 0],
                 [1, 1]
@@ -42,7 +42,7 @@ var matrices = {
         },
         {
             name: 'J',
-            points: [
+            matrix: [
                 [1, 0],
                 [-1, 0],
                 [-1, 1]
@@ -50,26 +50,47 @@ var matrices = {
         },
         {
             name: 'L',
-            points: [
+            matrix: [
                 [1, 0],
                 [-1, 0],
                 [-1, -1]
             ]
         }
     ],
-    orientations: [
-        [[ 1,  0], [ 0, 1 ]],
-        [[ 0, -1], [ 1, 0 ]],
-        [[-1,  0], [ 0, -1]],
-        [[ 0,  1], [-1, 0 ]]
+    orientations:[
+        {
+            angle: 0,
+            matrix: [
+                [1, 0],
+                [0, 1]
+            ]
+        },{
+            angle: 90,
+            matrix: [
+                [0, -1],
+                [1, 0]
+            ]
+        },{
+            angle: 180,
+            matrix: [
+                [-1, 0],
+                [0, -1]
+            ]
+        },{
+            angle: 270,
+            matrix: [
+                [0, 1],
+                [-1, 0]
+            ]
+        }
     ]
 };
 
-function myRandom(max, min) {
-    if (min !== undefined) {
-        min = Math.ceil(min);
-    } else {
+function randInt(max, min) {
+    if (min === undefined) {
         min = 0;
+    } else {
+        min = Math.ceil(min);
     }
 
     max = Math.floor(max);
@@ -78,16 +99,16 @@ function myRandom(max, min) {
 }
 
 function Shape() {
-    this.x = 140;
+    this.x = window.width / 2;
     this.y = 20;
     this.isFrozen = false;
-    this.color = myRandom(3);
-    this.type = matrices.types[myRandom(6)];
-    this.orientaion = myRandom(3);
+    this.color = randInt(3);
+    this.type = randInt(6);
+    this.orientaion = randInt(3);
     this.bricks = [];
-    this.applyMovement = function(direction) {
+    this.applyMovement = function (direction) {
         switch (direction) {
-             // TODO: Implement 'drop' case
+            // TODO: Implement 'drop' case
 
             case 'moveright':
             case 'moveleft':
@@ -122,27 +143,15 @@ function Shape() {
         }
     };
 
-    this.applyOrientation = function() {
-        var rMatrix = matrices.orientations[this.orientaion],
-            sMatrix = this.type.points;
+    this.applyOrientation = function () {
+        var resultMatrix = math.multiply(
+            shapeData.types[this.type].matrix,
+            shapeData.orientations[this.orientaion].matrix
+        );
 
         for (var i = 0; i < 3; ++i) {
-            var coordinate,
-                point = sMatrix[i],
-                transformedPoint = [];
-
-            for (var j = 0; j < 2; ++j) {
-                coordinate = 0;
-
-                for (var k = 0; k < 2; ++k) {
-                    coordinate += point[k] * rMatrix[k][j];
-                }
-
-                transformedPoint[j] = coordinate;
-            }
-
-            this.bricks[i + 1].x = this.bricks[0].x + transformedPoint[0] * 20;
-            this.bricks[i + 1].y = this.bricks[0].y + transformedPoint[1] * 20;
+            this.bricks[i + 1].x = this.bricks[0].x + resultMatrix[i][0] * 20;
+            this.bricks[i + 1].y = this.bricks[0].y + resultMatrix[i][1] * 20;
         }
     };
 

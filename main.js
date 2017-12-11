@@ -1,6 +1,5 @@
-var game = new game();
+var game = new Game();
 
-// noinspection JSUnusedGlobalSymbols
 function setup() {
     createCanvas(300, 200);
     frameRate(50);

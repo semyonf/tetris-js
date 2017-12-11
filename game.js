@@ -1,4 +1,4 @@
-function game() {
+function Game() {
     this.staticBricks = [];
     this.currentShape = new Shape();
     this.continue = function() {
