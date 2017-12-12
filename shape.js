@@ -83,6 +83,27 @@ var shapeData = {
                 [-1, 0]
             ]
         }
+    ],
+    colors: [
+        {
+            name: 'orange',
+            rgb: 'rgb(255,87,34)'
+        },{
+            name: 'green',
+            rgb: 'rgb(76,175,80)'
+        },{
+            name: 'blue',
+            rgb: 'rgb(33,150,243)'
+        },{
+            name: 'indigo',
+            rgb: 'rgb(61,90,254)'
+        },{
+            name: 'yellow',
+            rgb: 'rgb(255,235,59)'
+        },{
+            name: 'cyan',
+            rgb: 'rgb(0,188,212)'
+        }
     ]
 };
 
@@ -93,6 +114,7 @@ function randInt(max, min) {
         min = Math.ceil(min);
     }
 
+    --max;
     max = Math.floor(max);
 
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -102,10 +124,9 @@ function Shape() {
     this.startX = width / 2; // TODO: Make sure it's a multiple of gridSize
     this.startY = gridSize;
     this.isFrozen = false;
-    this.color = randInt(3);
-    // TODO: Investigate weird behaviour
-    this.type = randInt(6);
-    this.orientaion = randInt(3);
+    this.color = randInt(shapeData.colors.length);
+    this.type = randInt(shapeData.types.length);
+    this.orientaion = randInt(shapeData.orientations.length);
     this.bricks = [];
     this.fall = function () {
         if (!this.isFrozen) {
@@ -172,7 +193,11 @@ function Shape() {
     };
 
     for (var i = 0; i < 4; i++) {
-        this.bricks.push(new Brick(this.startX, this.startY, this.color));
+        this.bricks.push(new Brick(
+            this.startX,
+            this.startY,
+            shapeData.colors[this.color].rgb
+        ));
     }
 
     this.applyOrientation();

@@ -1,10 +1,10 @@
-function Brick(x, y) {
+function Brick(x, y, rgb) {
     this.x = x;
     this.y = y;
-    this.color = 10;
+    this.rgb = rgb;
     this.show = function() {
         noStroke();
-        fill(this.color);
+        fill(this.rgb);
         rect(this.x, this.y, gridSize, gridSize);
     };
 
