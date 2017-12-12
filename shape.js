@@ -57,26 +57,26 @@ var shapeData = {
             ]
         }
     ],
-    orientations:[
+    orientations: [
         {
             angle: 0,
             matrix: [
                 [1, 0],
                 [0, 1]
             ]
-        },{
+        }, {
             angle: 90,
             matrix: [
                 [0, -1],
                 [1, 0]
             ]
-        },{
+        }, {
             angle: 180,
             matrix: [
                 [-1, 0],
                 [0, -1]
             ]
-        },{
+        }, {
             angle: 270,
             matrix: [
                 [0, 1],
@@ -106,6 +106,23 @@ function Shape() {
     this.type = randInt(6);
     this.orientaion = randInt(3);
     this.bricks = [];
+    this.fall = function () {
+        if (!this.isFrozen) {
+            // TODO: Rewrite using declarative approach
+            for (var i = 0; i < 4; ++i) {
+                this.bricks[i].y += gridSize;
+            }
+        }
+
+        return this;
+    };
+    this.show = function () {
+        for (var i = 0; i < 4; ++i) {
+            this.bricks[i].show();
+        }
+
+        return this;
+    };
     this.applyMovement = function (direction) {
         switch (direction) {
             // TODO: Implement 'drop' case
@@ -135,13 +152,7 @@ function Shape() {
                 break;
         }
 
-        for (var i = 0; i < 4; ++i) {
-            this.bricks[i].fall().show();
-
-            if (this.bricks[i].isStuck) {
-                this.isFrozen = true;
-            }
-        }
+        return this;
     };
     this.applyOrientation = function () {
         var resultMatrix = math.multiply(
@@ -153,6 +164,8 @@ function Shape() {
             this.bricks[i + 1].x = this.bricks[0].x + resultMatrix[i][0] * 20;
             this.bricks[i + 1].y = this.bricks[0].y + resultMatrix[i][1] * 20;
         }
+
+        return this;
     };
 
     for (var i = 0; i < 4; i++) {

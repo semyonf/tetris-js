@@ -3,16 +3,20 @@ function Game() {
     this.currentShape = new Shape();
     this.continue = function () {
         if (this.currentShape.isFrozen) {
+            // TODO: There should be a faster way
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
             }
 
             this.currentShape = new Shape();
         } else {
+            // this.currentShape.fall().show();
+
             var collisions = this.checkCollisions(),
                 action = this.getUserAction();
 
             this.transformShape(action, collisions);
+            this.currentShape.fall().show();
         }
 
         this.showStaticBricks();
@@ -138,17 +142,37 @@ function Game() {
         }
 
         // TODO: there should be a better way to restrict user input rate
-        if (frameCount % 5 === 0) {
+        // if (frameCount % 2 === 0) {
             // TODO: action should be implemented as an enum-like thing
             return action;
-        } else {
-            return null;
-        }
+        // } else {
+        //     return null;
+        // }
     };
 
     this.transformShape = function (action, collisions) {
         // TODO: Implement
         this.shapeCanNotBeRotated = function () {
+            var tempShape = new Shape();
+
+            for (var i = 0; i < 4; ++i) {
+                tempShape.bricks[i] = this.currentShape.bricks[i];
+            }
+
+            tempShape.applyMovement('rotate');
+
+            for (var t = 0; t < 4; ++t) {
+                for (var s = 0; s < this.staticBricks.length; ++s) {
+                    if (
+                        tempShape.bricks[t].x === this.staticBricks[s].x
+                        &&
+                        tempShape.bricks[t].y === this.staticBricks[s].y
+                    ) {
+                        return true;
+                    }
+                }
+            }
+
             return false;
         };
 
