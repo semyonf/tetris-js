@@ -1,5 +1,5 @@
 var game;
-var gridSize = 20;
+var brickSize = 20;
 
 function setup() {
     createCanvas(200, 440);

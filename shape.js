@@ -115,7 +115,7 @@ var shapeData = {
 
 function Shape() {
     this.startX = width / 2;
-    this.startY = gridSize;
+    this.startY = brickSize;
     this.isFrozen = false;
     this.color = randInt(shapeData.colors.length);
     this.type = randInt(shapeData.types.length);
@@ -124,7 +124,7 @@ function Shape() {
     this.fall = function () {
         if (!this.isFrozen) {
             this.bricks.forEach(function (brick) {
-                brick.y += gridSize;
+                brick.y += brickSize;
             });
         }
 
@@ -162,9 +162,9 @@ function Shape() {
             case userAction.MOVE_LEFT:
                 for (var i = 0; i < 4; ++i) {
                     if (direction === userAction.MOVE_LEFT) {
-                        this.bricks[i].x -= gridSize;
+                        this.bricks[i].x -= brickSize;
                     } else {
-                        this.bricks[i].x += gridSize;
+                        this.bricks[i].x += brickSize;
                     }
                 }
 
@@ -184,9 +184,9 @@ function Shape() {
 
         for (var i = 0; i < 3; ++i) {
             this.bricks[i + 1].x =
-                this.bricks[0].x + resultMatrix[i][0] * gridSize;
+                this.bricks[0].x + resultMatrix[i][0] * brickSize;
             this.bricks[i + 1].y =
-                this.bricks[0].y + resultMatrix[i][1] * gridSize;
+                this.bricks[0].y + resultMatrix[i][1] * brickSize;
         }
 
         return this;

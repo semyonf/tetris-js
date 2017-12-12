@@ -5,7 +5,7 @@ function Brick(x, y, rgb) {
     this.show = function() {
         noStroke();
         fill(this.rgb);
-        rect(this.x, this.y, gridSize, gridSize);
+        rect(this.x, this.y, brickSize, brickSize);
     };
 
     return this;

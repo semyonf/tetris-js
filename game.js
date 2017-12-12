@@ -8,12 +8,54 @@ var userAction = {
 function Game() {
     this.staticBricks = [];
     this.currentShape = new Shape();
+
+    this.checkFilledRegions = function () {
+        var rows = [],
+            bricks,
+            bricksChecked = 0;
+
+        for (
+            var i = height - brickSize;
+            bricksChecked !== this.staticBricks.length;
+            i -= brickSize
+        ) {
+            bricks = this.staticBricks.filter(function (brick) {
+                return brick.y === i;
+            });
+
+            rows.push({
+                bricks: bricks,
+                isFull: bricks.length === width / brickSize
+            });
+
+            bricksChecked += bricks.length;
+        }
+
+        var newBricks = [];
+
+        for (var i = 0, rowsSkipped = 0; i < rows.length; ++i) {
+            if (rows[i].isFull) {
+                rows[i].bricks = [];
+                ++rowsSkipped;
+            } else {
+                rows[i].bricks.forEach(function (brick) {
+                    brick.y += rowsSkipped * brickSize;
+                });
+            }
+
+            newBricks = newBricks.concat(rows[i].bricks);
+        }
+
+        this.staticBricks = newBricks;
+    };
+
     this.continue = function () {
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
             }
 
+            this.checkFilledRegions();
             this.currentShape = new Shape();
         } else {
             var action = this.getUserAction(),
@@ -36,13 +78,13 @@ function Game() {
             };
 
         function touchedGround(brick) {
-            return brick.y === height - gridSize;
+            return brick.y === height - brickSize;
         }
 
         function touchedStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
-                    brick.y === self.staticBricks[i].y - gridSize &&
+                    brick.y === self.staticBricks[i].y - brickSize &&
                     brick.x === self.staticBricks[i].x
                 ) {
                     return true;
@@ -57,14 +99,14 @@ function Game() {
         }
 
         function touchedRightWall(brick) {
-            return brick.x === width - gridSize;
+            return brick.x === width - brickSize;
         }
 
         function touchedRightStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
                     brick.y === self.staticBricks[i].y &&
-                    brick.x + gridSize === self.staticBricks[i].x
+                    brick.x + brickSize === self.staticBricks[i].x
                 ) {
                     return true;
                 }
@@ -77,7 +119,7 @@ function Game() {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
                     brick.y === self.staticBricks[i].y &&
-                    brick.x - gridSize === self.staticBricks[i].x
+                    brick.x - brickSize === self.staticBricks[i].x
                 ) {
                     return true;
                 }
