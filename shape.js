@@ -99,10 +99,11 @@ function randInt(max, min) {
 }
 
 function Shape() {
-    this.startX = width / 2; // TODO: Make sure it's also a multiple of 20
+    this.startX = width / 2; // TODO: Make sure it's a multiple of gridSize
     this.startY = gridSize;
     this.isFrozen = false;
     this.color = randInt(3);
+    // TODO: Investigate weird behaviour
     this.type = randInt(6);
     this.orientaion = randInt(3);
     this.bricks = [];
@@ -126,8 +127,8 @@ function Shape() {
     this.applyMovement = function (direction) {
         switch (direction) {
             // TODO: Implement 'drop' case
-            case 'rotate':
-                if (this.type.name !== 'O') {
+            case userAction.ROTATE:
+                if (shapeData.types[this.type].name !== 'O') {
                     if (this.orientaion === 3) {
                         this.orientaion = 0;
                     } else {
@@ -139,13 +140,13 @@ function Shape() {
 
                 break;
 
-            case 'moveright':
-            case 'moveleft':
+            case userAction.MOVE_RIGHT:
+            case userAction.MOVE_LEFT:
                 for (var i = 0; i < 4; ++i) {
-                    if (direction === 'moveleft') {
-                        this.bricks[i].x -= 20;
+                    if (direction === userAction.MOVE_LEFT) {
+                        this.bricks[i].x -= gridSize;
                     } else {
-                        this.bricks[i].x += 20;
+                        this.bricks[i].x += gridSize;
                     }
                 }
 
@@ -161,8 +162,10 @@ function Shape() {
         );
 
         for (var i = 0; i < 3; ++i) {
-            this.bricks[i + 1].x = this.bricks[0].x + resultMatrix[i][0] * 20;
-            this.bricks[i + 1].y = this.bricks[0].y + resultMatrix[i][1] * 20;
+            this.bricks[i + 1].x =
+                this.bricks[0].x + resultMatrix[i][0] * gridSize;
+            this.bricks[i + 1].y =
+                this.bricks[0].y + resultMatrix[i][1] * gridSize;
         }
 
         return this;
