@@ -3,7 +3,7 @@ var gridSize = 20;
 
 function setup() {
     createCanvas(500, 500);
-    frameRate(5);
+    frameRate(10);
     background(75);
     game = new Game();
 }

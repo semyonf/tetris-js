@@ -155,18 +155,18 @@ function Game() {
         this.cantBeRotated = function () {
             var tempShape = new Shape();
 
+            tempShape.orientaion = this.currentShape.orientaion;
+            tempShape.type = this.currentShape.type;
             for (var i = 0; i < 4; ++i) {
-                tempShape.bricks[i] = this.currentShape.bricks[i];
+                Object.assign(tempShape.bricks[i], this.currentShape.bricks[i]);
             }
 
-            tempShape.orientaion = this.currentShape.orientaion;
-            tempShape.applyMovement('rotate');
+            tempShape.applyMovement(userAction.ROTATE);
 
             for (var t = 0; t < 4; ++t) {
                 for (var s = 0; s < this.staticBricks.length; ++s) {
                     if (
-                        tempShape.bricks[t].x === this.staticBricks[s].x
-                        &&
+                        tempShape.bricks[t].x === this.staticBricks[s].x &&
                         tempShape.bricks[t].y === this.staticBricks[s].y
                     ) {
                         return true;
