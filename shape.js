@@ -99,8 +99,8 @@ function randInt(max, min) {
 }
 
 function Shape() {
-    this.x = width / 2; // TODO: Make sure it's also a multiple of 20
-    this.y = gridSize;
+    this.startX = width / 2; // TODO: Make sure it's also a multiple of 20
+    this.startY = gridSize;
     this.isFrozen = false;
     this.color = randInt(3);
     this.type = randInt(6);
@@ -169,7 +169,7 @@ function Shape() {
     };
 
     for (var i = 0; i < 4; i++) {
-        this.bricks.push(new Brick(this.x, this.y, this.color));
+        this.bricks.push(new Brick(this.startX, this.startY, this.color));
     }
 
     this.applyOrientation();

@@ -10,13 +10,13 @@ function Game() {
 
             this.currentShape = new Shape();
         } else {
-            // this.currentShape.fall().show();
-
             var collisions = this.checkCollisions(),
                 action = this.getUserAction();
 
             this.transformShape(action, collisions);
-            this.currentShape.fall().show();
+            this.currentShape
+                .fall()
+                .show();
         }
 
         this.showStaticBricks();
@@ -30,14 +30,14 @@ function Game() {
                 bottom: false
             };
 
-        function brickTouchedGround(brick) {
-            return brick.y === height - 20;
+        function touchedGround(brick) {
+            return brick.y === height - gridSize;
         }
 
-        function brickTouchedStatic(brick) {
+        function touchedStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
-                    brick.y === self.staticBricks[i].y - 20 &&
+                    brick.y === self.staticBricks[i].y - gridSize &&
                     brick.x === self.staticBricks[i].x
                 ) {
                     return true;
@@ -47,19 +47,19 @@ function Game() {
             return false;
         }
 
-        function brickTouchedLeftWall(brick) {
+        function touchedLeftWall(brick) {
             return brick.x === 0;
         }
 
-        function brickTouchedRightWall(brick) {
-            return brick.x === width - 20;
+        function touchedRightWall(brick) {
+            return brick.x === width - gridSize;
         }
 
-        function brickTouchedRightStatic(brick) {
+        function touchedRightStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
                     brick.y === self.staticBricks[i].y &&
-                    brick.x + 20 === self.staticBricks[i].x
+                    brick.x + gridSize === self.staticBricks[i].x
                 ) {
                     return true;
                 }
@@ -68,7 +68,7 @@ function Game() {
             return false;
         }
 
-        function brickTouchedLeftStatic(brick) {
+        function touchedLeftStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
                     brick.y === self.staticBricks[i].y &&
@@ -87,17 +87,17 @@ function Game() {
                 var brick = this.currentShape.bricks[i];
 
                 switch (true) {
-                    case brickTouchedGround(brick):
-                    case brickTouchedStatic(brick):
-                        collisions.bottom = true;
+                    case touchedGround(brick):
+                    case touchedStatic(brick):
                         this.currentShape.isFrozen = true;
 
                         break iterateBricks;
-                    case brickTouchedLeftWall(brick):
-                    case brickTouchedLeftStatic(brick):
+
+                    case touchedLeftWall(brick):
+                    case touchedLeftStatic(brick):
                         collisions.left = true;
-                    case brickTouchedRightWall(brick):
-                    case brickTouchedRightStatic(brick):
+                    case touchedRightWall(brick):
+                    case touchedRightStatic(brick):
                         collisions.right = true;
 
                         break;
@@ -143,22 +143,22 @@ function Game() {
 
         // TODO: there should be a better way to restrict user input rate
         // if (frameCount % 2 === 0) {
-            // TODO: action should be implemented as an enum-like thing
-            return action;
+        // TODO: action should be implemented as an enum-like thing
+        return action;
         // } else {
         //     return null;
         // }
     };
 
     this.transformShape = function (action, collisions) {
-        // TODO: Implement
-        this.shapeCanNotBeRotated = function () {
+        this.cantBeRotated = function () {
             var tempShape = new Shape();
 
             for (var i = 0; i < 4; ++i) {
                 tempShape.bricks[i] = this.currentShape.bricks[i];
             }
 
+            tempShape.orientaion = this.currentShape.orientaion;
             tempShape.applyMovement('rotate');
 
             for (var t = 0; t < 4; ++t) {
@@ -179,7 +179,7 @@ function Game() {
         switch (true) {
             case action === 'moveright' && collisions.right:
             case action === 'moveleft' && collisions.left:
-            case action === 'rotate' && this.shapeCanNotBeRotated():
+            case action === 'rotate' && this.cantBeRotated():
                 break;
             default:
                 this.currentShape.applyMovement(action);
