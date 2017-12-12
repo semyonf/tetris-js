@@ -144,6 +144,7 @@ function Game() {
                 break;
 
             default:
+                frameRate(10);
                 break;
         }
 
