@@ -1,14 +1,15 @@
-var game;
-var brickSize = 20;
+var game,
+    brickSize = 20,
+    boardColor = 'rgb(69,90,100)';
 
 function setup() {
     createCanvas(200, 440);
-    frameRate(10);
+    frameRate(8);
     background(75);
     game = new Game();
 }
 
 function draw() {
-    background('rgb(69,90,100)');
+    background(boardColor);
     game.continue();
 }

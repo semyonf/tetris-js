@@ -7,6 +7,7 @@ var userAction = {
 function Game() {
     this.staticBricks = [];
     this.currentShape = new Shape();
+    this.playerScore = 0;
 
     this.checkFilledRegions = function () {
         var rows = [],
@@ -36,6 +37,7 @@ function Game() {
             if (rows[i].isFull) {
                 rows[i].bricks = [];
                 ++rowsSkipped;
+                this.playerScore += rowsSkipped;
             } else {
                 rows[i].bricks.forEach(function (brick) {
                     brick.y += rowsSkipped * brickSize;
@@ -48,10 +50,30 @@ function Game() {
         this.staticBricks = newBricks;
     };
 
+    this.showScoreWindow = function () {
+        noStroke();
+        fill('rgb(139,195,74)');
+        rect(0, 0, 200, 30);
+        fill(255);
+        text('Score:' + this.playerScore, 20, 20);
+    };
+
+    this.boardIsFull = function () {
+        return this.staticBricks.some(function (brick) {
+            return brick.y < 60;
+        });
+    };
     this.continue = function () {
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
+            }
+
+            if (this.boardIsFull()) {
+                this.staticBricks = [];
+                this.playerScore = 0;
+
+                alert('Game over! Restarting...');
             }
 
             this.checkFilledRegions();
@@ -66,6 +88,7 @@ function Game() {
         }
 
         this.showStaticBricks();
+        this.showScoreWindow();
     };
 
     this.checkCollisions = function () {
@@ -129,7 +152,7 @@ function Game() {
 
         this.currentShape.bricks.forEach(function (brick) {
             /**
-             * For some reason this code doesn't work, had to use switch...
+             * For some reason this code doesn't work and I had to use a switch
              *
              * collisions.bottom = (touchedGround(brick) || touchedStatic(brick));
              * collisions.left = (touchedLeftWall(brick) || touchedLeftStatic(brick));
@@ -171,6 +194,7 @@ function Game() {
 
             case keyIsDown(DOWN_ARROW):
                 frameRate(20);
+                boardColor = 'rgba(69,90,100,0.25)';
 
                 break;
 
@@ -185,7 +209,9 @@ function Game() {
                 break;
 
             default:
-                frameRate(10);
+                frameRate(8);
+                boardColor = 'rgb(69,90,100)';
+
                 break;
         }
 
@@ -209,6 +235,12 @@ function Game() {
                     if (
                         tempShape.bricks[t].x === this.staticBricks[s].x &&
                         tempShape.bricks[t].y === this.staticBricks[s].y
+                    ) {
+                        return true;
+                    } else if (
+                        tempShape.bricks[t].x >= width ||
+                        tempShape.bricks[t].x <= 0 ||
+                        tempShape.bricks[t].y >= height
                     ) {
                         return true;
                     }
