@@ -130,10 +130,9 @@ function Shape() {
     this.bricks = [];
     this.fall = function () {
         if (!this.isFrozen) {
-            // TODO: Rewrite using declarative approach
-            for (var i = 0; i < 4; ++i) {
-                this.bricks[i].y += gridSize;
-            }
+            this.bricks.forEach(function (brick) {
+                brick.y += gridSize;
+            });
         }
 
         return this;

@@ -10,7 +10,6 @@ function Game() {
     this.currentShape = new Shape();
     this.continue = function () {
         if (this.currentShape.isFrozen) {
-            // TODO: There should be a faster way
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
             }
@@ -87,29 +86,29 @@ function Game() {
             return false;
         }
 
-        for (var i = 0; i < 4; ++i) {
-            var brick = this.currentShape.bricks[i];
-
+        this.currentShape.bricks.forEach(function (brick) {
+            /**
+             * For some reason this code doesn't work, had to use switch...
+             *
+             * collisions.bottom = (touchedGround(brick) || touchedStatic(brick));
+             * collisions.left = (touchedLeftWall(brick) || touchedLeftStatic(brick));
+             * collisions.right = (touchedRightWall(brick) || touchedRightStatic(brick));
+             */
+            // noinspection FallThroughInSwitchStatementJS
             switch (true) {
-                case touchedGround(brick):
-                case touchedStatic(brick):
+                case touchedGround(brick) || touchedStatic(brick):
                     collisions.bottom = true;
 
-                    break;
-
-                case touchedLeftWall(brick):
-                case touchedLeftStatic(brick):
+                case touchedLeftWall(brick) || touchedLeftStatic(brick):
                     collisions.left = true;
-                case touchedRightWall(brick):
-                case touchedRightStatic(brick):
-                    collisions.right = true;
 
-                    break;
+                case touchedRightWall(brick) || touchedRightStatic(brick):
+                    collisions.right = true;
 
                 default:
                     break;
             }
-        }
+        });
 
         return collisions;
     };
