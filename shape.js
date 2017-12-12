@@ -107,21 +107,8 @@ var shapeData = {
     ]
 };
 
-function randInt(max, min) {
-    if (min === undefined) {
-        min = 0;
-    } else {
-        min = Math.ceil(min);
-    }
-
-    --max;
-    max = Math.floor(max);
-
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function Shape() {
-    this.startX = width / 2; // TODO: Make sure it's a multiple of gridSize
+    this.startX = width / 2;
     this.startY = gridSize;
     this.isFrozen = false;
     this.color = randInt(shapeData.colors.length);
@@ -171,12 +158,15 @@ function Shape() {
                 }
 
                 break;
+
+            default:
+                break;
         }
 
         return this;
     };
     this.applyOrientation = function () {
-        var resultMatrix = math.multiply(
+        var resultMatrix = matrixMultiply(
             shapeData.types[this.type].matrix,
             shapeData.orientations[this.orientaion].matrix
         );
