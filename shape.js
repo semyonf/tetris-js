@@ -87,22 +87,28 @@ var shapeData = {
     colors: [
         {
             name: 'orange',
-            rgb: 'rgb(255,87,34)'
+            rgb: 'rgb(239,108,0)'
         },{
+            name: 'red',
+            rgb: 'rgb(211,47,47)'
+        }, {
             name: 'green',
             rgb: 'rgb(76,175,80)'
-        },{
+        }, {
             name: 'blue',
             rgb: 'rgb(33,150,243)'
-        },{
-            name: 'indigo',
-            rgb: 'rgb(61,90,254)'
-        },{
+        }, {
             name: 'yellow',
             rgb: 'rgb(255,235,59)'
-        },{
+        }, {
             name: 'cyan',
             rgb: 'rgb(0,188,212)'
+        }, {
+            name: 'pink',
+            rgb: 'rgb(233,30,99)'
+        }, {
+            name: 'white',
+            rgb: 'rgb(224,224,224)'
         }
     ]
 };

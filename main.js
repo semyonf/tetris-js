@@ -9,6 +9,6 @@ function setup() {
 }
 
 function draw() {
-    background('rgb(55,71,79)');
+    background('rgb(69,90,100)');
     game.continue();
 }
