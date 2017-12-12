@@ -1,8 +1,7 @@
 var userAction = {
     ROTATE: 'shaperotate',
     MOVE_LEFT: 'shapemleft',
-    MOVE_RIGHT: 'shapemright',
-    DROP: 'shapedrop'
+    MOVE_RIGHT: 'shapemright'
 };
 
 function Game() {
@@ -171,7 +170,7 @@ function Game() {
                 break;
 
             case keyIsDown(DOWN_ARROW):
-                action = userAction.DROP;
+                frameRate(20);
 
                 break;
 

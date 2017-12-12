@@ -139,12 +139,6 @@ function Shape() {
     };
     this.applyMovement = function (direction) {
         switch (direction) {
-            // TODO: Refactor
-            case userAction.DROP:
-                frameRate(20);
-
-                break;
-
             case userAction.ROTATE:
                 if (shapeData.types[this.type].name !== 'O') {
                     if (this.orientaion === 3) {
