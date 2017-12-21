@@ -114,7 +114,7 @@ var shapeData = {
 };
 
 function Shape() {
-    this.startX = width / 2;
+    this.startX = boardWidth / 2;
     this.startY = brickSize;
     this.isFrozen = false;
     this.color = randInt(shapeData.colors.length);

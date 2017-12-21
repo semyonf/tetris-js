@@ -8,6 +8,7 @@ function Game() {
     this.staticBricks = [];
     this.currentShape = new Shape();
     this.playerScore = 0;
+    this.action = null;
 
     this.checkFilledRegions = function () {
         var rows = [],
@@ -15,7 +16,7 @@ function Game() {
             bricksChecked = 0;
 
         for (
-            var i = height - brickSize;
+            var i = boardHeight - brickSize;
             bricksChecked !== this.staticBricks.length;
             i -= brickSize
         ) {
@@ -25,7 +26,7 @@ function Game() {
 
             rows.push({
                 bricks: bricks,
-                isFull: bricks.length === width / brickSize
+                isFull: bricks.length === boardWidth / brickSize
             });
 
             bricksChecked += bricks.length;
@@ -50,12 +51,14 @@ function Game() {
         this.staticBricks = newBricks;
     };
 
+    /**
+     * TODO: Implement
+     */
     this.showScoreWindow = function () {
-        noStroke();
-        fill('rgb(139,195,74)');
-        rect(0, 0, 200, 30);
-        fill(255);
-        text('Score:' + this.playerScore, 20, 20);
+        // fill('rgb(139,195,74)');
+        // rect(0, 0, 200, 30);
+        // fill(255);
+        // text('Score:' + this.playerScore, 20, 20);
     };
 
     this.boardIsFull = function () {
@@ -63,6 +66,7 @@ function Game() {
             return brick.y < 60;
         });
     };
+
     this.continue = function () {
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
@@ -79,10 +83,9 @@ function Game() {
             this.checkFilledRegions();
             this.currentShape = new Shape();
         } else {
-            var action = this.getUserAction(),
-                collisions = this.checkCollisions();
+            var collisions = this.checkCollisions();
 
-            this.applyAction(action, collisions);
+            this.applyAction(this.action, collisions);
             this.currentShape.isFrozen = this.checkCollisions().bottom;
             this.currentShape.fall().show();
         }
@@ -100,9 +103,8 @@ function Game() {
             };
 
         function touchedGround(brick) {
-            return brick.y === height - brickSize;
+            return brick.y === boardHeight - brickSize;
         }
-
         function touchedStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
@@ -115,15 +117,12 @@ function Game() {
 
             return false;
         }
-
         function touchedLeftWall(brick) {
             return brick.x === 0;
         }
-
         function touchedRightWall(brick) {
-            return brick.x === width - brickSize;
+            return brick.x === boardWidth - brickSize;
         }
-
         function touchedRightStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
@@ -136,7 +135,6 @@ function Game() {
 
             return false;
         }
-
         function touchedLeftStatic(brick) {
             for (var i = 0; i < self.staticBricks.length; ++i) {
                 if (
@@ -154,9 +152,9 @@ function Game() {
             /**
              * For some reason this code doesn't work and I had to use a switch
              *
-             * collisions.bottom = (touchedGround(brick) || touchedStatic(brick));
-             * collisions.left = (touchedLeftWall(brick) || touchedLeftStatic(brick));
-             * collisions.right = (touchedRightWall(brick) || touchedRightStatic(brick));
+             * collisions.bottom = (touchedGround(brick)    || touchedStatic(brick));
+             * collisions.left   = (touchedLeftWall(brick)  || touchedLeftStatic(brick));
+             * collisions.right  = (touchedRightWall(brick) || touchedRightStatic(brick));
              */
             // noinspection FallThroughInSwitchStatementJS
             switch (true) {
@@ -183,41 +181,6 @@ function Game() {
         }
     };
 
-    this.getUserAction = function () {
-        var action;
-
-        switch (true) {
-            case keyIsDown(UP_ARROW):
-                action = userAction.ROTATE;
-
-                break;
-
-            case keyIsDown(DOWN_ARROW):
-                frameRate(20);
-                boardColor = 'rgba(69,90,100,0.25)';
-
-                break;
-
-            case keyIsDown(LEFT_ARROW):
-                action = userAction.MOVE_LEFT;
-
-                break;
-
-            case keyIsDown(RIGHT_ARROW):
-                action = userAction.MOVE_RIGHT;
-
-                break;
-
-            default:
-                frameRate(8);
-                boardColor = 'rgb(69,90,100)';
-
-                break;
-        }
-
-        return action;
-    };
-
     this.applyAction = function (action, collisions) {
         this.cantBeRotated = function () {
             var tempShape = new Shape();
@@ -238,9 +201,9 @@ function Game() {
                     ) {
                         return true;
                     } else if (
-                        tempShape.bricks[t].x >= width ||
+                        tempShape.bricks[t].x >= boardWidth ||
                         tempShape.bricks[t].x <= 0 ||
-                        tempShape.bricks[t].y >= height
+                        tempShape.bricks[t].y >= boardHeight
                     ) {
                         return true;
                     }
@@ -261,6 +224,48 @@ function Game() {
                 break;
         }
     };
+
+    var self = this;
+
+    this.handlePlayerInput = function (e) {
+        var action;
+
+        if (e.type === 'keyup') {
+            action = null;
+            boardColor = 'rgb(69,90,100)';
+        } else {
+            switch (e.key) {
+                case 'ArrowLeft':
+                    action = userAction.MOVE_LEFT;
+
+                    break;
+
+                case 'ArrowUp':
+                    action = userAction.ROTATE;
+
+                    break;
+
+                case 'ArrowRight':
+                    action = userAction.MOVE_RIGHT;
+
+                    break;
+
+                case 'ArrowDown':
+                    boardColor = 'rgba(69,90,100,0.25)';
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        self.action = action;
+    };
+
+    ['keypress', 'keydown', 'keyup'].forEach(function (event) {
+        window.addEventListener(event, self.handlePlayerInput);
+    });
 
     return this;
 }

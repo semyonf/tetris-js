@@ -3,9 +3,8 @@ function Brick(x, y, rgb) {
     this.y = y;
     this.rgb = rgb;
     this.show = function() {
-        noStroke();
-        fill(this.rgb);
-        rect(this.x, this.y, brickSize, brickSize);
+        c.fillStyle = this.rgb;
+        c.fillRect(this.x, this.y, brickSize, brickSize);
     };
 
     return this;
