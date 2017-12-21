@@ -9,6 +9,8 @@ var c = canvas.getContext('2d');
 
 var brickSize = 20,
     boardColor = 'rgb(69,90,100)',
+    frameCounter = 0,
+    refreshLag = 100,
     game = new Game();
 
 function redrawBackground() {
@@ -21,7 +23,8 @@ function animate() {
         requestAnimationFrame(animate);
         redrawBackground();
         game.continue();
-    }, 100);
+        ++frameCounter;
+    }, refreshLag);
 }
 
 animate();

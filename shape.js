@@ -170,6 +170,7 @@ function Shape() {
 
         return this;
     };
+
     this.applyOrientation = function () {
         var resultMatrix = matrixMultiply(
             shapeData.types[this.type].matrix,

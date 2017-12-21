@@ -67,6 +67,10 @@ function Game() {
         });
     };
 
+    this.gravityIsActive = function () {
+        return frameCounter % 2 === 0;
+    };
+
     this.continue = function () {
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
@@ -87,7 +91,12 @@ function Game() {
 
             this.applyAction(this.action, collisions);
             this.currentShape.isFrozen = this.checkCollisions().bottom;
-            this.currentShape.fall().show();
+
+            if (this.gravityIsActive()) {
+                this.currentShape.fall();
+            }
+
+            this.currentShape.show();
         }
 
         this.showStaticBricks();
@@ -263,7 +272,7 @@ function Game() {
         self.action = action;
     };
 
-    ['keypress', 'keydown', 'keyup'].forEach(function (event) {
+    ['keydown', 'keyup'].forEach(function (event) {
         window.addEventListener(event, self.handlePlayerInput);
     });
 
