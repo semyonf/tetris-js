@@ -4,7 +4,7 @@ var userAction = {
     MOVE_RIGHT: 'shapemright'
 };
 
-function Game() {
+function Game(config) {
     this.staticBricks = [];
     this.currentShape = new Shape();
     this.playerScore = 0;
@@ -67,11 +67,17 @@ function Game() {
         });
     };
 
-    this.gravityIsActive = function () {
+    this.gravityIsActive = function () {/**/
         return frameCounter % 2 === 0;
     };
 
+    this.redrawBackground = function () {
+        c.fillStyle = boardColor;
+        c.fillRect(0, 0, boardWidth, boardHeight);
+    };
+
     this.continue = function () {
+        this.redrawBackground();
         if (this.currentShape.isFrozen) {
             for (var i = 0; i < 4; ++i) {
                 this.staticBricks.push(this.currentShape.bricks.pop());
