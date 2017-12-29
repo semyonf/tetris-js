@@ -125,7 +125,7 @@
                     this.staticBricks = [];
                     this.playerScore = 0;
 
-                    alert('Game over! Restarting...');
+                    // alert('Game over! Restarting...');
                 }
 
                 this.checkFilledRegions();
@@ -273,6 +273,7 @@
 
         this.handlePlayerInput = function (e) {
             let action;
+            refreshLag = 100;
 
             if (e.type === 'keyup') {
                 action = null;
@@ -295,6 +296,7 @@
                         break;
 
                     case 'ArrowDown':
+                        refreshLag = 20;
                         boardColor = 'rgba(69,90,100,0.25)';
 
                         break;
