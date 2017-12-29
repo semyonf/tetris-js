@@ -26,12 +26,21 @@
 
     animate();
 
+    /**
+     * An enum-like object to store user's actions
+     * @type {{ROTATE: string, MOVE_LEFT: string, MOVE_RIGHT: string}}
+     */
     const userActions = {
         ROTATE: 'rotate',
         MOVE_LEFT: 'moveLeft',
         MOVE_RIGHT: 'moveRight'
     };
 
+    /**
+     * Main Tetris logic
+     * @returns {Game}
+     * @constructor
+     */
     function Game() {
         this.staticBricks = [];
         this.currentShape = new Shape();
@@ -193,26 +202,16 @@
             }
 
             this.currentShape.bricks.forEach(function (brick) {
-                /**
-                 * For some reason this code doesn't work and I had to use a switch
-                 *
-                 * collisions.bottom = (touchedGround(brick)    || touchedStatic(brick));
-                 * collisions.left   = (touchedLeftWall(brick)  || touchedLeftStatic(brick));
-                 * collisions.right  = (touchedRightWall(brick) || touchedRightStatic(brick));
-                 */
-                // noinspection FallThroughInSwitchStatementJS
-                switch (true) {
-                    case touchedGround(brick) || touchedStatic(brick):
-                        collisions.bottom = true;
+                if (touchedGround(brick) || touchedStatic(brick)) {
+                    collisions.bottom = true;
+                }
 
-                    case touchedLeftWall(brick) || touchedLeftStatic(brick):
-                        collisions.left = true;
+                if (touchedLeftWall(brick)  || touchedLeftStatic(brick)) {
+                    collisions.left = true;
+                }
 
-                    case touchedRightWall(brick) || touchedRightStatic(brick):
-                        collisions.right = true;
-
-                    default:
-                        break;
+                if (touchedRightWall(brick) || touchedRightStatic(brick)) {
+                    collisions.right = true;
                 }
             });
 
@@ -315,6 +314,11 @@
         return this;
     }
 
+    /**
+     * Tetramino shape
+     * @returns {Shape}
+     * @constructor
+     */
     function Shape() {
         this.shapeData = {
             types: [
@@ -519,6 +523,14 @@
         return this;
     }
 
+    /**
+     * Base tetramino building block
+     * @param x
+     * @param y
+     * @param rgb
+     * @returns {Brick}
+     * @constructor
+     */
     function Brick(x, y, rgb) {
         this.x = x;
         this.y = y;
@@ -531,6 +543,12 @@
         return this;
     }
 
+    /**
+     * Matrix multiplication
+     * @param matrixA
+     * @param matrixB
+     * @returns {Array}
+     */
     function matrixMultiply(matrixA, matrixB) {
         let resultMatrix = [];
         for (let i = 0; i < matrixA.length; ++i) {
@@ -546,6 +564,12 @@
         return resultMatrix;
     }
 
+    /**
+     * Random integer generator
+     * @param max
+     * @param min
+     * @returns {*}
+     */
     function randInt(max, min) {
         if (min === undefined) {
             min = 0;
