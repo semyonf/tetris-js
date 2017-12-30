@@ -5,8 +5,8 @@
         boardWidth = 200,
         boardHeight = 440;
 
-    board.width = boardWidth;
-    board.height = boardHeight;
+    board.width = boardWidth + 100;
+    board.height = boardHeight + 100;
 
     const context = board.getContext('2d');
 
@@ -28,7 +28,7 @@
 
     /**
      * An enum-like object to store user's actions
-     * @type {{ROTATE: string, MOVE_LEFT: string, MOVE_RIGHT: string}}
+     * @type {*}
      */
     const userActions = {
         ROTATE: 'rotate',
@@ -90,13 +90,13 @@
         };
 
         /**
-         * TODO: Implement
+         * TODO: Refactor
          */
         this.showScoreWindow = function () {
-            // fill('rgb(139,195,74)');
-            // rect(0, 0, 200, 30);
-            // fill(255);
-            // text('Score:' + this.playerScore, 20, 20);
+            context.fillStyle = 'rgb(139,195,74)';
+            context.fillRect(boardWidth + 20, 0, 60, 60);
+            context.fillStyle = 'rgb(255,0,0)';
+            context.fillText('Score:' + this.playerScore, boardWidth + 25, 32);
         };
 
         this.boardIsFull = function () {
