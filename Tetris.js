@@ -89,14 +89,10 @@
             this.staticBricks = newBricks;
         };
 
-        /**
-         * TODO: Refactor
-         */
         this.showScoreWindow = function () {
-            context.fillStyle = 'rgb(139,195,74)';
-            context.fillRect(boardWidth + 20, 0, 60, 60);
-            context.fillStyle = 'rgb(255,0,0)';
-            context.fillText('Score:' + this.playerScore, boardWidth + 25, 32);
+            context.fillStyle = 'rgb(255,255,255)';
+            context.font="12px Courier";
+            context.fillText('Score: ' + this.playerScore, 0, 10);
         };
 
         this.boardIsFull = function () {
@@ -105,7 +101,7 @@
             });
         };
 
-        this.gravityIsActive = function () {/**/
+        this.gravityIsActive = function () {
             return frameCounter % 2 === 0;
         };
 
@@ -124,8 +120,6 @@
                 if (this.boardIsFull()) {
                     this.staticBricks = [];
                     this.playerScore = 0;
-
-                    // alert('Game over! Restarting...');
                 }
 
                 this.checkFilledRegions();
@@ -268,7 +262,6 @@
             }
         };
 
-        // TODO: Refactor
         const self = this;
 
         this.handlePlayerInput = function (e) {
