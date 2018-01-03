@@ -246,7 +246,7 @@
             this.staticBricks.forEach(function (staticBrick) {
                 staticBrick.show();
             }, this);
-        };
+        };/**/
 
         this.applyAction = function (action, collisions) {
             this.cantBeRotated = function () {
@@ -264,20 +264,17 @@
 
                 tempShape.applyMovement(userActions.ROTATE);
 
-                for (let t = 0; t < 4; ++t) {
-                    /**
-                     * TODO: Refactor
-                     */
-                    for (let s = 0; s < this.staticBricks.length; ++s) {
+                for (let i = 0; i < 4; ++i) {
+                    for (let j = 0; j < this.staticBricks.length; ++j) {
                         if (
-                            tempShape.bricks[t].x === this.staticBricks[s].x &&
-                            tempShape.bricks[t].y === this.staticBricks[s].y
+                            tempShape.bricks[i].x === this.staticBricks[j].x &&
+                            tempShape.bricks[i].y === this.staticBricks[j].y
                         ) {
                             return true;
                         } else if (
-                            tempShape.bricks[t].x >= boardWidth ||
-                            tempShape.bricks[t].x <= 0 ||
-                            tempShape.bricks[t].y >= boardHeight
+                            tempShape.bricks[i].x >= boardWidth ||
+                            tempShape.bricks[i].x <= 0 ||
+                            tempShape.bricks[i].y >= boardHeight
                         ) {
                             return true;
                         }
@@ -577,6 +574,7 @@
 
     /**
      * Matrix multiplication
+     * TODO: hardcode dimensions in
      * @param matrixA 2-dimensional
      * @param matrixB 2-dimensional
      * @returns {Array}
