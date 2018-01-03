@@ -54,23 +54,22 @@
     animate();
 
     /**
-     * An enum-like object to store actions for user input
-     * @type {*}
+     * An enum-like object to identify possible actions
      */
-    const userActions = {
+    const shapeActions = {
         ROTATE: 'rotate',
         MOVE_LEFT: 'moveLeft',
         MOVE_RIGHT: 'moveRight'
     };
 
     /**
-     * Main Tetris logic
+     * Main game logic
      * @returns {Game}
      * @constructor
      */
     function Game() {
         this.staticBricks = [];
-        this.currentShape = new Shape();
+        this.activeShape = new Shape();
         this.playerScore = 0;
         this.action = null;
 
@@ -116,7 +115,7 @@
             this.staticBricks = newBricks;
         };
 
-        this.showScoreWindow = function () {
+        this.drawScore = function () {
             context.fillStyle = 'rgb(255,255,255)';
             context.font="12px Courier";
             context.fillText('Score: ' + this.playerScore, 0, 10);
@@ -132,17 +131,17 @@
             return frameCounter % 2 === 0;
         };
 
-        this.redrawBackground = function () {
+        this.drawBackground = function () {
             context.fillStyle = boardColor;
             context.fillRect(0, 0, boardWidth, boardHeight);
         };
 
         this.continue = function () {
-            this.redrawBackground();
+            this.drawBackground();
 
-            if (this.currentShape.isFrozen) {
+            if (this.activeShape.isFrozen) {
                 for (let i = 0; i < 4; ++i) {
-                    this.staticBricks.push(this.currentShape.bricks.pop());
+                    this.staticBricks.push(this.activeShape.bricks.pop());
                 }
 
                 if (this.boardIsFull()) {
@@ -151,20 +150,20 @@
                 }
 
                 this.checkFilledRegions();
-                this.currentShape = new Shape();
+                this.activeShape = new Shape();
             } else {
                 this.applyAction(this.action, this.checkCollisions());
-                this.currentShape.isFrozen = this.checkCollisions().bottom;
+                this.activeShape.isFrozen = this.checkCollisions().bottom;
 
                 if (this.gravityIsActive()) {
-                    this.currentShape.fall();
+                    this.activeShape.fall();
                 }
 
-                this.currentShape.show();
+                this.activeShape.draw();
             }
 
-            this.showStaticBricks();
-            this.showScoreWindow();
+            this.drawStaticBricks();
+            this.drawScore();
         };
 
         this.checkCollisions = function () {
@@ -216,7 +215,7 @@
                 };
             }
             
-            this.currentShape.bricks.forEach(function (brick) {
+            this.activeShape.bricks.forEach(function (brick) {
                 ['bottom', 'left', 'right'].forEach(function (direction) {
                     if (
                         checkAgainst('board', direction)(brick) ||
@@ -230,9 +229,9 @@
             return collisions;
         };
 
-        this.showStaticBricks = function () {
+        this.drawStaticBricks = function () {
             this.staticBricks.forEach(function (staticBrick) {
-                staticBrick.show();
+                staticBrick.draw();
             }, this);
         };
 
@@ -240,17 +239,17 @@
             this.cantBeRotated = function () {
                 const tempShape = new Shape();
 
-                tempShape.orientaion = this.currentShape.orientaion;
-                tempShape.type = this.currentShape.type;
+                tempShape.orientaion = this.activeShape.orientaion;
+                tempShape.type = this.activeShape.type;
 
                 for (let i = 0; i < 4; ++i) {
                     Object.assign(
                         tempShape.bricks[i],
-                        this.currentShape.bricks[i]
+                        this.activeShape.bricks[i]
                     );
                 }
 
-                tempShape.applyMovement(userActions.ROTATE);
+                tempShape.applyMovement(shapeActions.ROTATE);
 
                 for (let i = 0; i < 4; ++i) {
                     for (let j = 0; j < this.staticBricks.length; ++j) {
@@ -273,12 +272,12 @@
             };
 
             switch (true) {
-                case action === userActions.MOVE_RIGHT && collisions.right:
-                case action === userActions.MOVE_LEFT && collisions.left:
-                case action === userActions.ROTATE && this.cantBeRotated():
+                case action === shapeActions.MOVE_RIGHT && collisions.right:
+                case action === shapeActions.MOVE_LEFT && collisions.left:
+                case action === shapeActions.ROTATE && this.cantBeRotated():
                     break;
                 default:
-                    this.currentShape.applyMovement(action);
+                    this.activeShape.applyMovement(action);
 
                     break;
             }
@@ -296,17 +295,17 @@
             } else {
                 switch (e.key) {
                     case 'ArrowLeft':
-                        action = userActions.MOVE_LEFT;
+                        action = shapeActions.MOVE_LEFT;
 
                         break;
 
                     case 'ArrowUp':
-                        action = userActions.ROTATE;
+                        action = shapeActions.ROTATE;
 
                         break;
 
                     case 'ArrowRight':
-                        action = userActions.MOVE_RIGHT;
+                        action = shapeActions.MOVE_RIGHT;
 
                         break;
 
@@ -332,12 +331,12 @@
     }
 
     /**
-     * Tetramino shape
+     * Tetramino data
      * @returns {Shape}
      * @constructor
      */
     function Shape() {
-        this.shapeData = {
+        this.data = {
             types: [
                 {
                     name: 'I',
@@ -454,9 +453,9 @@
         this.startX = boardWidth / 2;
         this.startY = brickSize;
         this.isFrozen = false;
-        this.color = randInt(this.shapeData.colors.length);
-        this.type = randInt(this.shapeData.types.length);
-        this.orientaion = randInt(this.shapeData.orientations.length);
+        this.color = randInt(this.data.colors.length);
+        this.type = randInt(this.data.types.length);
+        this.orientaion = randInt(this.data.orientations.length);
         this.bricks = [];
 
         this.fall = function () {
@@ -469,9 +468,9 @@
             return this;
         };
 
-        this.show = function () {
+        this.draw = function () {
             for (let i = 0; i < 4; ++i) {
-                this.bricks[i].show();
+                this.bricks[i].draw();
             }
 
             return this;
@@ -479,8 +478,8 @@
 
         this.applyMovement = function (direction) {
             switch (direction) {
-                case userActions.ROTATE:
-                    if (this.shapeData.types[this.type].name !== 'O') {
+                case shapeActions.ROTATE:
+                    if (this.data.types[this.type].name !== 'O') {
                         if (this.orientaion === 3) {
                             this.orientaion = 0;
                         } else {
@@ -492,10 +491,10 @@
 
                     break;
 
-                case userActions.MOVE_RIGHT:
-                case userActions.MOVE_LEFT:
+                case shapeActions.MOVE_RIGHT:
+                case shapeActions.MOVE_LEFT:
                     for (let i = 0; i < 4; ++i) {
-                        if (direction === userActions.MOVE_LEFT) {
+                        if (direction === shapeActions.MOVE_LEFT) {
                             this.bricks[i].x -= brickSize;
                         } else {
                             this.bricks[i].x += brickSize;
@@ -512,10 +511,22 @@
         };
 
         this.applyOrientation = function () {
-            const oriented = matrixMultiply(
-                this.shapeData.types[this.type].matrix,
-                this.shapeData.orientations[this.orientaion].matrix
-            );
+            const
+                type = this.data.types[this.type].matrix,
+                orientation = this.data.orientations[this.orientaion].matrix;
+
+            let oriented = [];
+
+            // Dot product of data matrix and orientation matrix
+            for (let i = 0; i < 3; ++i) {
+                oriented[i] = [];
+                for (let j = 0; j < 2; ++j) {
+                    oriented[i][j] = 0;
+                    for (let k = 0; k < 2; ++k) {
+                        oriented[i][j] += type[i][k] * orientation[k][j];
+                    }
+                }
+            }
 
             const center = this.bricks[0];
 
@@ -527,11 +538,11 @@
             return this;
         };
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; ++i) {
             this.bricks.push(new Brick(
                 this.startX,
                 this.startY,
-                this.shapeData.colors[this.color].rgb
+                this.data.colors[this.color].rgb
             ));
         }
 
@@ -541,10 +552,8 @@
     }
 
     /**
-     * Base tetramino building block
-     * @param x coordinate
-     * @param y coordinate
-     * @param rgb color sting
+     * Tetramino building block
+     * @param {String} rgb color string
      * @returns {Brick}
      * @constructor
      */
@@ -552,7 +561,7 @@
         this.x = x;
         this.y = y;
         this.rgb = rgb;
-        this.show = function() {
+        this.draw = function() {
             context.fillStyle = this.rgb;
             context.fillRect(this.x, this.y, brickSize, brickSize);
         };
@@ -561,32 +570,8 @@
     }
 
     /**
-     * Matrix multiplication
-     * TODO: hardcode dimensions in
-     * @param matrixA 2-dimensional
-     * @param matrixB 2-dimensional
-     * @returns {Array}
-     */
-    function matrixMultiply(matrixA, matrixB) {
-        let resultMatrix = [];
-        for (let i = 0; i < matrixA.length; ++i) {
-            resultMatrix[i] = [];
-            for (let j = 0; j < matrixB[0].length; ++j) {
-                resultMatrix[i][j] = 0;
-                for (let k = 0; k < matrixA[0].length; ++k) {
-                    resultMatrix[i][j] += matrixA[i][k] * matrixB[k][j];
-                }
-            }
-        }
-
-        return resultMatrix;
-    }
-
-    /**
      * Random integer generator
-     * @param max
-     * @param min
-     * @returns {*}
+     * @returns {Number}
      */
     function randInt(max, min) {
         if (min === undefined) {
