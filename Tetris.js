@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -175,33 +175,33 @@
                     bottom: false
                 };
 
-            function checkAgainst(obstacle) {
+            function checkAgainst(obstacle, direction) {
                 return function (brick) {
-                    if (obstacle.indexOf('board') !== -1) {
-                        switch (obstacle) {
-                            case 'boardBottom':
+                    if (obstacle === 'board') {
+                        switch (direction) {
+                            case 'bottom':
                                 return brick.y === boardHeight - brickSize;
-                            case 'boardLeft':
+                            case 'left':
                                 return brick.x === 0;
-                            case 'boardRight':
+                            case 'right':
                                 return brick.x === boardWidth - brickSize;
                         }
                     } else {
                         let collision = false;
 
                         let callback = function (staticBrick) {
-                            switch (obstacle) {
-                                case 'staticBottom':
+                            switch (direction) {
+                                case 'bottom':
                                     collision = collision ||
                                         brick.y === staticBrick.y - brickSize &&
                                         brick.x === staticBrick.x;
                                     break;
-                                case 'staticLeft':
+                                case 'left':
                                     collision = collision ||
                                         brick.y === staticBrick.y &&
                                         brick.x - brickSize === staticBrick.x;
                                     break;
-                                case 'staticRight':
+                                case 'right':
                                     collision = collision ||
                                         brick.y === staticBrick.y &&
                                         brick.x + brickSize === staticBrick.x;
@@ -217,26 +217,14 @@
             }
             
             this.currentShape.bricks.forEach(function (brick) {
-                if (
-                    checkAgainst('boardBottom')(brick) ||
-                    checkAgainst('staticBottom')(brick)
-                ) {
-                    collisions.bottom = true;
-                }
-
-                if (
-                    checkAgainst('boardLeft')(brick) ||
-                    checkAgainst('staticLeft')(brick)
-                ) {
-                    collisions.left = true;
-                }
-
-                if (
-                    checkAgainst('boardRight')(brick) ||
-                    checkAgainst('staticRight')(brick)
-                ) {
-                    collisions.right = true;
-                }
+                ['bottom', 'left', 'right'].forEach(function (direction) {
+                    if (
+                        checkAgainst('board', direction)(brick) ||
+                        checkAgainst('static', direction)(brick)
+                    ) {
+                        collisions[direction] = true;
+                    }
+                });
             });
 
             return collisions;
@@ -246,7 +234,7 @@
             this.staticBricks.forEach(function (staticBrick) {
                 staticBrick.show();
             }, this);
-        };/**/
+        };
 
         this.applyAction = function (action, collisions) {
             this.cantBeRotated = function () {
