@@ -96,9 +96,9 @@
                 bricksChecked += bricks.length;
             }
 
-            let newBricks = [];
+            let newBricks = [],
+                rowsSkipped = 0;
 
-            let rowsSkipped = 0;
             for (let i = 0; i < rows.length; ++i) {
                 if (rows[i].isFull) {
                     rows[i].bricks = [];
@@ -139,6 +139,7 @@
 
         this.continue = function () {
             this.redrawBackground();
+
             if (this.currentShape.isFrozen) {
                 for (let i = 0; i < 4; ++i) {
                     this.staticBricks.push(this.currentShape.bricks.pop());
@@ -152,9 +153,7 @@
                 this.checkFilledRegions();
                 this.currentShape = new Shape();
             } else {
-                const collisions = this.checkCollisions();
-
-                this.applyAction(this.action, collisions);
+                this.applyAction(this.action, this.checkCollisions());
                 this.currentShape.isFrozen = this.checkCollisions().bottom;
 
                 if (this.gravityIsActive()) {
@@ -176,67 +175,87 @@
                     bottom: false
                 };
 
-            function touchedGround(brick) {
-                return brick.y === boardHeight - brickSize;
-            }
+            /**
+             * Генератор функций проверки коллизий
+             * @param {string} obstacle
+             */
+            function checkerGenerator(obstacle) {
+                return function (brick) {
+                    if (obstacle.indexOf('board') !== -1) {
+                        switch (obstacle) {
+                            case 'boardBottom':
+                                return brick.y === boardHeight - brickSize;
+                            case 'boardLeft':
+                                return brick.x === 0;
+                            case 'boardRight':
+                                return brick.x === boardWidth - brickSize;
+                        }
+                    } else {
+                        let status = false;
 
-            function touchedStatic(brick) {
-                for (let i = 0; i < self.staticBricks.length; ++i) {
-                    if (
-                        brick.y === self.staticBricks[i].y - brickSize &&
-                        brick.x === self.staticBricks[i].x
-                    ) {
-                        return true;
+                        let callback = function (staticBrick) {
+                            switch (obstacle) {
+                                case 'staticBottom':
+                                    status = status || brick.y === staticBrick.y - brickSize &&
+                                        brick.x === staticBrick.x;
+                                    break;
+                                case 'staticBottom':
+                                    status = status || brick.y === staticBrick.y - brickSize &&
+                                        brick.x === staticBrick.x;
+                                    break;
+                            }
+                        };
+
+                        self.staticBricks.forEach(callback);
+
+                        return status;
                     }
-                }
-
-                return false;
+                };
             }
 
-            function touchedLeftWall(brick) {
-                return brick.x === 0;
-            }
+            function landedStatic(brick) {
+                let status = false;
 
-            function touchedRightWall(brick) {
-                return brick.x === boardWidth - brickSize;
-            }
+                self.staticBricks.forEach(function(staticBrick) {
+                    status = status || brick.y === staticBrick.y - brickSize &&
+                        brick.x === staticBrick.x;
+                });
 
-            function touchedRightStatic(brick) {
-                for (let i = 0; i < self.staticBricks.length; ++i) {
-                    if (
-                        brick.y === self.staticBricks[i].y &&
-                        brick.x + brickSize === self.staticBricks[i].x
-                    ) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return status;
             }
 
             function touchedLeftStatic(brick) {
-                for (let i = 0; i < self.staticBricks.length; ++i) {
-                    if (
-                        brick.y === self.staticBricks[i].y &&
-                        brick.x - brickSize === self.staticBricks[i].x
-                    ) {
-                        return true;
-                    }
-                }
+                let status = false;
 
-                return false;
+                self.staticBricks.forEach(function(staticBrick) {
+                    status = status || brick.y === staticBrick.y &&
+                        brick.x - brickSize === staticBrick.x;
+                });
+
+                return status;
+            }
+
+            function touchedRightStatic(brick) {
+                let status = false;
+
+                self.staticBricks.forEach(function(staticBrick) {
+                    status = status || brick.y === staticBrick.y &&
+                        brick.x + brickSize === staticBrick.x;
+                });
+
+                return status;
             }
 
             this.currentShape.bricks.forEach(function (brick) {
-                if (touchedGround(brick) || touchedStatic(brick)) {
+                if (checkerGenerator('boardBottom')(brick) || landedStatic(brick)) {
                     collisions.bottom = true;
                 }
 
-                if (touchedLeftWall(brick)  || touchedLeftStatic(brick)) {
+                if (checkerGenerator('boardLeft')(brick)  || touchedLeftStatic(brick)) {
                     collisions.left = true;
                 }
 
-                if (touchedRightWall(brick) || touchedRightStatic(brick)) {
+                if (checkerGenerator('boardRight')(brick) || touchedRightStatic(brick)) {
                     collisions.right = true;
                 }
             });
@@ -245,6 +264,9 @@
         };
 
         this.showStaticBricks = function () {
+            /**
+             * TODO: Possible forEach loop
+             */
             for (let i = 0; i < this.staticBricks.length; i++) {
                 this.staticBricks[i].show();
             }
@@ -256,6 +278,7 @@
 
                 tempShape.orientaion = this.currentShape.orientaion;
                 tempShape.type = this.currentShape.type;
+
                 for (let i = 0; i < 4; ++i) {
                     Object.assign(tempShape.bricks[i], this.currentShape.bricks[i]);
                 }
@@ -263,9 +286,12 @@
                 tempShape.applyMovement(userActions.ROTATE);
 
                 for (let t = 0; t < 4; ++t) {
+                    /**
+                     * TODO: Refactor
+                     */
                     for (let s = 0; s < this.staticBricks.length; ++s) {
                         if (
-                            tempShape.bricks[t].x === this.staticBricks[s].x &&
+                            tempShape.bricks[t].x === this.staticBricks[/**/s].x &&
                             tempShape.bricks[t].y === this.staticBricks[s].y
                         ) {
                             return true;
@@ -335,8 +361,8 @@
         };
 
         ['keydown', 'keyup'].forEach(function (event) {
-            window.addEventListener(event, self.handlePlayerInput);
-        });
+            window.addEventListener(event, this.handlePlayerInput);
+        }, this);
 
         return this;
     }
@@ -522,16 +548,16 @@
         };
 
         this.applyOrientation = function () {
-            const resultMatrix = matrixMultiply(
+            const oriented = matrixMultiply(
                 this.shapeData.types[this.type].matrix,
                 this.shapeData.orientations[this.orientaion].matrix
             );
 
+            const center = this.bricks[0];
+
             for (let i = 0; i < 3; ++i) {
-                this.bricks[i + 1].x =
-                    this.bricks[0].x + resultMatrix[i][0] * brickSize;
-                this.bricks[i + 1].y =
-                    this.bricks[0].y + resultMatrix[i][1] * brickSize;
+                this.bricks[i + 1].x = center.x + oriented[i][0] * brickSize;
+                this.bricks[i + 1].y = center.y + oriented[i][1] * brickSize;
             }
 
             return this;
@@ -552,9 +578,9 @@
 
     /**
      * Base tetramino building block
-     * @param x
-     * @param y
-     * @param rgb
+     * @param x coordinate
+     * @param y coordinate
+     * @param rgb color sting
      * @returns {Brick}
      * @constructor
      */
@@ -572,8 +598,8 @@
 
     /**
      * Matrix multiplication
-     * @param matrixA
-     * @param matrixB
+     * @param matrixA 2-dimensional
+     * @param matrixB 2-dimensional
      * @returns {Array}
      */
     function matrixMultiply(matrixA, matrixB) {
