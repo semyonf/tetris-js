@@ -553,6 +553,8 @@
 
     /**
      * Tetramino building block
+     * @param {Number} x coordinate
+     * @param {Number} y coordinate
      * @param {String} rgb color string
      * @returns {Brick}
      * @constructor
