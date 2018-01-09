@@ -78,20 +78,11 @@
         const self = this;
 
         this.updateDifficulty = function () {
-            switch (true) {
-                case this.playerScore > 39:
-                    this.difficulty = 5;
-                    break;
-                case this.playerScore > 29:
-                    this.difficulty = 4;
-                    break;
-                case this.playerScore > 9:
-                    this.difficulty = 3;
-                    break;
-                case this.playerScore > 4:
-                    this.difficulty = 2;
-                    break;
-            }
+            [39, 29, 9, 4].forEach(function (targetScore, index) {
+                if (self.playerScore > targetScore) {
+                    self.difficulty = 5 - index;
+                }
+            });
         };
 
         this.checkFilledRegions = function () {
@@ -440,8 +431,6 @@
             for (let i = 0; i < 4; ++i) {
                 this.bricks[i].draw();
             }
-
-            return this;
         };
 
         this.applyMovement = function (direction) {
