@@ -78,9 +78,11 @@
         const self = this;
 
         this.updateDifficulty = function () {
-            [39, 29, 9, 4].forEach(function (targetScore, index) {
+            [39, 29, 9, 4].some(function (targetScore, index) {
                 if (self.playerScore > targetScore) {
                     self.difficulty = 5 - index;
+
+                    return true;
                 }
             });
         };
@@ -178,7 +180,7 @@
             this.drawScore();
         };
 
-        this.checkCollisions = function () {
+        this.checkCollisions = function (callback) {
             const self = this,
                 collisions = {
                     left: false,
@@ -238,7 +240,7 @@
                 });
             });
 
-            return collisions;
+            callback(collisions);
         };
 
         this.drawStaticBricks = function () {
@@ -248,55 +250,56 @@
         };
 
         this.applyAction = function (action) {
-            this.cantBeRotated = function () {
-                const tempShape = new Shape();
+            self.checkCollisions(function (collisions) {
+                self.activeShape.isFrozen = collisions.bottom;
 
-                tempShape.orientaion = this.activeShape.orientaion;
-                tempShape.type = this.activeShape.type;
+                switch (true) {
+                    case action === shapeActions.MOVE_RIGHT && collisions.right:
+                    case action === shapeActions.MOVE_LEFT && collisions.left:
+                    case action === shapeActions.MOVE_DOWN && collisions.bottom:
+                    case action === shapeActions.ROTATE && cantBeRotated():
+                        break;
+                    default:
+                        self.activeShape.applyMovement(action);
 
-                for (let i = 0; i < 4; ++i) {
-                    Object.assign(
-                        tempShape.bricks[i],
-                        this.activeShape.bricks[i]
-                    );
+                        break;
                 }
 
-                tempShape.applyMovement(shapeActions.ROTATE);
+                function cantBeRotated() {
+                    const tempShape = new Shape();
 
-                for (let i = 0; i < 4; ++i) {
-                    for (let j = 0; j < this.staticBricks.length; ++j) {
-                        if (
-                            tempShape.bricks[i].x === this.staticBricks[j].x &&
-                            tempShape.bricks[i].y === this.staticBricks[j].y
-                        ) {
-                            return true;
-                        } else if (
-                            tempShape.bricks[i].x >= boardWidth ||
-                            tempShape.bricks[i].x <= 0 ||
-                            tempShape.bricks[i].y >= boardHeight
-                        ) {
-                            return true;
+                    tempShape.orientaion = self.activeShape.orientaion;
+                    tempShape.type = self.activeShape.type;
+
+                    for (let i = 0; i < 4; ++i) {
+                        Object.assign(
+                            tempShape.bricks[i],
+                            self.activeShape.bricks[i]
+                        );
+                    }
+
+                    tempShape.applyMovement(shapeActions.ROTATE);
+
+                    for (let i = 0; i < 4; ++i) {
+                        for (let j = 0; j < self.staticBricks.length; ++j) {
+                            if (
+                                tempShape.bricks[i].x === self.staticBricks[j].x &&
+                                tempShape.bricks[i].y === self.staticBricks[j].y
+                            ) {
+                                return true;
+                            } else if (
+                                tempShape.bricks[i].x >= boardWidth ||
+                                tempShape.bricks[i].x <= 0 ||
+                                tempShape.bricks[i].y >= boardHeight
+                            ) {
+                                return true;
+                            }
                         }
                     }
+
+                    return false;
                 }
-
-                return false;
-            };
-
-            const collisions = self.checkCollisions();
-            this.activeShape.isFrozen = collisions.bottom;
-
-            switch (true) {
-                case action === shapeActions.MOVE_RIGHT && collisions.right:
-                case action === shapeActions.MOVE_LEFT && collisions.left:
-                case action === shapeActions.MOVE_DOWN && collisions.bottom:
-                case action === shapeActions.ROTATE && this.cantBeRotated():
-                    break;
-                default:
-                    this.activeShape.applyMovement(action);
-
-                    break;
-            }
+            });
         };
 
         this.enableInput = function () {
@@ -314,8 +317,9 @@
             if (!self.inputDisabled) {
                 self.applyAction(actions[event.key]);
                 self.inputDisabled = true;
-                let collisions = self.checkCollisions();
-                self.activeShape.isFrozen = collisions.bottom;
+                self.checkCollisions(function (collisions) {
+                    self.activeShape.isFrozen = collisions.bottom;
+                });
             }
         };
 
