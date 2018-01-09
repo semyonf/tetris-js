@@ -36,7 +36,7 @@
         brickSize = 20;
 
     let frameCounter = 0,
-        refreshLag = 100,
+        refreshLag = 20,
         boardColor = 'rgb(69,90,100)',
         game = new Game();
 
@@ -59,7 +59,8 @@
     const shapeActions = {
         ROTATE: 'rotate',
         MOVE_LEFT: 'moveLeft',
-        MOVE_RIGHT: 'moveRight'
+        MOVE_RIGHT: 'moveRight',
+        MOVE_DOWN: 'moveDown'
     };
 
     /**
@@ -71,7 +72,27 @@
         this.staticBricks = [];
         this.activeShape = new Shape();
         this.playerScore = 0;
-        this.action = null;
+        this.difficulty = 3;
+        this.inputDisabled = false;
+
+        const self = this;
+
+        this.updateDifficulty = function () {
+            switch (true) {
+                case this.playerScore > 39:
+                    this.difficulty = 5;
+                    break;
+                case this.playerScore > 29:
+                    this.difficulty = 4;
+                    break;
+                case this.playerScore > 9:
+                    this.difficulty = 3;
+                    break;
+                case this.playerScore > 4:
+                    this.difficulty = 2;
+                    break;
+            }
+        };
 
         this.checkFilledRegions = function () {
             let rows = [],
@@ -103,6 +124,7 @@
                     rows[i].bricks = [];
                     ++rowsSkipped;
                     this.playerScore += rowsSkipped;
+                    this.updateDifficulty();
                 } else {
                     rows[i].bricks.forEach(function (brick) {
                         brick.y += rowsSkipped * brickSize;
@@ -128,7 +150,9 @@
         };
 
         this.gravityIsActive = function () {
-            return frameCounter % 2 === 0;
+            let mods = [15, 12, 10, 8, 4];
+
+            return frameCounter % mods[this.difficulty] === 0;
         };
 
         this.drawBackground = function () {
@@ -152,11 +176,8 @@
                 this.checkFilledRegions();
                 this.activeShape = new Shape();
             } else {
-                this.applyAction(this.action, this.checkCollisions());
-                this.activeShape.isFrozen = this.checkCollisions().bottom;
-
                 if (this.gravityIsActive()) {
-                    this.activeShape.fall();
+                    this.applyAction(shapeActions.MOVE_DOWN);
                 }
 
                 this.activeShape.draw();
@@ -214,7 +235,7 @@
                     }
                 };
             }
-            
+
             this.activeShape.bricks.forEach(function (brick) {
                 ['bottom', 'left', 'right'].forEach(function (direction) {
                     if (
@@ -235,7 +256,7 @@
             }, this);
         };
 
-        this.applyAction = function (action, collisions) {
+        this.applyAction = function (action) {
             this.cantBeRotated = function () {
                 const tempShape = new Shape();
 
@@ -271,9 +292,13 @@
                 return false;
             };
 
+            const collisions = self.checkCollisions();
+            this.activeShape.isFrozen = collisions.bottom;
+
             switch (true) {
                 case action === shapeActions.MOVE_RIGHT && collisions.right:
                 case action === shapeActions.MOVE_LEFT && collisions.left:
+                case action === shapeActions.MOVE_DOWN && collisions.bottom:
                 case action === shapeActions.ROTATE && this.cantBeRotated():
                     break;
                 default:
@@ -283,49 +308,28 @@
             }
         };
 
-        const self = this;
-
-        this.handlePlayerInput = function (e) {
-            let action;
-            refreshLag = 100;
-
-            if (e.type === 'keyup') {
-                action = null;
-                boardColor = 'rgb(69,90,100)';
-            } else {
-                switch (e.key) {
-                    case 'ArrowLeft':
-                        action = shapeActions.MOVE_LEFT;
-
-                        break;
-
-                    case 'ArrowUp':
-                        action = shapeActions.ROTATE;
-
-                        break;
-
-                    case 'ArrowRight':
-                        action = shapeActions.MOVE_RIGHT;
-
-                        break;
-
-                    case 'ArrowDown':
-                        refreshLag = 20;
-                        boardColor = 'rgba(69,90,100,0.25)';
-
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            self.action = action;
+        this.enableInput = function () {
+            self.inputDisabled = false;
         };
 
-        ['keydown', 'keyup'].forEach(function (event) {
-            window.addEventListener(event, this.handlePlayerInput);
-        }, this);
+        this.processAction = function (event) {
+            const actions = {
+                'ArrowLeft': shapeActions.MOVE_LEFT,
+                'ArrowRight': shapeActions.MOVE_RIGHT,
+                'ArrowUp': shapeActions.ROTATE,
+                // todo: implement 'ArrowDown'
+            };
+
+            if (!self.inputDisabled) {
+                self.applyAction(actions[event.key]);
+                self.inputDisabled = true;
+                let collisions = self.checkCollisions();
+                self.activeShape.isFrozen = collisions.bottom;
+            }
+        };
+
+        window.addEventListener('keydown', this.processAction);
+        window.addEventListener('keyup', this.enableInput);
 
         return this;
     }
@@ -341,85 +345,59 @@
                 {
                     name: 'I',
                     matrix: [
-                        [0, -1],
-                        [0, 1],
-                        [0, 2]
+                        [0, -1], [0, 1], [0, 2]
                     ]
                 },
                 {
                     name: 'O',
                     matrix: [
-                        [0, 1],
-                        [1, 0],
-                        [1, 1]
+                        [0, 1], [1, 0], [1, 1]
                     ]
                 },
                 {
                     name: 'Z',
                     matrix: [
-                        [0, -1],
-                        [-1, 0],
-                        [1, -1]
+                        [0, -1], [-1, 0], [1, -1]
                     ]
                 },
                 {
                     name: 'S',
                     matrix: [
-                        [-1, -1],
-                        [0, -1],
-                        [1, 0]
+                        [-1, -1], [0, -1], [1, 0]
                     ]
                 },
                 {
                     name: 'T',
                     matrix: [
-                        [1, 0],
-                        [-1, 0],
-                        [1, 1]
+                        [1, 0], [-1, 0], [1, 1]
                     ]
                 },
                 {
                     name: 'J',
                     matrix: [
-                        [1, 0],
-                        [-1, 0],
-                        [-1, 1]
+                        [1, 0], [-1, 0], [-1, 1]
                     ]
                 },
                 {
                     name: 'L',
                     matrix: [
-                        [1, 0],
-                        [-1, 0],
-                        [-1, -1]
+                        [1, 0], [-1, 0], [-1, -1]
                     ]
                 }
             ],
             orientations: [
                 {
                     angle: 0,
-                    matrix: [
-                        [1, 0],
-                        [0, 1]
-                    ]
+                    matrix: [ [1, 0], [0, 1] ]
                 }, {
                     angle: 90,
-                    matrix: [
-                        [0, -1],
-                        [1, 0]
-                    ]
+                    matrix: [ [0, -1], [1, 0] ]
                 }, {
                     angle: 180,
-                    matrix: [
-                        [-1, 0],
-                        [0, -1]
-                    ]
+                    matrix: [ [-1, 0], [0, -1] ]
                 }, {
                     angle: 270,
-                    matrix: [
-                        [0, 1],
-                        [-1, 0]
-                    ]
+                    matrix: [ [0, 1], [-1, 0] ]
                 }
             ],
             colors: [
@@ -458,16 +436,6 @@
         this.orientaion = randInt(this.data.orientations.length);
         this.bricks = [];
 
-        this.fall = function () {
-            if (!this.isFrozen) {
-                this.bricks.forEach(function (brick) {
-                    brick.y += brickSize;
-                });
-            }
-
-            return this;
-        };
-
         this.draw = function () {
             for (let i = 0; i < 4; ++i) {
                 this.bricks[i].draw();
@@ -489,6 +457,11 @@
                         this.applyOrientation();
                     }
 
+                    break;
+                case shapeActions.MOVE_DOWN:
+                    this.bricks.forEach(function (brick) {
+                        brick.y += brickSize;
+                    });
                     break;
 
                 case shapeActions.MOVE_RIGHT:
