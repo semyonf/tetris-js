@@ -4,7 +4,6 @@
     <list default="true" id="b5353363-12ed-48be-9bb4-7a1941be2488" name="Default" comment="Fix speed boosterˆ">
       <change beforePath="$PROJECT_DIR$/.idea/dictionaries/taxnuke.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/taxnuke.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/Tetris.js" afterPath="$PROJECT_DIR$/Tetris.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,12 +17,29 @@
       <file leaf-file-name="Tetris.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Tetris.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="288" column="30" lean-forward="false" selection-start-line="288" selection-start-column="30" selection-end-line="288" selection-end-column="30" />
+            <state relative-caret-position="4">
+              <caret line="516" column="20" lean-forward="true" selection-start-line="516" selection-start-column="20" selection-end-line="516" selection-end-column="20" />
               <folding>
-                <element signature="e#9689#11221#0" expanded="false" />
-                <element signature="e#11249#11952#0" expanded="false" />
-                <element signature="e#11974#12788#0" expanded="false" />
+                <element signature="e#0#1135#0" expanded="false" />
+                <element signature="e#2647#3908#0" expanded="false" />
+                <element signature="e#3948#4119#0" expanded="false" />
+                <element signature="e#4161#4297#0" expanded="false" />
+                <element signature="e#4343#4461#0" expanded="false" />
+                <element signature="e#4506#4622#0" expanded="false" />
+                <element signature="e#4661#5402#0" expanded="false" />
+                <element signature="e#5456#7967#0" expanded="false" />
+                <element signature="e#5696#7490#0" expanded="false" />
+                <element signature="e#8014#8146#0" expanded="false" />
+                <element signature="e#8194#10256#0" expanded="false" />
+                <element signature="e#8882#10230#0" expanded="false" />
+                <element signature="e#10298#10349#0" expanded="false" />
+                <element signature="e#11258#12454#0" expanded="false" />
+                <element signature="e#12482#12913#0" expanded="false" />
+                <element signature="e#12935#13749#0" expanded="false" />
+                <element signature="e#14096#14202#0" expanded="false" />
+                <element signature="e#14255#15447#0" expanded="false" />
+                <element signature="e#15494#16380#0" expanded="false" />
+                <element signature="e#16419#16593#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -37,13 +53,21 @@
       <find>self</find>
       <find>DOWN</find>
       <find>refresh</find>
+      <find>debu</find>
+      <find>score</find>
+      <find>rowsSkipped</find>
+      <find>playerScore</find>
+      <find>checkcoll</find>
+      <find>appl</find>
+      <find>froze</find>
+      <find>checkCollisions</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="es6-classes" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
   </component>
@@ -60,11 +84,10 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1280" />
-    <option name="y" value="-385" />
-    <option name="width" value="960" />
-    <option name="height" value="1058" />
+  <component name="ProjectFrameBounds">
+    <option name="y" value="22" />
+    <option name="width" value="1280" />
+    <option name="height" value="730" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -103,7 +126,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -116,12 +138,13 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="settings.editor.selected.configurable" value="watcher.settings" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -163,6 +186,8 @@
       <workItem from="1513956182014" duration="2219000" />
       <workItem from="1514561714574" duration="20000" />
       <workItem from="1514561754755" duration="3662000" />
+      <workItem from="1515493813931" duration="8852000" />
+      <workItem from="1515503459502" duration="1256000" />
     </task>
     <task id="LOCAL-00001" summary="Fix bug that caused tetraminos to freeze sometimes">
       <created>1514564341919</created>
@@ -171,11 +196,32 @@
       <option name="project" value="LOCAL" />
       <updated>1514564341919</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Fix controls and implement difficulty levels">
+      <created>1515501641593</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1515501641593</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Refactor updateDifficulty()">
+      <created>1515503180785</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1515503180785</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Improve performance and implement callbacks">
+      <created>1515504705235</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1515504705235</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7164000" />
+    <option name="totallyTimeSpent" value="17272000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -187,25 +233,25 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="-385" width="1920" height="1058" extended-state="6" />
+    <frame x="0" y="22" width="1280" height="730" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15625" sideWeight="0.2657856" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19921875" sideWeight="0.25701943" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3270936" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15625" sideWeight="0.73421437" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3270936" sideWeight="0.49791667" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19921875" sideWeight="0.74298054" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32605532" sideWeight="0.49791667" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3973799" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32906404" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896653" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -218,11 +264,14 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fix bug that caused tetraminos to freeze sometimes" />
     <MESSAGE value="Fix speed boosterˆ" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix speed boosterˆ" />
+    <MESSAGE value="Fix controls and implement difficulty levels" />
+    <MESSAGE value="Refactor updateDifficulty()" />
+    <MESSAGE value="Improve performance and implement callbacks" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improve performance and implement callbacks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="7" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -241,9 +290,26 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#9689#11221#0" expanded="false" />
-            <element signature="e#11249#11952#0" expanded="false" />
-            <element signature="e#11974#12788#0" expanded="false" />
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -253,9 +319,26 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#9689#11221#0" expanded="false" />
-            <element signature="e#11249#11952#0" expanded="false" />
-            <element signature="e#11974#12788#0" expanded="false" />
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -265,9 +348,26 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#9689#11221#0" expanded="false" />
-            <element signature="e#11249#11952#0" expanded="false" />
-            <element signature="e#11974#12788#0" expanded="false" />
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -277,9 +377,84 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#9689#11221#0" expanded="false" />
-            <element signature="e#11249#11952#0" expanded="false" />
-            <element signature="e#11974#12788#0" expanded="false" />
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tetris.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tetris.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -288,18 +463,34 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Tetris.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="288" column="30" lean-forward="false" selection-start-line="288" selection-start-column="30" selection-end-line="288" selection-end-column="30" />
+        <state relative-caret-position="4">
+          <caret line="516" column="20" lean-forward="true" selection-start-line="516" selection-start-column="20" selection-end-line="516" selection-end-column="20" />
           <folding>
-            <element signature="e#9689#11221#0" expanded="false" />
-            <element signature="e#11249#11952#0" expanded="false" />
-            <element signature="e#11974#12788#0" expanded="false" />
+            <element signature="e#0#1135#0" expanded="false" />
+            <element signature="e#2647#3908#0" expanded="false" />
+            <element signature="e#3948#4119#0" expanded="false" />
+            <element signature="e#4161#4297#0" expanded="false" />
+            <element signature="e#4343#4461#0" expanded="false" />
+            <element signature="e#4506#4622#0" expanded="false" />
+            <element signature="e#4661#5402#0" expanded="false" />
+            <element signature="e#5456#7967#0" expanded="false" />
+            <element signature="e#5696#7490#0" expanded="false" />
+            <element signature="e#8014#8146#0" expanded="false" />
+            <element signature="e#8194#10256#0" expanded="false" />
+            <element signature="e#8882#10230#0" expanded="false" />
+            <element signature="e#10298#10349#0" expanded="false" />
+            <element signature="e#11258#12454#0" expanded="false" />
+            <element signature="e#12482#12913#0" expanded="false" />
+            <element signature="e#12935#13749#0" expanded="false" />
+            <element signature="e#14096#14202#0" expanded="false" />
+            <element signature="e#14255#15447#0" expanded="false" />
+            <element signature="e#15494#16380#0" expanded="false" />
+            <element signature="e#16419#16593#0" expanded="false" />
           </folding>
         </state>
       </provider>
