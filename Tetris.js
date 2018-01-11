@@ -36,22 +36,15 @@
         brickSize = 20;
 
     let frameCounter = 0,
-        refreshLag = 20,
         boardColor = 'rgb(69,90,100)',
         game = new Game();
 
-    /**
-     * Main loop
-     */
-    function animate() {
-        setTimeout(function () {
-            requestAnimationFrame(animate);
-            game.continue();
-            ++frameCounter;
-        }, refreshLag);
+    function mainLoop() {
+        game.continue();
+        ++frameCounter;
+        requestAnimationFrame(mainLoop);
     }
-
-    animate();
+    requestAnimationFrame(mainLoop);
 
     /**
      * An enum-like object to identify possible actions
@@ -151,7 +144,7 @@
         };
 
         this.gravityIsActive = function () {
-            let gameSpeeds = [null, 15, 12, 10, 8, 5];
+            let gameSpeeds = [null, 30, 24, 20, 16, 10];
 
             return frameCounter % gameSpeeds[this.difficulty] === 0;
         };
