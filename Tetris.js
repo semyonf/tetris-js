@@ -83,7 +83,7 @@
             set: function(newScore) {
                 self._playerScore = newScore;
 
-                [39, 29, 9, 4, 0].some(function (threshold, index) {
+                [149, 49, 39, 9, 0].some(function (threshold, index) {
                     if (newScore >= threshold) {
                         self.difficulty = 5 - index;
 
@@ -151,7 +151,7 @@
         };
 
         this.gravityIsActive = function () {
-            let gameSpeeds = [null, 15, 12, 10, 8, 4];
+            let gameSpeeds = [null, 15, 12, 10, 8, 5];
 
             return frameCounter % gameSpeeds[this.difficulty] === 0;
         };
