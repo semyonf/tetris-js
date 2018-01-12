@@ -379,7 +379,7 @@
         {
           name: 'T',
           matrix: [
-            [1, 0], [-1, 0], [1, 1]
+            [1, 0], [-1, 0], [0, 1]
           ]
         },
         {
@@ -554,18 +554,14 @@
 
   /**
    * Random integer generator
-   * @returns {Number}
+   * @param {number} max - not included
+   * @param {number} [min] - included
+   * @returns {number}
    */
   function randInt(max, min) {
-    if (min === undefined) {
-      min = 0;
-    } else {
-      min = Math.ceil(min);
-    }
-
+    min = (min === undefined) ? 0 : min;
     --max;
-    max = Math.floor(max);
 
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(min + Math.random() * (max + 1 - min));
   }
 })();
