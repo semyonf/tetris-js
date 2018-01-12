@@ -33,15 +33,16 @@
   board.height = boardHeight;
 
   const context = board.getContext('2d'),
-    brickSize = 20;
+    brickSize = 20,
+    normalBoardColor = 'rgb(69,90,100)',
+    turboBoardColor = 'rgba(69,90,100,0.12)';
 
-  let frameCounter = 0,
-    boardColor = 'rgb(69,90,100)',
+  let frameCount = 0,
     game = new Game();
 
   function mainLoop() {
     game.continue();
-    ++frameCounter;
+    ++frameCount;
     requestAnimationFrame(mainLoop);
   }
 
@@ -50,11 +51,12 @@
   /**
    * An enum-like object to identify possible actions
    */
-  const userActions = Object.freeze({
+  const shapeActions = Object.freeze({
     ROTATE: 'rotate',
     MOVE_LEFT: 'moveLeft',
     MOVE_RIGHT: 'moveRight',
-    MOVE_DOWN: 'moveDown'
+    FALL: 'moveDown',
+    DROP: 'drop'
   });
 
   /**
@@ -67,6 +69,9 @@
 
     this.staticBricks = [];
     this.activeShape = new Shape();
+    this.difficulty = 1;
+    this.turboMode = false;
+    this.inputDisabled = false;
     this._playerScore = 0;
 
     Object.defineProperty(this, 'playerScore', {
@@ -86,9 +91,6 @@
         });
       }
     });
-
-    this.difficulty = 1;
-    this.inputDisabled = false;
 
     this.checkFilledRegions = function () {
       let rows = [],
@@ -133,7 +135,7 @@
     };
 
     this.drawScore = function () {
-      context.fillStyle = 'rgb(255,255,255)';
+      context.fillStyle = 'white';
       context.font = '12px Courier';
       context.fillText('Score: ' + this.playerScore, 0, 10);
     };
@@ -147,11 +149,11 @@
     this.gravityIsActive = function () {
       let gameSpeeds = [null, 30, 24, 20, 16, 10];
 
-      return frameCounter % gameSpeeds[this.difficulty] === 0;
+      return self.turboMode || frameCount % gameSpeeds[this.difficulty] === 0;
     };
 
     this.drawBackground = function () {
-      context.fillStyle = boardColor;
+      context.fillStyle = self.turboMode ? turboBoardColor : normalBoardColor;
       context.fillRect(0, 0, boardWidth, boardHeight);
     };
 
@@ -163,16 +165,17 @@
           this.staticBricks.push(this.activeShape.bricks.pop());
         }
 
+        this.checkFilledRegions();
+        self.turboMode = false;
+        this.activeShape = new Shape();
+
         if (this.boardIsFull()) {
           this.staticBricks = [];
           this.playerScore = 0;
         }
-
-        this.checkFilledRegions();
-        this.activeShape = new Shape();
       } else {
         if (this.gravityIsActive()) {
-          this.applyAction(userActions.MOVE_DOWN);
+          this.processAction(shapeActions.FALL);
         }
 
         this.activeShape.draw();
@@ -256,19 +259,24 @@
       });
     };
 
-    this.applyAction = function (action) {
+    this.processAction = function (action) {
       self.checkCollisions(function (collisions) {
         self.activeShape.isFrozen = collisions.bottom;
 
         switch (true) {
-          case action === userActions.MOVE_RIGHT && collisions.right:
-          case action === userActions.MOVE_LEFT && collisions.left:
-          case action === userActions.MOVE_DOWN && collisions.bottom:
-          case action === userActions.ROTATE && cantBeRotated():
+          case action === shapeActions.ROTATE && cantBeRotated():
+          case action === shapeActions.MOVE_RIGHT && collisions.right:
+          case action === shapeActions.MOVE_LEFT && collisions.left:
+          case action === shapeActions.FALL && collisions.bottom:
+          case action === shapeActions.DROP && collisions.bottom:
             break;
-          default:
-            self.activeShape.applyMovement(action);
 
+          default:
+            if (action === shapeActions.DROP) {
+              self.turboMode = true;
+            }
+
+            self.activeShape.performAction(action);
             break;
         }
 
@@ -285,7 +293,7 @@
             );
           }
 
-          temp.applyMovement(userActions.ROTATE);
+          temp.performAction(shapeActions.ROTATE);
 
           for (let i = 0; i < 4; ++i) {
             for (let j = 0; j < self.staticBricks.length; ++j) {
@@ -313,24 +321,24 @@
       self.inputDisabled = false;
     };
 
-    this.processAction = function (event) {
+    this.readAction = function (event) {
       const actions = Object.freeze({
-        'ArrowLeft': userActions.MOVE_LEFT,
-        'ArrowRight': userActions.MOVE_RIGHT,
-        'ArrowUp': userActions.ROTATE,
-        // todo: implement 'ArrowDown'
+        'ArrowLeft': shapeActions.MOVE_LEFT,
+        'ArrowRight': shapeActions.MOVE_RIGHT,
+        'ArrowUp': shapeActions.ROTATE,
+        'ArrowDown': shapeActions.DROP,
       });
 
       if (!self.inputDisabled) {
-        self.applyAction(actions[event.key]);
         self.inputDisabled = true;
+        self.processAction(actions[event.key]);
         self.checkCollisions(function (collisions) {
           self.activeShape.isFrozen = collisions.bottom;
         });
       }
     };
 
-    window.addEventListener('keydown', this.processAction);
+    window.addEventListener('keydown', this.readAction);
     window.addEventListener('keyup', this.enableInput);
 
     return this;
@@ -445,39 +453,33 @@
       }
     };
 
-    this.applyMovement = function (direction) {
-      switch (direction) {
-        case userActions.ROTATE:
+    this.performAction = function (movement) {
+      switch (movement) {
+        case shapeActions.ROTATE:
           if (this.data.types[this.type].name !== 'O') {
-            if (this.orientaion === 3) {
-              this.orientaion = 0;
-            } else {
-              ++this.orientaion;
-            }
-
+            this.orientaion = (this.orientaion === 3) ? 0 : ++this.orientaion;
             this.applyOrientation();
           }
-
           break;
-        case userActions.MOVE_DOWN:
+
+        case shapeActions.FALL:
           this.bricks.forEach(function (brick) {
             brick.y += brickSize;
           });
           break;
 
-        case userActions.MOVE_RIGHT:
-        case userActions.MOVE_LEFT:
+        case shapeActions.MOVE_RIGHT:
+        case shapeActions.MOVE_LEFT:
           for (let i = 0; i < 4; ++i) {
-            if (direction === userActions.MOVE_LEFT) {
+            if (movement === shapeActions.MOVE_LEFT) {
               this.bricks[i].x -= brickSize;
             } else {
               this.bricks[i].x += brickSize;
             }
           }
-
           break;
 
-        default:
+        case shapeActions.DROP:
           break;
       }
 
