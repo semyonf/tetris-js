@@ -33,18 +33,18 @@
   board.height = boardHeight;
 
   const context = board.getContext('2d'),
-    brickSize = 20,
     normalBoardColor = 'rgb(69,90,100)',
-    turboBoardColor = 'rgba(69,90,100,0.12)';
+    turboBoardColor = 'rgba(69,90,100,0.12)',
+    brickSize = 20;
 
   /**
    * An enum-like object to identify possible actions
    */
   const shapeActions = Object.freeze({
     ROTATE: 'rotate',
-    MOVE_LEFT: 'moveLeft',
-    MOVE_RIGHT: 'moveRight',
-    FALL: 'moveDown',
+    MOVE_LEFT: 'move-left',
+    MOVE_RIGHT: 'move-right',
+    FALL: 'fall',
     DROP: 'drop'
   });
 
@@ -69,7 +69,7 @@
         set(newScore) {
           _playerScore = newScore;
 
-          scoreThresholds.some(function (threshold, index) {
+          scoreThresholds.some((threshold, index) => {
             if (newScore >= threshold) {
               difficulty = 5 - index;
 
@@ -79,15 +79,15 @@
         },
         add(extraScore) {
           _playerScore += extraScore;
+        },
+        reset() {
+          _playerScore = 0;
         }
       }
     })();
 
     function checkFilledRegions() {
-      let
-        rows = [],
-        bricks,
-        bricksChecked = 0;
+      let rows = [], bricks, bricksChecked = 0;
 
       for (
         let i = boardHeight - brickSize;
@@ -104,8 +104,7 @@
         bricksChecked += bricks.length;
       }
 
-      let newBricks = [],
-        rowsSkipped = 0;
+      let newBricks = [], rowsSkipped = 0;
 
       for (let i = 0; i < rows.length; ++i) {
         if (rows[i].isFull) {
@@ -123,34 +122,52 @@
 
       staticBricks = newBricks;
     }
+
     function drawScore() {
       context.fillStyle = 'white';
       context.font = '12px Courier';
       context.fillText('Score: ' + playerScore.get(), 0, 10);
     }
+
     function boardIsFull() {
       return staticBricks.some((brick) => brick.y < brickSize * 2);
     }
+
     function gravityIsActive() {
-      let gameSpeeds = [null, 30, 24, 20, 16, 10];
+      const gameSpeeds = [null, 30, 24, 20, 16, 10];
 
       return turboMode || frameCount % gameSpeeds[difficulty] === 0;
     }
+
     function drawBackground() {
       context.fillStyle = turboMode ? turboBoardColor : normalBoardColor;
       context.fillRect(0, 0, boardWidth, boardHeight);
     }
+
     function checkCollisions(callback) {
       const collisions = Object.seal({
-          left: false,
-          right: false,
-          bottom: false
-        });
+        left: false,
+        right: false,
+        bottom: false
+      });
 
-      function checkAgainst(obstacle, direction) {
+      activeShape.bricks.forEach((brick) => {
+        ['bottom', 'left', 'right'].forEach((side) => {
+          if (
+            checkAgainst('board', side)(brick) ||
+            checkAgainst('static', side)(brick)
+          ) {
+            collisions[side] = true;
+          }
+        });
+      });
+
+      callback(collisions);
+
+      function checkAgainst(obstacle, side) {
         return (brick) => {
           if (obstacle === 'board') {
-            switch (direction) {
+            switch (side) {
               case 'bottom':
                 return brick.y === boardHeight - brickSize;
               case 'left':
@@ -162,7 +179,7 @@
             let collision = false;
 
             let callback = (staticBrick) => {
-              switch (direction) {
+              switch (side) {
                 case 'bottom': {
                   collision = collision ||
                     brick.y === staticBrick.y - brickSize &&
@@ -192,25 +209,14 @@
           }
         };
       }
-
-      activeShape.bricks.forEach((brick) => {
-        ['bottom', 'left', 'right'].forEach((side) => {
-          if (
-            checkAgainst('board', side)(brick) ||
-            checkAgainst('static', side)(brick)
-          ) {
-            collisions[side] = true;
-          }
-        });
-      });
-
-      callback(collisions);
     }
+
     function drawStaticBricks() {
       staticBricks.forEach((staticBrick) => staticBrick.draw());
     }
+
     function processAction(action) {
-      checkCollisions(function (collisions) {
+      checkCollisions((collisions) => {
         activeShape.isFrozen = collisions.bottom;
 
         switch (true) {
@@ -266,9 +272,11 @@
         }
       });
     }
+
     function enableInput() {
       inputDisabled = false;
     }
+
     function readAction(event) {
       const actions = Object.freeze({
         'ArrowLeft': shapeActions.MOVE_LEFT,
@@ -286,49 +294,46 @@
       }
     }
 
+    function proceed() {
+      drawBackground();
+
+      if (activeShape.isFrozen) {
+        for (let i = 0; i < 4; ++i) {
+          staticBricks.push(activeShape.bricks.pop());
+        }
+
+        checkFilledRegions();
+        turboMode = false;
+        activeShape = new Shape();
+
+        if (boardIsFull()) {
+          staticBricks = [];
+          playerScore.reset();
+        }
+      } else {
+        if (gravityIsActive()) {
+          processAction(shapeActions.FALL);
+        }
+
+        activeShape.draw();
+      }
+
+      drawStaticBricks();
+      drawScore();
+    }
+
     window.addEventListener('keydown', readAction);
     window.addEventListener('keyup', enableInput);
 
     /**
-     * Interface
-     * @type {{continue(): void}}
+     * Exterior
+     * @type {{proceed: proceed}}
      */
-    const game = {
-      continue() {
-        drawBackground();
-
-        if (activeShape.isFrozen) {
-          for (let i = 0; i < 4; ++i) {
-            staticBricks.push(activeShape.bricks.pop());
-          }
-
-          checkFilledRegions();
-          turboMode = false;
-          activeShape = new Shape();
-
-          if (boardIsFull()) {
-            staticBricks = [];
-            playerScore.set(0);
-          }
-        } else {
-          if (gravityIsActive()) {
-            processAction(shapeActions.FALL);
-          }
-
-          activeShape.draw();
-        }
-
-        drawStaticBricks();
-        drawScore();
-      }
-    };
-
-    return game;
-
+    return {proceed};
   })();
 
   function mainLoop() {
-    game.continue();
+    game.proceed();
     ++frameCount;
     requestAnimationFrame(mainLoop);
   }
