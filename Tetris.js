@@ -37,17 +37,6 @@
     normalBoardColor = 'rgb(69,90,100)',
     turboBoardColor = 'rgba(69,90,100,0.12)';
 
-  let frameCount = 0,
-    game = new Game();
-
-  function mainLoop() {
-    game.continue();
-    ++frameCount;
-    requestAnimationFrame(mainLoop);
-  }
-
-  requestAnimationFrame(mainLoop);
-
   /**
    * An enum-like object to identify possible actions
    */
@@ -59,52 +48,53 @@
     DROP: 'drop'
   });
 
-  /**
-   * Main game logic
-   * @returns {Game}
-   * @constructor
-   */
-  function Game() {
-    const self = this;
+  let frameCount = 0;
 
-    this.staticBricks = [];
-    this.activeShape = new Shape();
-    this.difficulty = 1;
-    this.turboMode = false;
-    this.inputDisabled = false;
-    this._playerScore = 0;
+  const game = (() => {
+    let
+      activeShape = new Shape(),
+      difficulty = 1,
+      staticBricks = [],
+      turboMode = false,
+      inputDisabled = false;
 
-    Object.defineProperty(this, 'playerScore', {
-      get: function () {
-        return self._playerScore;
-      },
+    const playerScore = (() => {
+      let _playerScore = 0;
+      const scoreThresholds = [149, 49, 39, 9, 0];
 
-      set: function (newScore) {
-        self._playerScore = newScore;
+      return {
+        get() {
+          return _playerScore;
+        },
+        set(newScore) {
+          _playerScore = newScore;
 
-        [149, 49, 39, 9, 0].some(function (threshold, index) {
-          if (newScore >= threshold) {
-            self.difficulty = 5 - index;
+          scoreThresholds.some(function (threshold, index) {
+            if (newScore >= threshold) {
+              difficulty = 5 - index;
 
-            return true;
-          }
-        });
+              return true;
+            }
+          });
+        },
+        add(extraScore) {
+          _playerScore += extraScore;
+        }
       }
-    });
+    })();
 
-    this.checkFilledRegions = function () {
-      let rows = [],
+    function checkFilledRegions() {
+      let
+        rows = [],
         bricks,
         bricksChecked = 0;
 
       for (
         let i = boardHeight - brickSize;
-        bricksChecked !== this.staticBricks.length;
+        bricksChecked !== staticBricks.length;
         i -= brickSize
       ) {
-        bricks = this.staticBricks.filter(function (brick) {
-          return brick.y === i;
-        });
+        bricks = staticBricks.filter((brick) => brick.y === i);
 
         rows.push({
           bricks: bricks,
@@ -121,9 +111,9 @@
         if (rows[i].isFull) {
           rows[i].bricks = [];
           ++rowsSkipped;
-          this.playerScore += rowsSkipped;
+          playerScore.add(rowsSkipped);
         } else {
-          rows[i].bricks.forEach(function (brick) {
+          rows[i].bricks.forEach((brick) => {
             brick.y += rowsSkipped * brickSize;
           });
         }
@@ -131,70 +121,34 @@
         newBricks = newBricks.concat(rows[i].bricks);
       }
 
-      this.staticBricks = newBricks;
-    };
-
-    this.drawScore = function () {
+      staticBricks = newBricks;
+    }
+    function drawScore() {
       context.fillStyle = 'white';
       context.font = '12px Courier';
-      context.fillText('Score: ' + this.playerScore, 0, 10);
-    };
-
-    this.boardIsFull = function () {
-      return this.staticBricks.some(function (brick) {
-        return brick.y < brickSize * 2;
-      });
-    };
-
-    this.gravityIsActive = function () {
+      context.fillText('Score: ' + playerScore.get(), 0, 10);
+    }
+    function boardIsFull() {
+      return staticBricks.some((brick) => brick.y < brickSize * 2);
+    }
+    function gravityIsActive() {
       let gameSpeeds = [null, 30, 24, 20, 16, 10];
 
-      return self.turboMode || frameCount % gameSpeeds[this.difficulty] === 0;
-    };
-
-    this.drawBackground = function () {
-      context.fillStyle = self.turboMode ? turboBoardColor : normalBoardColor;
+      return turboMode || frameCount % gameSpeeds[difficulty] === 0;
+    }
+    function drawBackground() {
+      context.fillStyle = turboMode ? turboBoardColor : normalBoardColor;
       context.fillRect(0, 0, boardWidth, boardHeight);
-    };
-
-    this.continue = function () {
-      this.drawBackground();
-
-      if (this.activeShape.isFrozen) {
-        for (let i = 0; i < 4; ++i) {
-          this.staticBricks.push(this.activeShape.bricks.pop());
-        }
-
-        this.checkFilledRegions();
-        self.turboMode = false;
-        this.activeShape = new Shape();
-
-        if (this.boardIsFull()) {
-          this.staticBricks = [];
-          this.playerScore = 0;
-        }
-      } else {
-        if (this.gravityIsActive()) {
-          this.processAction(shapeActions.FALL);
-        }
-
-        this.activeShape.draw();
-      }
-
-      this.drawStaticBricks();
-      this.drawScore();
-    };
-
-    this.checkCollisions = function (callback) {
-      const self = this,
-        collisions = Object.seal({
+    }
+    function checkCollisions(callback) {
+      const collisions = Object.seal({
           left: false,
           right: false,
           bottom: false
         });
 
       function checkAgainst(obstacle, direction) {
-        return function (brick) {
+        return (brick) => {
           if (obstacle === 'board') {
             switch (direction) {
               case 'bottom':
@@ -207,7 +161,7 @@
           } else {
             let collision = false;
 
-            let callback = function (staticBrick) {
+            let callback = (staticBrick) => {
               switch (direction) {
                 case 'bottom': {
                   collision = collision ||
@@ -232,15 +186,15 @@
               }
             };
 
-            self.staticBricks.forEach(callback);
+            staticBricks.forEach(callback);
 
             return collision;
           }
         };
       }
 
-      this.activeShape.bricks.forEach(function (brick) {
-        ['bottom', 'left', 'right'].forEach(function (side) {
+      activeShape.bricks.forEach((brick) => {
+        ['bottom', 'left', 'right'].forEach((side) => {
           if (
             checkAgainst('board', side)(brick) ||
             checkAgainst('static', side)(brick)
@@ -251,17 +205,13 @@
       });
 
       callback(collisions);
-    };
-
-    this.drawStaticBricks = function () {
-      this.staticBricks.forEach(function (staticBrick) {
-        staticBrick.draw();
-      });
-    };
-
-    this.processAction = function (action) {
-      self.checkCollisions(function (collisions) {
-        self.activeShape.isFrozen = collisions.bottom;
+    }
+    function drawStaticBricks() {
+      staticBricks.forEach((staticBrick) => staticBrick.draw());
+    }
+    function processAction(action) {
+      checkCollisions(function (collisions) {
+        activeShape.isFrozen = collisions.bottom;
 
         switch (true) {
           case action === shapeActions.ROTATE && cantBeRotated():
@@ -273,33 +223,33 @@
 
           default:
             if (action === shapeActions.DROP) {
-              self.turboMode = true;
+              turboMode = true;
             }
 
-            self.activeShape.performAction(action);
+            activeShape.performAction(action);
             break;
         }
 
         function cantBeRotated() {
           const temp = new Shape();
 
-          temp.orientaion = self.activeShape.orientaion;
-          temp.type = self.activeShape.type;
+          temp.orientaion = activeShape.orientaion;
+          temp.type = activeShape.type;
 
           for (let i = 0; i < 4; ++i) {
             Object.assign(
               temp.bricks[i],
-              self.activeShape.bricks[i]
+              activeShape.bricks[i]
             );
           }
 
           temp.performAction(shapeActions.ROTATE);
 
           for (let i = 0; i < 4; ++i) {
-            for (let j = 0; j < self.staticBricks.length; ++j) {
+            for (let j = 0; j < staticBricks.length; ++j) {
               if (
-                temp.bricks[i].x === self.staticBricks[j].x &&
-                temp.bricks[i].y === self.staticBricks[j].y
+                temp.bricks[i].x === staticBricks[j].x &&
+                temp.bricks[i].y === staticBricks[j].y
               ) {
                 return true;
               } else if (
@@ -315,13 +265,11 @@
           return false;
         }
       });
-    };
-
-    this.enableInput = function () {
-      self.inputDisabled = false;
-    };
-
-    this.readAction = function (event) {
+    }
+    function enableInput() {
+      inputDisabled = false;
+    }
+    function readAction(event) {
       const actions = Object.freeze({
         'ArrowLeft': shapeActions.MOVE_LEFT,
         'ArrowRight': shapeActions.MOVE_RIGHT,
@@ -329,28 +277,71 @@
         'ArrowDown': shapeActions.DROP,
       });
 
-      if (!self.inputDisabled) {
-        self.inputDisabled = true;
-        self.processAction(actions[event.key]);
-        self.checkCollisions(function (collisions) {
-          self.activeShape.isFrozen = collisions.bottom;
+      if (!inputDisabled) {
+        inputDisabled = true;
+        processAction(actions[event.key]);
+        checkCollisions(function (collisions) {
+          activeShape.isFrozen = collisions.bottom;
         });
+      }
+    }
+
+    window.addEventListener('keydown', readAction);
+    window.addEventListener('keyup', enableInput);
+
+    /**
+     * Interface
+     * @type {{continue(): void}}
+     */
+    const game = {
+      continue() {
+        drawBackground();
+
+        if (activeShape.isFrozen) {
+          for (let i = 0; i < 4; ++i) {
+            staticBricks.push(activeShape.bricks.pop());
+          }
+
+          checkFilledRegions();
+          turboMode = false;
+          activeShape = new Shape();
+
+          if (boardIsFull()) {
+            staticBricks = [];
+            playerScore.set(0);
+          }
+        } else {
+          if (gravityIsActive()) {
+            processAction(shapeActions.FALL);
+          }
+
+          activeShape.draw();
+        }
+
+        drawStaticBricks();
+        drawScore();
       }
     };
 
-    window.addEventListener('keydown', this.readAction);
-    window.addEventListener('keyup', this.enableInput);
+    return game;
 
-    return this;
+  })();
+
+  function mainLoop() {
+    game.continue();
+    ++frameCount;
+    requestAnimationFrame(mainLoop);
   }
 
+  requestAnimationFrame(mainLoop);
+
   /**
-   * Tetramino data
+   * Tetramino constructor
    * @returns {Shape}
    * @constructor
    */
   function Shape() {
-    this.data = {
+    const data = {
       types: [
         {
           name: 'I',
@@ -442,21 +433,17 @@
     this.startX = boardWidth / 2;
     this.startY = brickSize;
     this.isFrozen = false;
-    this.color = randInt(this.data.colors.length);
-    this.type = randInt(this.data.types.length);
-    this.orientaion = randInt(this.data.orientations.length);
+    this.color = randInt(data.colors.length);
+    this.type = randInt(data.types.length);
+    this.orientaion = randInt(data.orientations.length);
     this.bricks = [];
-
-    this.draw = function () {
-      for (let i = 0; i < 4; ++i) {
-        this.bricks[i].draw();
-      }
+    this.draw = () => {
+      this.bricks.forEach((brick) => brick.draw());
     };
-
-    this.performAction = function (movement) {
+    this.performAction = (movement) => {
       switch (movement) {
         case shapeActions.ROTATE:
-          if (this.data.types[this.type].name !== 'O') {
+          if (data.types[this.type].name !== 'O') {
             this.orientaion = (this.orientaion === 3) ? 0 : ++this.orientaion;
             this.applyOrientation();
           }
@@ -485,11 +472,10 @@
 
       return this;
     };
-
-    this.applyOrientation = function () {
+    this.applyOrientation = () => {
       const
-        type = this.data.types[this.type].matrix,
-        orientation = this.data.orientations[this.orientaion].matrix;
+        type = data.types[this.type].matrix,
+        orientation = data.orientations[this.orientaion].matrix;
 
       let oriented = [];
 
@@ -518,7 +504,7 @@
       this.bricks.push(new Brick(
         this.startX,
         this.startY,
-        this.data.colors[this.color].rgb
+        data.colors[this.color].rgb
       ));
     }
 
@@ -539,7 +525,7 @@
     this.x = x;
     this.y = y;
     this.rgb = rgb;
-    this.draw = function () {
+    this.draw = () => {
       context.fillStyle = this.rgb;
       context.fillRect(
         this.x,
