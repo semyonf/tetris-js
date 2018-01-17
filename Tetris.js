@@ -25,17 +25,19 @@
 (function (undefined) {
   'use strict';
 
-  const board = document.querySelector('canvas#board'),
-    boardWidth = 200,
-    boardHeight = 440;
+  const
+    board = document.querySelector('canvas#board'),
+    context = board.getContext('2d'),
+    normalBoardColor = 'rgb(69,90,100)',
+    turboBoardColor = 'rgba(69,90,100,0.12)',
+    brickSize = 20,
+    boardRows = 22,
+    boardCols = 10,
+    boardWidth = brickSize * boardCols,
+    boardHeight = brickSize * boardRows;
 
   board.width = boardWidth;
   board.height = boardHeight;
-
-  const context = board.getContext('2d'),
-    normalBoardColor = 'rgb(69,90,100)',
-    turboBoardColor = 'rgba(69,90,100,0.12)',
-    brickSize = 20;
 
   /**
    * An enum-like object to identify possible actions
@@ -258,13 +260,15 @@
                 temp.bricks[i].y === staticBricks[j].y
               ) {
                 return true;
-              } else if (
-                temp.bricks[i].x >= boardWidth ||
-                temp.bricks[i].x <= 0 ||
-                temp.bricks[i].y >= boardHeight
-              ) {
-                return true;
               }
+            }
+
+            if (
+              temp.bricks[i].x >= boardWidth ||
+              temp.bricks[i].x <= 0 ||
+              temp.bricks[i].y >= boardHeight
+            ) {
+              return true;
             }
           }
 
