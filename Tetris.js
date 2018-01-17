@@ -80,10 +80,7 @@
           });
         },
         add(extraScore) {
-          _playerScore += extraScore;
-        },
-        reset() {
-          _playerScore = 0;
+          this.set(_playerScore + extraScore);
         }
       }
     })();
@@ -312,7 +309,7 @@
 
         if (boardIsFull()) {
           staticBricks = [];
-          playerScore.reset();
+          playerScore.set(0);
         }
       } else {
         if (gravityIsActive()) {
@@ -330,8 +327,8 @@
     window.addEventListener('keyup', enableInput);
 
     /**
-     * Exterior
-     * @type {{proceed: proceed}}
+     * Public interface
+     * @type {{proceed: void}}
      */
     return {proceed};
   })();
@@ -350,7 +347,7 @@
    * @constructor
    */
   function Shape() {
-    const data = {
+    const data = Object.freeze({
       types: [
         {
           name: 'I',
@@ -437,7 +434,7 @@
           rgb: 'rgb(224,224,224)'
         }
       ]
-    };
+    });
 
     this.startX = boardWidth / 2;
     this.startY = brickSize;
