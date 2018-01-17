@@ -132,16 +132,16 @@
         bricksChecked += bricks.length;
       }
 
-      let newBricks = [], rowsSkipped = 0;
+      let newBricks = [], rowsCleared = 0;
 
       for (let i = 0; i < rows.length; ++i) {
         if (rows[i].isFull) {
           rows[i].bricks = [];
-          ++rowsSkipped;
-          playerScore.add(rowsSkipped);
+          ++rowsCleared;
+          playerScore.add(rowsCleared);
         } else {
           rows[i].bricks.forEach((brick) => {
-            brick.y += rowsSkipped * brickSize;
+            brick.y += rowsCleared * brickSize;
           });
         }
 
