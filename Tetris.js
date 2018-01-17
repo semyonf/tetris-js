@@ -52,13 +52,42 @@
 
   let frameCount = 0;
 
+  const keyboard = (() => {
+    const keys = Object.seal({
+      ArrowUp: false,
+      ArrowDown: false,
+      ArrowLeft: false,
+      ArrowRight: false,
+      anyKey: false
+    });
+
+    function keyEvents(e) {
+      const isDown = (e.type === 'keydown');
+      keys.anyKey = isDown;
+      if (keys[e.code] !== undefined) {
+        keys[e.code] = isDown;
+        e.preventDefault();
+      }
+    }
+
+    /**
+     * Public interface
+     */
+    return {
+      keys,
+      start() {
+        addEventListener('keyup', keyEvents);
+        addEventListener('keydown', keyEvents);
+      }
+    };
+  })();
+
   const game = (() => {
     let
       activeShape = new Shape(),
       difficulty = 1,
       staticBricks = [],
-      turboMode = false,
-      inputDisabled = false;
+      turboMode = false;
 
     const playerScore = (() => {
       let _playerScore = 0;
@@ -103,16 +132,16 @@
         bricksChecked += bricks.length;
       }
 
-      let newBricks = [], rowsSkipped = 0;
+      let newBricks = [], rowsCleared = 0;
 
       for (let i = 0; i < rows.length; ++i) {
         if (rows[i].isFull) {
           rows[i].bricks = [];
-          ++rowsSkipped;
-          playerScore.add(rowsSkipped);
+          ++rowsCleared;
+          playerScore.add(rowsCleared);
         } else {
           rows[i].bricks.forEach((brick) => {
-            brick.y += rowsSkipped * brickSize;
+            brick.y += rowsCleared * brickSize;
           });
         }
 
@@ -274,28 +303,41 @@
       });
     }
 
-    function enableInput() {
-      inputDisabled = false;
-    }
-
-    function readAction(event) {
-      const actions = Object.freeze({
-        'ArrowLeft': shapeActions.MOVE_LEFT,
-        'ArrowRight': shapeActions.MOVE_RIGHT,
-        'ArrowUp': shapeActions.ROTATE,
-        'ArrowDown': shapeActions.DROP,
+    function readKeyboard() {
+      const keyMap = Object.freeze({
+        moveLeft: 'ArrowLeft',
+        moveRight: 'ArrowRight',
+        moveDown: 'ArrowDown',
+        rotate: 'ArrowUp'
       });
 
-      if (!inputDisabled) {
-        inputDisabled = true;
-        processAction(actions[event.key]);
-        checkCollisions(function (collisions) {
-          activeShape.isFrozen = collisions.bottom;
-        });
+      if (keyboard.keys[keyMap.moveLeft]) {
+        processAction(shapeActions.MOVE_LEFT);
+        keyboard.keys[keyMap.moveLeft] = false;
       }
+
+      if (keyboard.keys[keyMap.moveRight]) {
+        processAction(shapeActions.MOVE_RIGHT);
+        keyboard.keys[keyMap.moveRight] = false;
+      }
+
+      if (keyboard.keys[keyMap.rotate]) {
+        processAction(shapeActions.ROTATE);
+        keyboard.keys[keyMap.rotate] = false;
+      }
+
+      if (keyboard.keys[keyMap.moveDown]) {
+        processAction(shapeActions.DROP);
+        keyboard.keys[keyMap.moveDown] = false;
+      }
+
+      checkCollisions((collisions) => {
+        activeShape.isFrozen = collisions.bottom;
+      });
     }
 
     function proceed() {
+      readKeyboard();
       drawBackground();
 
       if (activeShape.isFrozen) {
@@ -323,15 +365,14 @@
       drawScore();
     }
 
-    window.addEventListener('keydown', readAction);
-    window.addEventListener('keyup', enableInput);
-
     /**
      * Public interface
      * @type {{proceed: void}}
      */
     return {proceed};
   })();
+
+  keyboard.start();
 
   function mainLoop() {
     game.proceed();
