@@ -34,7 +34,10 @@
     boardRows = 22,
     boardCols = 10,
     boardWidth = brickSize * boardCols,
-    boardHeight = brickSize * boardRows;
+    boardHeight = brickSize * boardRows,
+    randomSeed = +(new Date());
+
+  let random = new SeededRandom(randomSeed);
 
   board.width = boardWidth;
   board.height = boardHeight;
@@ -52,34 +55,90 @@
 
   let frameCount = 0;
 
+  const recorder = (() => {
+    const tape = [];
+
+    function startRecording() {
+      joystick.setCallback('anyKey', (key, frame) => {
+        switch (key) {
+          case 'ArrowUp':
+          case 'ArrowDown':
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            recorder.tape.push({key, frame});
+        }
+      });
+
+      joystick.setCallback('Escape', () => {
+        joystick.stop();
+        recorder.stopRecording();
+        random = new SeededRandom(randomSeed);
+        frameCount = 0;
+        game.restart();
+        recorder.playRecording();
+      });
+    }
+
+    function stopRecording() {
+      joystick.setCallback('anyKey', undefined);
+      joystick.setCallback('Escape', undefined);
+    }
+
+    function playRecording() {
+      setInterval(() => {
+        if (tape.length && frameCount === tape[0].frame) {
+          joystick.keyQueue.push(tape.shift().key);
+        }
+      }, 15);
+    }
+
+    /**
+     * Public interface
+     */
+    return {
+      tape,
+      startRecording,
+      stopRecording,
+      playRecording
+    }
+  })();
+
   const joystick = (() => {
     const keys = Object.seal({
       ArrowUp: false,
       ArrowDown: false,
       ArrowLeft: false,
       ArrowRight: false,
+      Escape: false,
       anyKey: false
     });
 
     const callbacks = {}, keyQueue = [];
 
     function keyEvents(e) {
-      const isDown = (e.type === 'keydown');
+      const isDown = (e.type === 'keydown'), keyCode = e.code;
       keys.anyKey = isDown;
 
-      if (keys[e.code] === undefined) {
-        return;
+      if (isDown && callbacks['anyKey'] !== undefined) {
+        callbacks['anyKey'](keyCode, frameCount);
       }
 
-      e.preventDefault();
+      if (keys[keyCode] !== undefined) {
+        e.preventDefault();
+        keys[keyCode] = isDown;
 
-      keys[e.code] = isDown;
+        if (isDown) {
+          switch (keyCode) {
+            case 'ArrowUp':
+            case 'ArrowDown':
+            case 'ArrowLeft':
+            case 'ArrowRight':
+              keyQueue.push(keyCode);
+          }
 
-      if (isDown) {
-        keyQueue.push(e.code);
-
-        if (callbacks[e.code] !== undefined) {
-            keys[e.code] = callbacks[e.code]();
+          if (callbacks[keyCode] !== undefined) {
+            callbacks[keyCode](keyCode, frameCount);
+          }
         }
       }
     }
@@ -135,6 +194,12 @@
         }
       }
     })();
+
+    function restart() {
+      playerScore.set(0);
+      staticBricks = [];
+      activeShape = new Shape();
+    }
 
     function checkFilledRegions() {
       let rows = [], bricks, bricksChecked = 0;
@@ -355,8 +420,7 @@
         activeShape = new Shape();
 
         if (boardIsFull()) {
-          staticBricks = [];
-          playerScore.set(0);
+          restart();
         }
       } else {
         if (gravityIsActive()) {
@@ -372,12 +436,13 @@
 
     /**
      * Public interface
-     * @type {{proceed: void}}
+     * @type {{proceed: void, restart: void}}
      */
-    return {proceed};
+    return {proceed, restart};
   })();
 
   joystick.start();
+  recorder.startRecording();
 
   function mainLoop() {
     game.proceed();
@@ -603,6 +668,28 @@
     min = (min === undefined) ? 0 : min;
     --max;
 
-    return Math.floor(min + Math.random() * (max + 1 - min));
+    return Math.floor(min + random.nextFloat() * (max + 1 - min));
+  }
+
+  /**
+   * Seeded PRNG
+   * Originally found at https://gist.github.com/blixt/f17b47c62508be59987b
+   * @param seed
+   * @constructor
+   */
+  function SeededRandom(seed) {
+    this._seed = (seed % 2147483647);
+
+    this.next = function () {
+      return this._seed = this._seed * 16807 % 2147483647;
+    };
+
+    this.nextFloat = function () {
+      return (this.next() - 1) / 2147483646;
+    };
+
+    if (this._seed <= 0) {
+      this._seed += 2147483646;
+    }
   }
 })();
