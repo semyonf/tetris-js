@@ -313,12 +313,12 @@
       });
     }
 
-    const keyMap = {
+    const keyMap = Object.freeze({
       "ArrowLeft": shapeActions.MOVE_LEFT,
       "ArrowRight": shapeActions.MOVE_RIGHT,
       "ArrowUp": shapeActions.ROTATE,
       "ArrowDown": shapeActions.DROP,
-    };
+    });
 
     for (let key in keyMap) {
       keyboard.setCallback(key, () => {
