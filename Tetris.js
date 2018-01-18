@@ -52,34 +52,82 @@
 
   let frameCount = 0;
 
+  const recorder = (() => {
+    const tape = [];
+
+    function startRecording() {
+      joystick.setCallback('anyKey', (key, frame) => {
+        switch (key) {
+          case 'ArrowUp':
+          case 'ArrowDown':
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            tape.push({key, frame});
+        }
+      });
+
+      joystick.setCallback('Escape', () => {
+        stopRecording();
+      });
+    }
+
+    function stopRecording() {
+      joystick.setCallback('anyKey', undefined);
+      joystick.setCallback('Escape', undefined);
+
+      playRecording();
+    }
+
+    function playRecording() {
+      game.replay(tape);
+    }
+
+    /**
+     * Public interface
+     */
+    return {
+      startRecording,
+      stopRecording,
+      playRecording
+    }
+  })();
+
   const joystick = (() => {
     const keys = Object.seal({
       ArrowUp: false,
       ArrowDown: false,
       ArrowLeft: false,
       ArrowRight: false,
+      Escape: false,
       anyKey: false
     });
 
     const callbacks = {}, keyQueue = [];
 
     function keyEvents(e) {
-      const isDown = (e.type === 'keydown');
+      const isDown = (e.type === 'keydown'), keyCode = e.code;
       keys.anyKey = isDown;
 
-      if (keys[e.code] === undefined) {
-        return;
+      if (isDown && callbacks['anyKey'] !== undefined) {
+        callbacks['anyKey'](keyCode, frameCount);
       }
 
-      e.preventDefault();
+      if (keys[keyCode] !== undefined) {
+        e.preventDefault();
+        keys[keyCode] = isDown;
 
-      keys[e.code] = isDown;
+        if (isDown) {
+          switch (keyCode) {
+            case 'ArrowUp':
+            case 'ArrowDown':
+            case 'ArrowLeft':
+            case 'ArrowRight':
+              keyQueue.push(keyCode);
+          }
 
-      if (isDown) {
-        keyQueue.push(e.code);
-
-        if (callbacks[e.code] !== undefined) {
-            keys[e.code] = callbacks[e.code]();
+          if (callbacks[keyCode] !== undefined) {
+            callbacks[keyCode](keyCode, frameCount);
+          }
         }
       }
     }
@@ -109,6 +157,7 @@
       activeShape = new Shape(),
       difficulty = 1,
       staticBricks = [],
+      tape = [],
       turboMode = false;
 
     const playerScore = (() => {
@@ -135,6 +184,17 @@
         }
       }
     })();
+
+    function replay(newTape) {
+      frameCount = 0;
+      playerScore.set(0);
+      staticBricks = [];
+      activeShape = new Shape();
+
+      if (newTape) {
+        tape = newTape;
+      }
+    }
 
     function checkFilledRegions() {
       let rows = [], bricks, bricksChecked = 0;
@@ -341,8 +401,26 @@
       });
     }
 
+    function playTape() {
+      const keyMap = Object.freeze({
+        "ArrowLeft": shapeActions.MOVE_LEFT,
+        "ArrowRight": shapeActions.MOVE_RIGHT,
+        "ArrowUp": shapeActions.ROTATE,
+        "ArrowDown": shapeActions.DROP,
+      });
+
+      if (frameCount === tape[0].frame) {
+        processAction(keyMap[tape.shift().key]);
+      }
+    }
+
     function proceed() {
-      readAction();
+      if (tape.length > 0) {
+        playTape();
+      } else {
+        readAction();
+      }
+
       drawBackground();
 
       if (activeShape.isFrozen) {
@@ -355,8 +433,7 @@
         activeShape = new Shape();
 
         if (boardIsFull()) {
-          staticBricks = [];
-          playerScore.set(0);
+          replay();
         }
       } else {
         if (gravityIsActive()) {
@@ -374,10 +451,11 @@
      * Public interface
      * @type {{proceed: void}}
      */
-    return {proceed};
+    return {proceed, replay};
   })();
 
   joystick.start();
+  recorder.startRecording();
 
   function mainLoop() {
     game.proceed();
