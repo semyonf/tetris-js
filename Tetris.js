@@ -73,6 +73,7 @@
         joystick.stop();
         recorder.stopRecording();
         random = new SeededRandom(randomSeed);
+        frameCount = 0;
         game.restart();
         recorder.playRecording();
       });
@@ -84,13 +85,6 @@
     }
 
     function playRecording() {
-      const keyMap = Object.freeze({
-        "ArrowLeft": shapeActions.MOVE_LEFT,
-        "ArrowRight": shapeActions.MOVE_RIGHT,
-        "ArrowUp": shapeActions.ROTATE,
-        "ArrowDown": shapeActions.DROP,
-      });
-
       setInterval(() => {
         if (tape.length && frameCount === tape[0].frame) {
           joystick.keyQueue.push(tape.shift().key);
@@ -174,7 +168,6 @@
       activeShape = new Shape(),
       difficulty = 1,
       staticBricks = [],
-      tape = [],
       turboMode = false;
 
     const playerScore = (() => {
@@ -203,7 +196,6 @@
     })();
 
     function restart() {
-      frameCount = 0;
       playerScore.set(0);
       staticBricks = [];
       activeShape = new Shape();
