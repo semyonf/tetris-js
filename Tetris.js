@@ -52,7 +52,7 @@
 
   let frameCount = 0;
 
-  const keyboard = (() => {
+  const joystick = (() => {
     const keys = Object.seal({
       ArrowUp: false,
       ArrowDown: false,
@@ -61,17 +61,24 @@
       anyKey: false
     });
 
-    const callbacks = {};
+    const callbacks = {}, keyQueue = [];
 
     function keyEvents(e) {
       const isDown = (e.type === 'keydown');
       keys.anyKey = isDown;
 
-      if (keys[e.code] !== undefined) {
-        e.preventDefault();
-        keys[e.code] = isDown;
+      if (keys[e.code] === undefined) {
+        return;
+      }
 
-        if (isDown && callbacks[e.code] !== undefined) {
+      e.preventDefault();
+
+      keys[e.code] = isDown;
+
+      if (isDown) {
+        keyQueue.push(e.code);
+
+        if (callbacks[e.code] !== undefined) {
             keys[e.code] = callbacks[e.code]();
         }
       }
@@ -82,9 +89,14 @@
      */
     return {
       keys,
+      keyQueue,
       start() {
         addEventListener('keyup', keyEvents);
         addEventListener('keydown', keyEvents);
+      },
+      stop() {
+        removeEventListener("keyup", keyEvents);
+        removeEventListener("keydown", keyEvents);
       },
       setCallback(key, callback) {
         callbacks[key] = callback;
@@ -313,24 +325,24 @@
       });
     }
 
-    const keyMap = Object.freeze({
-      "ArrowLeft": shapeActions.MOVE_LEFT,
-      "ArrowRight": shapeActions.MOVE_RIGHT,
-      "ArrowUp": shapeActions.ROTATE,
-      "ArrowDown": shapeActions.DROP,
-    });
+    function readAction() {
+      const keyMap = Object.freeze({
+        "ArrowLeft": shapeActions.MOVE_LEFT,
+        "ArrowRight": shapeActions.MOVE_RIGHT,
+        "ArrowUp": shapeActions.ROTATE,
+        "ArrowDown": shapeActions.DROP,
+      });
 
-    for (let key in keyMap) {
-      keyboard.setCallback(key, () => {
-        processAction(keyMap[key]);
-        checkCollisions((collisions) => {
-          activeShape.isFrozen = collisions.bottom;
-        });
-        return true;
+      const nextKey = joystick.keyQueue.shift();
+      processAction(keyMap[nextKey]);
+
+      checkCollisions((collisions) => {
+        activeShape.isFrozen = collisions.bottom;
       });
     }
 
     function proceed() {
+      readAction();
       drawBackground();
 
       if (activeShape.isFrozen) {
@@ -365,7 +377,7 @@
     return {proceed};
   })();
 
-  keyboard.start();
+  joystick.start();
 
   function mainLoop() {
     game.proceed();
@@ -477,9 +489,11 @@
     this.type = randInt(data.types.length);
     this.orientaion = randInt(data.orientations.length);
     this.bricks = [];
+
     this.draw = () => {
       this.bricks.forEach((brick) => brick.draw());
     };
+
     this.performAction = (movement) => {
       switch (movement) {
         case shapeActions.ROTATE:
@@ -512,6 +526,7 @@
 
       return this;
     };
+
     this.applyOrientation = () => {
       const
         type = data.types[this.type].matrix,
