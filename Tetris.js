@@ -61,12 +61,19 @@
       anyKey: false
     });
 
+    const callbacks = {};
+
     function keyEvents(e) {
       const isDown = (e.type === 'keydown');
       keys.anyKey = isDown;
+
       if (keys[e.code] !== undefined) {
-        keys[e.code] = isDown;
         e.preventDefault();
+        keys[e.code] = isDown;
+
+        if (isDown && callbacks[e.code] !== undefined) {
+            keys[e.code] = callbacks[e.code]();
+        }
       }
     }
 
@@ -78,6 +85,9 @@
       start() {
         addEventListener('keyup', keyEvents);
         addEventListener('keydown', keyEvents);
+      },
+      setCallback(key, callback) {
+        callbacks[key] = callback;
       }
     };
   })();
@@ -303,41 +313,24 @@
       });
     }
 
-    function readKeyboard() {
-      const keyMap = Object.freeze({
-        moveLeft: 'ArrowLeft',
-        moveRight: 'ArrowRight',
-        moveDown: 'ArrowDown',
-        rotate: 'ArrowUp'
-      });
+    const keyMap = {
+      "ArrowLeft": shapeActions.MOVE_LEFT,
+      "ArrowRight": shapeActions.MOVE_RIGHT,
+      "ArrowUp": shapeActions.ROTATE,
+      "ArrowDown": shapeActions.DROP,
+    };
 
-      if (keyboard.keys[keyMap.moveLeft]) {
-        processAction(shapeActions.MOVE_LEFT);
-        keyboard.keys[keyMap.moveLeft] = false;
-      }
-
-      if (keyboard.keys[keyMap.moveRight]) {
-        processAction(shapeActions.MOVE_RIGHT);
-        keyboard.keys[keyMap.moveRight] = false;
-      }
-
-      if (keyboard.keys[keyMap.rotate]) {
-        processAction(shapeActions.ROTATE);
-        keyboard.keys[keyMap.rotate] = false;
-      }
-
-      if (keyboard.keys[keyMap.moveDown]) {
-        processAction(shapeActions.DROP);
-        keyboard.keys[keyMap.moveDown] = false;
-      }
-
-      checkCollisions((collisions) => {
-        activeShape.isFrozen = collisions.bottom;
+    for (let key in keyMap) {
+      keyboard.setCallback(key, () => {
+        processAction(keyMap[key]);
+        checkCollisions((collisions) => {
+          activeShape.isFrozen = collisions.bottom;
+        });
+        return true;
       });
     }
 
     function proceed() {
-      readKeyboard();
       drawBackground();
 
       if (activeShape.isFrozen) {
