@@ -34,7 +34,10 @@
     boardRows = 22,
     boardCols = 10,
     boardWidth = brickSize * boardCols,
-    boardHeight = brickSize * boardRows;
+    boardHeight = brickSize * boardRows,
+    randomSeed = +(new Date());
+
+  let random = new SeededRandom(randomSeed);
 
   board.width = boardWidth;
   board.height = boardHeight;
@@ -62,30 +65,44 @@
           case 'ArrowDown':
           case 'ArrowLeft':
           case 'ArrowRight':
-            tape.push({key, frame});
+            recorder.tape.push({key, frame});
         }
       });
 
       joystick.setCallback('Escape', () => {
-        stopRecording();
+        joystick.stop();
+        recorder.stopRecording();
+        random = new SeededRandom(randomSeed);
+        game.restart();
+        recorder.playRecording();
       });
     }
 
     function stopRecording() {
       joystick.setCallback('anyKey', undefined);
       joystick.setCallback('Escape', undefined);
-
-      playRecording();
     }
 
     function playRecording() {
-      game.replay(tape);
+      const keyMap = Object.freeze({
+        "ArrowLeft": shapeActions.MOVE_LEFT,
+        "ArrowRight": shapeActions.MOVE_RIGHT,
+        "ArrowUp": shapeActions.ROTATE,
+        "ArrowDown": shapeActions.DROP,
+      });
+
+      setInterval(() => {
+        if (tape.length && frameCount === tape[0].frame) {
+          joystick.keyQueue.push(tape.shift().key);
+        }
+      }, 15);
     }
 
     /**
      * Public interface
      */
     return {
+      tape,
       startRecording,
       stopRecording,
       playRecording
@@ -185,15 +202,11 @@
       }
     })();
 
-    function replay(newTape) {
+    function restart() {
       frameCount = 0;
       playerScore.set(0);
       staticBricks = [];
       activeShape = new Shape();
-
-      if (newTape) {
-        tape = newTape;
-      }
     }
 
     function checkFilledRegions() {
@@ -401,26 +414,8 @@
       });
     }
 
-    function playTape() {
-      const keyMap = Object.freeze({
-        "ArrowLeft": shapeActions.MOVE_LEFT,
-        "ArrowRight": shapeActions.MOVE_RIGHT,
-        "ArrowUp": shapeActions.ROTATE,
-        "ArrowDown": shapeActions.DROP,
-      });
-
-      if (frameCount === tape[0].frame) {
-        processAction(keyMap[tape.shift().key]);
-      }
-    }
-
     function proceed() {
-      if (tape.length > 0) {
-        playTape();
-      } else {
-        readAction();
-      }
-
+      readAction();
       drawBackground();
 
       if (activeShape.isFrozen) {
@@ -433,7 +428,7 @@
         activeShape = new Shape();
 
         if (boardIsFull()) {
-          replay();
+          restart();
         }
       } else {
         if (gravityIsActive()) {
@@ -449,9 +444,9 @@
 
     /**
      * Public interface
-     * @type {{proceed: void}}
+     * @type {{proceed: void, restart: void}}
      */
-    return {proceed, replay};
+    return {proceed, restart};
   })();
 
   joystick.start();
@@ -681,6 +676,28 @@
     min = (min === undefined) ? 0 : min;
     --max;
 
-    return Math.floor(min + Math.random() * (max + 1 - min));
+    return Math.floor(min + random.nextFloat() * (max + 1 - min));
+  }
+
+  /**
+   * Seeded PRNG
+   * Originally found at https://gist.github.com/blixt/f17b47c62508be59987b
+   * @param seed
+   * @constructor
+   */
+  function SeededRandom(seed) {
+    this._seed = (seed % 2147483647);
+
+    this.next = function () {
+      return this._seed = this._seed * 16807 % 2147483647;
+    };
+
+    this.nextFloat = function () {
+      return (this.next() - 1) / 2147483646;
+    };
+
+    if (this._seed <= 0) {
+      this._seed += 2147483646;
+    }
   }
 })();
