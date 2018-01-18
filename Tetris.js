@@ -172,7 +172,7 @@
     }
 
     function gravityIsActive() {
-      const gameSpeeds = [null, 30, 24, 20, 16, 10];
+      const gameSpeeds = [null, 27, 24, 16, 12, 8];
 
       return turboMode || frameCount % gameSpeeds[difficulty] === 0;
     }
