@@ -565,9 +565,9 @@
     this.startX = boardWidth / 2;
     this.startY = brickSize;
     this.isFrozen = false;
-    this.color = randInt(data.colors.length);
-    this.type = randInt(data.types.length);
-    this.orientaion = randInt(data.orientations.length);
+    this.color = random.nextInRange(data.colors.length);
+    this.type = random.nextInRange(data.types.length);
+    this.orientaion = random.nextInRange(data.orientations.length);
     this.bricks = [];
 
     this.draw = () => {
@@ -674,19 +674,6 @@
   }
 
   /**
-   * Random integer generator
-   * @param {number} max - not included
-   * @param {number} [min] - included
-   * @returns {number}
-   */
-  function randInt(max, min) {
-    min = (min === undefined) ? 0 : min;
-    --max;
-
-    return Math.floor(min + random.nextFloat() * (max + 1 - min));
-  }
-
-  /**
    * Seeded PRNG
    * Originally found at https://gist.github.com/blixt/f17b47c62508be59987b
    * @param seed
@@ -697,6 +684,19 @@
 
     this.next = function () {
       return this._seed = this._seed * 16807 % 2147483647;
+    };
+
+    /**
+     * Random integer generator
+     * @param {number} max - not included
+     * @param {number} [min] - included
+     * @returns {number}
+     */
+    this.nextInRange = function (max, min) {
+      min = (min === undefined) ? 0 : min;
+      --max;
+
+      return Math.floor(min + random.nextFloat() * (max + 1 - min));
     };
 
     this.nextFloat = function () {
