@@ -37,7 +37,9 @@
     boardHeight = brickSize * boardRows,
     randomSeed = +(new Date());
 
-  let random = new SeededRandom(randomSeed);
+  let
+    random = new SeededRandom(randomSeed),
+    frameCount = 0;
 
   board.width = boardWidth;
   board.height = boardHeight;
@@ -53,43 +55,49 @@
     DROP: 'drop'
   });
 
-  let frameCount = 0;
-
   const recorder = (() => {
     const tape = [];
 
-    function startRecording() {
-      joystick.setCallback('anyKey', (key, frame) => {
+    function start() {
+      joystick.setCallback('anyKey', (key) => {
         switch (key) {
           case 'ArrowUp':
           case 'ArrowDown':
           case 'ArrowLeft':
           case 'ArrowRight':
-            recorder.tape.push({key, frame});
+            recorder.tape.push({key, frame: frameCount});
         }
       });
 
       joystick.setCallback('Escape', () => {
         joystick.stop();
-        recorder.stopRecording();
         random = new SeededRandom(randomSeed);
+        recorder.stop();
+        recorder.play();
         frameCount = 0;
         game.restart();
-        recorder.playRecording();
       });
     }
 
-    function stopRecording() {
+    function stop() {
       joystick.setCallback('anyKey', undefined);
       joystick.setCallback('Escape', undefined);
     }
 
-    function playRecording() {
-      setInterval(() => {
-        if (tape.length && frameCount === tape[0].frame) {
-          joystick.keyQueue.push(tape.shift().key);
+    function play() {
+      game.beforeProceed = function() {
+        if (recorder.tape.length) {
+          if (frameCount === recorder.tape[0].frame) {
+            joystick.keyQueue.push(recorder.tape.shift().key);
+          }
+        } else {
+          game.beforeProceed = undefined;
+          frameCount = 0;
+          joystick.start();
+          recorder.start();
+          game.restart();
         }
-      }, 15);
+      };
     }
 
     /**
@@ -97,14 +105,14 @@
      */
     return {
       tape,
-      startRecording,
-      stopRecording,
-      playRecording
+      start,
+      stop,
+      play
     }
   })();
 
   const joystick = (() => {
-    const keys = Object.seal({
+    const keyStates = Object.seal({
       ArrowUp: false,
       ArrowDown: false,
       ArrowLeft: false,
@@ -116,16 +124,17 @@
     const callbacks = {}, keyQueue = [];
 
     function keyEvents(e) {
+
       const isDown = (e.type === 'keydown'), keyCode = e.code;
-      keys.anyKey = isDown;
+      keyStates.anyKey = isDown;
 
       if (isDown && callbacks['anyKey'] !== undefined) {
-        callbacks['anyKey'](keyCode, frameCount);
+        callbacks['anyKey'](keyCode);
       }
 
-      if (keys[keyCode] !== undefined) {
+      if (keyStates[keyCode] !== undefined) {
         e.preventDefault();
-        keys[keyCode] = isDown;
+        keyStates[keyCode] = isDown;
 
         if (isDown) {
           switch (keyCode) {
@@ -137,7 +146,7 @@
           }
 
           if (callbacks[keyCode] !== undefined) {
-            callbacks[keyCode](keyCode, frameCount);
+            callbacks[keyCode]();
           }
         }
       }
@@ -147,7 +156,7 @@
      * Public interface
      */
     return {
-      keys,
+      keys: keyStates,
       keyQueue,
       start() {
         addEventListener('keyup', keyEvents);
@@ -194,6 +203,8 @@
         }
       }
     })();
+
+    let beforeProceed = undefined;
 
     function restart() {
       playerScore.set(0);
@@ -407,6 +418,10 @@
     }
 
     function proceed() {
+      if (game.beforeProceed !== undefined) {
+        game.beforeProceed();
+      }
+
       readAction();
       drawBackground();
 
@@ -436,13 +451,13 @@
 
     /**
      * Public interface
-     * @type {{proceed: void, restart: void}}
+     * @type {{beforeProceed: [function], proceed: void, restart: void}}
      */
-    return {proceed, restart};
+    return {beforeProceed, proceed, restart};
   })();
 
   joystick.start();
-  recorder.startRecording();
+  recorder.start();
 
   function mainLoop() {
     game.proceed();
