@@ -28,36 +28,41 @@
   const
     board = document.querySelector('canvas#board'),
     context = board.getContext('2d'),
-    normalBoardColor = 'rgb(69,90,100)',
-    turboBoardColor = 'rgba(69,90,100,0.12)',
+
     brickSize = 20,
     boardRows = 22,
     boardCols = 10,
     boardWidth = brickSize * boardCols,
     boardHeight = brickSize * boardRows,
-    randomSeed = +(new Date());
+    normalBoardColor = 'rgb(69,90,100)',
+    turboBoardColor = 'rgba(69,90,100,0.12)',
+
+    shapeActions = Object.freeze({
+      ROTATE: 'rotate',
+      MOVE_LEFT: 'move-left',
+      MOVE_RIGHT: 'move-right',
+      FALL: 'fall',
+      DROP: 'drop'
+    }),
+
+    keyMap = Object.freeze({
+      'ArrowLeft': shapeActions.MOVE_LEFT,
+      'ArrowRight': shapeActions.MOVE_RIGHT,
+      'ArrowUp': shapeActions.ROTATE,
+      'ArrowDown': shapeActions.DROP,
+    });
 
   let
+    randomSeed = +(new Date()),
     random = new SeededRandom(randomSeed),
     frameCount = 0;
 
   board.width = boardWidth;
   board.height = boardHeight;
 
-  /**
-   * An enum-like object to identify possible actions
-   */
-  const shapeActions = Object.freeze({
-    ROTATE: 'rotate',
-    MOVE_LEFT: 'move-left',
-    MOVE_RIGHT: 'move-right',
-    FALL: 'fall',
-    DROP: 'drop'
-  });
-
   const recorder = (() => {
     const tape = [];
-    let lastFrame = undefined;
+    let lastFrame = null;
 
     function start() {
       joystick.setCallback('anyKey', (key) => {
@@ -67,10 +72,12 @@
 
       joystick.setCallback('Escape', () => {
         joystick.stop();
-        random = new SeededRandom(randomSeed);
         frameCount = 0;
         recorder.stop();
+        recorder.tape.pop();
         recorder.play();
+        random = new SeededRandom(randomSeed);
+        randomSeed = +(new Date());
         game.restart();
       });
     }
@@ -93,6 +100,7 @@
         } else {
           game.onProceed = undefined;
           frameCount = 0;
+          random = new SeededRandom(randomSeed);
           joystick.start();
           recorder.start();
           game.restart();
@@ -109,7 +117,7 @@
       start,
       stop,
       play
-    }
+    };
   })();
 
   const joystick = (() => {
@@ -205,7 +213,7 @@
         add(extraScore) {
           this.set(_playerScore + extraScore);
         }
-      }
+      };
     })();
 
     let beforeProceed = undefined;
@@ -406,13 +414,6 @@
     }
 
     function readAction() {
-      const keyMap = Object.freeze({
-        'ArrowLeft': shapeActions.MOVE_LEFT,
-        'ArrowRight': shapeActions.MOVE_RIGHT,
-        'ArrowUp': shapeActions.ROTATE,
-        'ArrowDown': shapeActions.DROP,
-      });
-
       const nextKey = joystick.keyQueue.shift();
       processAction(keyMap[nextKey]);
 
