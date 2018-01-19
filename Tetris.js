@@ -57,24 +57,22 @@
 
   const recorder = (() => {
     const tape = [];
+    let lastFrame = undefined;
 
     function start() {
+      lastFrame = undefined;
+
       joystick.setCallback('anyKey', (key) => {
-        switch (key) {
-          case 'ArrowUp':
-          case 'ArrowDown':
-          case 'ArrowLeft':
-          case 'ArrowRight':
-            recorder.tape.push({key, frame: frameCount});
-        }
+        recorder.tape.push({key, frame: frameCount});
+        recorder.lastFrame = frameCount;
       });
 
       joystick.setCallback('Escape', () => {
         joystick.stop();
         random = new SeededRandom(randomSeed);
+        frameCount = 0;
         recorder.stop();
         recorder.play();
-        frameCount = 0;
         game.restart();
       });
     }
@@ -85,9 +83,9 @@
     }
 
     function play() {
-      game.beforeProceed = function() {
-        if (recorder.tape.length) {
-          if (frameCount === recorder.tape[0].frame) {
+      game.beforeProceed = function () {
+        if (frameCount !== recorder.lastFrame) {
+          if (recorder.tape.length && frameCount === recorder.tape[0].frame) {
             joystick.keyQueue.push(recorder.tape.shift().key);
           }
         } else {
@@ -105,6 +103,7 @@
      */
     return {
       tape,
+      lastFrame,
       start,
       stop,
       play
@@ -163,8 +162,8 @@
         addEventListener('keydown', keyEvents);
       },
       stop() {
-        removeEventListener("keyup", keyEvents);
-        removeEventListener("keydown", keyEvents);
+        removeEventListener('keyup', keyEvents);
+        removeEventListener('keydown', keyEvents);
       },
       setCallback(key, callback) {
         callbacks[key] = callback;
@@ -403,10 +402,10 @@
 
     function readAction() {
       const keyMap = Object.freeze({
-        "ArrowLeft": shapeActions.MOVE_LEFT,
-        "ArrowRight": shapeActions.MOVE_RIGHT,
-        "ArrowUp": shapeActions.ROTATE,
-        "ArrowDown": shapeActions.DROP,
+        'ArrowLeft': shapeActions.MOVE_LEFT,
+        'ArrowRight': shapeActions.MOVE_RIGHT,
+        'ArrowUp': shapeActions.ROTATE,
+        'ArrowDown': shapeActions.DROP,
       });
 
       const nextKey = joystick.keyQueue.shift();
