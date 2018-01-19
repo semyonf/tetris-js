@@ -81,13 +81,17 @@
     }
 
     function play() {
-      game.beforeProceed = function () {
+      game.onProceed = function () {
         if (frameCount !== recorder.lastFrame) {
+          context.fillStyle = 'white';
+          context.font = '12px Courier';
+          context.fillText('REPLAY...', 0, 20);
+
           if (recorder.tape.length && frameCount === recorder.tape[0].frame) {
             joystick.keyQueue.push(recorder.tape.shift().key);
           }
         } else {
-          game.beforeProceed = undefined;
+          game.onProceed = undefined;
           frameCount = 0;
           joystick.start();
           recorder.start();
@@ -415,12 +419,13 @@
     }
 
     function proceed() {
-      if (game.beforeProceed !== undefined) {
-        game.beforeProceed();
+      drawBackground();
+
+      if (game.onProceed !== undefined) {
+        game.onProceed();
       }
 
       readAction();
-      drawBackground();
 
       if (activeShape.isFrozen) {
         for (let i = 0; i < 4; ++i) {
@@ -448,9 +453,9 @@
 
     /**
      * Public interface
-     * @type {{beforeProceed: [function], proceed: void, restart: void}}
+     * @type {{onProceed: [function], proceed: void, restart: void}}
      */
-    return {beforeProceed, proceed, restart};
+    return {onProceed: beforeProceed, proceed, restart};
   })();
 
   joystick.start();
@@ -679,7 +684,7 @@
   function SeededRandom(seed) {
     this._seed = (seed % 2147483647);
 
-    this.next = function () {
+    this.nextInt = function () {
       return this._seed = this._seed * 16807 % 2147483647;
     };
 
@@ -697,7 +702,7 @@
     };
 
     this.nextFloat = function () {
-      return (this.next() - 1) / 2147483646;
+      return (this.nextInt() - 1) / 2147483646;
     };
 
     if (this._seed <= 0) {
