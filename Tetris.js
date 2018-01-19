@@ -127,6 +127,7 @@
       ArrowLeft: false,
       ArrowRight: false,
       Escape: false,
+      Enter: false,
       anyKey: false
     });
 
@@ -456,6 +457,20 @@
 
   joystick.start();
   recorder.start();
+
+  /**
+   * Random mode, just for fun! :D
+   */
+  joystick.setCallback('Enter', () => {
+    recorder.stop();
+    joystick.stop();
+    const keys = Object.keys(keyMap);
+    game.onProceed = function () {
+      if (frameCount % 5 === 0) {
+        joystick.keyQueue.push(keys[random.nextInRange(keys.length)]);
+      }
+    };
+  });
 
   function mainLoop() {
     game.proceed();
