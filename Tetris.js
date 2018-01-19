@@ -62,7 +62,7 @@
 
   const recorder = (() => {
     const tape = [];
-    let lastFrame = null;
+    let lastFrame = Infinity;
 
     function start() {
       joystick.setCallback('anyKey', (key) => {
@@ -72,12 +72,12 @@
 
       joystick.setCallback('Escape', () => {
         joystick.stop();
-        frameCount = 0;
         recorder.stop();
         recorder.tape.pop();
         recorder.play();
         random = new SeededRandom(randomSeed);
         randomSeed = +(new Date());
+        frameCount = 0;
         game.restart();
       });
     }
@@ -133,7 +133,6 @@
     const callbacks = {}, keyQueue = [];
 
     function keyEvents(e) {
-
       const isDown = (e.type === 'keydown'), keyCode = e.code;
       keyStates.anyKey = isDown;
 
@@ -146,14 +145,7 @@
         keyStates[keyCode] = isDown;
 
         if (isDown) {
-          const controlKeys = [
-            'ArrowUp',
-            'ArrowDown',
-            'ArrowLeft',
-            'ArrowRight'
-          ];
-
-          if (controlKeys.indexOf(keyCode) !== -1) {
+          if (keyCode in keyMap) {
             keyQueue.push(keyCode);
           }
 
