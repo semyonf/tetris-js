@@ -60,8 +60,6 @@
     let lastFrame = undefined;
 
     function start() {
-      lastFrame = undefined;
-
       joystick.setCallback('anyKey', (key) => {
         recorder.tape.push({key, frame: frameCount});
         recorder.lastFrame = frameCount;
