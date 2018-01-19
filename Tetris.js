@@ -136,8 +136,8 @@
       const isDown = (e.type === 'keydown'), keyCode = e.code;
       keyStates.anyKey = isDown;
 
-      if (isDown && callbacks['anyKey'] !== undefined) {
-        callbacks['anyKey'](keyCode);
+      if (isDown && callbacks.anyKey !== undefined) {
+        callbacks.anyKey(keyCode);
       }
 
       if (keyStates[keyCode] !== undefined) {
@@ -208,7 +208,7 @@
       };
     })();
 
-    let beforeProceed = undefined;
+    let beforeProceed;
 
     function restart() {
       playerScore.set(0);
