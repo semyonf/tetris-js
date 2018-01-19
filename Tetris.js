@@ -138,12 +138,15 @@
         keyStates[keyCode] = isDown;
 
         if (isDown) {
-          switch (keyCode) {
-            case 'ArrowUp':
-            case 'ArrowDown':
-            case 'ArrowLeft':
-            case 'ArrowRight':
-              keyQueue.push(keyCode);
+          const controlKeys = [
+            'ArrowUp',
+            'ArrowDown',
+            'ArrowLeft',
+            'ArrowRight'
+          ];
+
+          if (controlKeys.indexOf(keyCode) !== -1) {
+            keyQueue.push(keyCode);
           }
 
           if (callbacks[keyCode] !== undefined) {
