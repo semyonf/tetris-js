@@ -208,7 +208,7 @@
       };
     })();
 
-    let beforeProceed;
+    let onProceed;
 
     function restart() {
       playerScore.set(0);
@@ -451,7 +451,7 @@
      * Public interface
      * @type {{onProceed: [function], proceed: void, restart: void}}
      */
-    return {onProceed: beforeProceed, proceed, restart};
+    return {onProceed, proceed, restart};
   })();
 
   joystick.start();
