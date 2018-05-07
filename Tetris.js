@@ -26,9 +26,6 @@
   'use strict';
 
   const
-    board = document.querySelector('canvas#board'),
-    context = board.getContext('2d'),
-
     brickSize = 20,
     boardRows = 22,
     boardCols = 10,
@@ -50,15 +47,20 @@
       'ArrowRight': shapeActions.MOVE_RIGHT,
       'ArrowUp': shapeActions.ROTATE,
       'ArrowDown': shapeActions.DROP,
-    });
+    }),
+    board = document.querySelector('canvas#board'),
+    context = board.getContext("2d");
+
+  board.width = boardWidth * window.devicePixelRatio;
+  board.height = boardHeight * window.devicePixelRatio;
+  board.style.width = `${boardWidth}px`;
+  board.style.height = `${boardHeight}px`;
+  context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
   let
     randomSeed = +(new Date()),
     random = new SeededRandom(randomSeed),
     frameCount = 0;
-
-  board.width = boardWidth;
-  board.height = boardHeight;
 
   const recorder = (() => {
     const tape = [];
@@ -693,7 +695,7 @@
         matches[3]
       ];
 
-    colors.forEach(function(color, index, colors) {
+    colors.forEach(function (color, index, colors) {
       colors[index] = Math.floor(color * factor);
     });
 
