@@ -43,10 +43,21 @@
     }),
 
     keyMap = Object.freeze({
+      // Arrow controls
       'ArrowLeft': shapeActions.MOVE_LEFT,
       'ArrowRight': shapeActions.MOVE_RIGHT,
       'ArrowUp': shapeActions.ROTATE,
       'ArrowDown': shapeActions.DROP,
+      // WASD controls
+      'KeyW': shapeActions.ROTATE,
+      'KeyA': shapeActions.MOVE_LEFT,
+      'KeyS': shapeActions.DROP,
+      'KeyD': shapeActions.MOVE_RIGHT,
+      // VIM controls
+      'KeyH': shapeActions.MOVE_LEFT,
+      'KeyJ': shapeActions.DROP,
+      'KeyK': shapeActions.ROTATE,
+      'KeyL': shapeActions.MOVE_RIGHT,
     }),
     board = document.querySelector('canvas#board'),
     context = board.getContext("2d");
@@ -123,15 +134,15 @@
   })();
 
   const joystick = (() => {
-    const keyStates = Object.seal({
-      ArrowUp: false,
-      ArrowDown: false,
-      ArrowLeft: false,
-      ArrowRight: false,
-      Escape: false,
-      Enter: false,
-      anyKey: false
-    });
+    const keyStates = Object.seal(
+      Object.assign({
+        Escape: false,
+        Enter: false,
+        anyKey: false
+      }, keyMap)
+    );
+
+    Object.keys(keyStates).forEach(keyState => keyState = false);
 
     const callbacks = {}, keyQueue = [];
 
