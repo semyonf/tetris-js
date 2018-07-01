@@ -39,52 +39,52 @@ import KeyMap from './KeyMap.js';
     const tape = [];
     let lastFrame = Infinity;
 
-    function start() {
+    const start = () => {
       joystick.setCallback('anyKey', (key) => {
-        recorder.tape.push({key, frame: frameCount});
-        recorder.lastFrame = frameCount;
+        tape.push({key, frame: frameCount});
       });
 
       joystick.setCallback('Escape', () => {
         joystick.stop();
-        recorder.stop();
-        recorder.tape.pop();
-        recorder.play();
+        lastFrame = frameCount;
+        stop();
+        tape.pop();
+        play();
         random = new SeededRandom(randomSeed);
         randomSeed = +(new Date());
         frameCount = 0;
         game.restart();
       });
-    }
+    };
 
-    function stop() {
+    const stop = () => {
       joystick.setCallback('anyKey', undefined);
       joystick.setCallback('Escape', undefined);
-    }
+    };
 
-    function play() {
-      game.onProceed = function () {
-        if (frameCount !== recorder.lastFrame) {
+    const play = () => {
+      game.onProceed = () => {
+        if (frameCount !== lastFrame) {
           context.fillStyle = 'white';
           context.font = '12px Courier';
           context.fillText('REPLAY...', 0, 20);
 
-          if (recorder.tape.length && frameCount === recorder.tape[0].frame) {
-            joystick.keyQueue.push(recorder.tape.shift().key);
+          if (tape.length && frameCount === tape[0].frame) {
+            joystick.keyQueue.push(tape.shift().key);
           }
         } else {
           game.onProceed = undefined;
           frameCount = 0;
           random = new SeededRandom(randomSeed);
           joystick.start();
-          recorder.start();
+          start();
           game.restart();
         }
       };
-    }
+    };
 
     /**
-     * Public interface
+     * Public
      */
     return {
       tape,
@@ -382,19 +382,19 @@ import KeyMap from './KeyMap.js';
   joystick.start();
   recorder.start();
 
-  /**
-   * Random mode, just for fun! :D
-   */
-  joystick.setCallback('Enter', () => {
-    recorder.stop();
-    joystick.stop();
-    const keys = Object.keys(keyMap);
-    game.onProceed = function () {
-      if (frameCount % 5 === 0) {
-        joystick.keyQueue.push(keys[random.nextInRange(keys.length)]);
-      }
-    };
-  });
+  // /**
+  //  * Random mode, just for fun! :D
+  //  */
+  // joystick.setCallback('Enter', () => {
+  //   recorder.stop();
+  //   joystick.stop();
+  //   const keys = Object.keys(keyMap);
+  //   game.onProceed = function () {
+  //     if (frameCount % 5 === 0) {
+  //       joystick.keyQueue.push(keys[random.nextInRange(keys.length)]);
+  //     }
+  //   };
+  // });
 
   function mainLoop() {
     game.proceed();
