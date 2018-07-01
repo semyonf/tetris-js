@@ -1,5 +1,6 @@
 import Joystick from './Joystick.js';
 import Shape from './Shape.js';
+import SeededRandom from './SeededRandom.js';
 
 (function (undefined) {
   'use strict';
@@ -30,13 +31,13 @@ import Shape from './Shape.js';
       'KeyK': Shape.prototype.actions.ROTATE,
       'KeyL': Shape.prototype.actions.MOVE_RIGHT,
     }),
-    board = document.querySelector('canvas#board'),
-    context = board.getContext("2d");
+    domElement = document.querySelector('canvas#board'),
+    context = domElement.getContext("2d");
 
-  board.width = boardWidth * window.devicePixelRatio;
-  board.height = boardHeight * window.devicePixelRatio;
-  board.style.width = `${boardWidth}px`;
-  board.style.height = `${boardHeight}px`;
+  domElement.width = boardWidth * window.devicePixelRatio;
+  domElement.height = boardHeight * window.devicePixelRatio;
+  domElement.style.width = `${boardWidth}px`;
+  domElement.style.height = `${boardHeight}px`;
   context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
   let
@@ -412,39 +413,4 @@ import Shape from './Shape.js';
   }
 
   requestAnimationFrame(mainLoop);
-
-  /**
-   * Seeded PRNG
-   * Originally found at https://gist.github.com/blixt/f17b47c62508be59987b
-   * @param seed
-   * @constructor
-   */
-  function SeededRandom(seed) {
-    this._seed = (seed % 2147483647);
-
-    this.nextInt = function () {
-      return this._seed = this._seed * 16807 % 2147483647;
-    };
-
-    /**
-     * Random integer generator
-     * @param {number} max - not included
-     * @param {number} [min] - included
-     * @returns {number}
-     */
-    this.nextInRange = function (max, min) {
-      min = (min === undefined) ? 0 : min;
-      --max;
-
-      return Math.floor(min + random.nextFloat() * (max + 1 - min));
-    };
-
-    this.nextFloat = function () {
-      return (this.nextInt() - 1) / 2147483646;
-    };
-
-    if (this._seed <= 0) {
-      this._seed += 2147483646;
-    }
-  }
 })();
