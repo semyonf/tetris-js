@@ -1,4 +1,5 @@
 import Joystick from './Joystick.js';
+import Shape from './Shape.js';
 
 (function (undefined) {
   'use strict';
@@ -12,30 +13,22 @@ import Joystick from './Joystick.js';
     normalBoardColor = 'rgb(69,90,100)',
     turboBoardColor = 'rgba(69,90,100,0.12)',
 
-    shapeActions = Object.freeze({
-      ROTATE: 'rotate',
-      MOVE_LEFT: 'move-left',
-      MOVE_RIGHT: 'move-right',
-      FALL: 'fall',
-      DROP: 'drop'
-    }),
-
     keyMap = Object.freeze({
       // Arrow controls
-      'ArrowLeft': shapeActions.MOVE_LEFT,
-      'ArrowRight': shapeActions.MOVE_RIGHT,
-      'ArrowUp': shapeActions.ROTATE,
-      'ArrowDown': shapeActions.DROP,
+      'ArrowLeft': Shape.prototype.actions.MOVE_LEFT,
+      'ArrowRight': Shape.prototype.actions.MOVE_RIGHT,
+      'ArrowUp': Shape.prototype.actions.ROTATE,
+      'ArrowDown': Shape.prototype.actions.DROP,
       // WASD controls
-      'KeyW': shapeActions.ROTATE,
-      'KeyA': shapeActions.MOVE_LEFT,
-      'KeyS': shapeActions.DROP,
-      'KeyD': shapeActions.MOVE_RIGHT,
+      'KeyW': Shape.prototype.actions.ROTATE,
+      'KeyA': Shape.prototype.actions.MOVE_LEFT,
+      'KeyS': Shape.prototype.actions.DROP,
+      'KeyD': Shape.prototype.actions.MOVE_RIGHT,
       // VIM controls
-      'KeyH': shapeActions.MOVE_LEFT,
-      'KeyJ': shapeActions.DROP,
-      'KeyK': shapeActions.ROTATE,
-      'KeyL': shapeActions.MOVE_RIGHT,
+      'KeyH': Shape.prototype.actions.MOVE_LEFT,
+      'KeyJ': Shape.prototype.actions.DROP,
+      'KeyK': Shape.prototype.actions.ROTATE,
+      'KeyL': Shape.prototype.actions.MOVE_RIGHT,
     }),
     board = document.querySelector('canvas#board'),
     context = board.getContext("2d");
@@ -114,8 +107,12 @@ import Joystick from './Joystick.js';
   const joystick = new Joystick(keyMap);
 
   const game = (() => {
+    function spawnShape() {
+      return new Shape(boardWidth, brickSize, random);
+    }
+
     let
-      activeShape = new Shape(),
+      activeShape = spawnShape(),
       difficulty = 1,
       staticBricks = [],
       turboMode = false;
@@ -150,7 +147,7 @@ import Joystick from './Joystick.js';
     function restart() {
       playerScore.set(0);
       staticBricks = [];
-      activeShape = new Shape();
+      activeShape = spawnShape();
     }
 
     function checkFilledRegions() {
@@ -279,7 +276,7 @@ import Joystick from './Joystick.js';
     }
 
     function drawStaticBricks() {
-      staticBricks.forEach((staticBrick) => staticBrick.draw());
+      staticBricks.forEach((staticBrick) => staticBrick.draw(context));
     }
 
     function processAction(action) {
@@ -287,15 +284,15 @@ import Joystick from './Joystick.js';
         activeShape.isFrozen = collisions.bottom;
 
         switch (true) {
-          case action === shapeActions.ROTATE && cantBeRotated():
-          case action === shapeActions.MOVE_RIGHT && collisions.right:
-          case action === shapeActions.MOVE_LEFT && collisions.left:
-          case action === shapeActions.FALL && collisions.bottom:
-          case action === shapeActions.DROP && collisions.bottom:
+          case action === Shape.prototype.actions.ROTATE && cantBeRotated():
+          case action === Shape.prototype.actions.MOVE_RIGHT && collisions.right:
+          case action === Shape.prototype.actions.MOVE_LEFT && collisions.left:
+          case action === Shape.prototype.actions.FALL && collisions.bottom:
+          case action === Shape.prototype.actions.DROP && collisions.bottom:
             break;
 
           default:
-            if (action === shapeActions.DROP) {
+            if (action === Shape.prototype.actions.DROP) {
               turboMode = true;
             }
 
@@ -304,7 +301,7 @@ import Joystick from './Joystick.js';
         }
 
         function cantBeRotated() {
-          const temp = new Shape();
+          const temp = spawnShape();
 
           temp.orientaion = activeShape.orientaion;
           temp.type = activeShape.type;
@@ -316,7 +313,7 @@ import Joystick from './Joystick.js';
             );
           }
 
-          temp.performAction(shapeActions.ROTATE);
+          temp.performAction(Shape.prototype.actions.ROTATE);
 
           for (let i = 0; i < 4; ++i) {
             for (let j = 0; j < staticBricks.length; ++j) {
@@ -367,17 +364,17 @@ import Joystick from './Joystick.js';
 
         checkFilledRegions();
         turboMode = false;
-        activeShape = new Shape();
+        activeShape = spawnShape();
 
         if (boardIsFull()) {
           restart();
         }
       } else {
         if (gravityIsActive()) {
-          processAction(shapeActions.FALL);
+          processAction(Shape.prototype.actions.FALL);
         }
 
-        activeShape.draw();
+        activeShape.draw(context);
       }
 
       drawStaticBricks();
@@ -415,226 +412,6 @@ import Joystick from './Joystick.js';
   }
 
   requestAnimationFrame(mainLoop);
-
-  /**
-   * Tetramino constructor
-   * @returns {Shape}
-   * @constructor
-   */
-  function Shape() {
-    const data = Object.freeze({
-      types: [
-        {
-          name: 'I',
-          matrix: [[0, -1], [0, 1], [0, 2]]
-        }, {
-          name: 'O',
-          matrix: [[0, 1], [1, 0], [1, 1]]
-        }, {
-          name: 'Z',
-          matrix: [[0, -1], [-1, 0], [1, -1]]
-        }, {
-          name: 'S',
-          matrix: [[-1, -1], [0, -1], [1, 0]]
-        }, {
-          name: 'T',
-          matrix: [[1, 0], [-1, 0], [0, 1]]
-        }, {
-          name: 'J',
-          matrix: [[1, 0], [-1, 0], [-1, 1]]
-        }, {
-          name: 'L',
-          matrix: [[1, 0], [-1, 0], [-1, -1]]
-        }
-      ],
-      orientations: [
-        {
-          angle: 0,
-          matrix: [[1, 0], [0, 1]]
-        }, {
-          angle: 90,
-          matrix: [[0, -1], [1, 0]]
-        }, {
-          angle: 180,
-          matrix: [[-1, 0], [0, -1]]
-        }, {
-          angle: 270,
-          matrix: [[0, 1], [-1, 0]]
-        }
-      ],
-      colors: [
-        {
-          name: 'orange',
-          rgb: 'rgb(239,108,0)'
-        }, {
-          name: 'red',
-          rgb: 'rgb(211,47,47)'
-        }, {
-          name: 'green',
-          rgb: 'rgb(76,175,80)'
-        }, {
-          name: 'blue',
-          rgb: 'rgb(33,150,243)'
-        }, {
-          name: 'yellow',
-          rgb: 'rgb(255,235,59)'
-        }, {
-          name: 'cyan',
-          rgb: 'rgb(0,188,212)'
-        }, {
-          name: 'pink',
-          rgb: 'rgb(233,30,99)'
-        }, {
-          name: 'white',
-          rgb: 'rgb(224,224,224)'
-        }
-      ]
-    });
-
-    this.startX = boardWidth / 2;
-    this.startY = brickSize;
-    this.isFrozen = false;
-    this.color = random.nextInRange(data.colors.length);
-    this.type = random.nextInRange(data.types.length);
-    this.orientaion = random.nextInRange(data.orientations.length);
-    this.bricks = [];
-
-    this.draw = () => {
-      this.bricks.forEach((brick) => brick.draw());
-    };
-
-    this.performAction = (movement) => {
-      switch (movement) {
-        case shapeActions.ROTATE:
-          if (data.types[this.type].name !== 'O') {
-            this.orientaion = (this.orientaion === 3) ? 0 : ++this.orientaion;
-            this.applyOrientation();
-          }
-          break;
-
-        case shapeActions.FALL:
-          this.bricks.forEach(function (brick) {
-            brick.y += brickSize;
-          });
-          break;
-
-        case shapeActions.MOVE_RIGHT:
-        case shapeActions.MOVE_LEFT:
-          for (let i = 0; i < 4; ++i) {
-            if (movement === shapeActions.MOVE_LEFT) {
-              this.bricks[i].x -= brickSize;
-            } else {
-              this.bricks[i].x += brickSize;
-            }
-          }
-          break;
-
-        case shapeActions.DROP:
-          break;
-      }
-
-      return this;
-    };
-
-    this.applyOrientation = () => {
-      const
-        type = data.types[this.type].matrix,
-        orientation = data.orientations[this.orientaion].matrix;
-
-      let oriented = [];
-
-      // Dot product of the data matrix and the orientation matrix
-      for (let i = 0; i < 3; ++i) {
-        oriented[i] = [];
-        for (let j = 0; j < 2; ++j) {
-          oriented[i][j] = 0;
-          for (let k = 0; k < 2; ++k) {
-            oriented[i][j] += type[i][k] * orientation[k][j];
-          }
-        }
-      }
-
-      const center = this.bricks[0];
-
-      for (let i = 0; i < 3; ++i) {
-        this.bricks[i + 1].x = center.x + oriented[i][0] * brickSize;
-        this.bricks[i + 1].y = center.y + oriented[i][1] * brickSize;
-      }
-
-      return this;
-    };
-
-    for (let i = 0; i < 4; ++i) {
-      this.bricks.push(new Brick(
-        this.startX,
-        this.startY,
-        data.colors[this.color].rgb
-      ));
-    }
-
-    this.applyOrientation();
-
-    return this;
-  }
-
-  /**
-   * Tetramino building block
-   * @param {Number} x coordinate
-   * @param {Number} y coordinate
-   * @param {String} rgb color string
-   * @returns {Brick}
-   * @constructor
-   */
-  function Brick(x, y, rgb) {
-    this.x = x;
-    this.y = y;
-    this.rgb = rgb;
-    this.draw = () => {
-      context.fillStyle = this.rgb;
-      context.beginPath();
-      context.moveTo(this.x, this.y);
-      context.lineTo(this.x + brickSize - 1, this.y);
-      context.lineTo(this.x, this.y + brickSize - 1);
-      context.closePath();
-      context.fill();
-
-      context.fillStyle = modifyRgb(this.rgb, 0.9);
-      context.beginPath();
-      context.moveTo(this.x + brickSize - 1, this.y);
-      context.lineTo(this.x, this.y + brickSize - 1);
-      context.lineTo(this.x, this.y + brickSize - 1);
-      context.lineTo(this.x + brickSize - 1, this.y + brickSize - 1);
-      context.closePath();
-      context.fill();
-    };
-
-    return this;
-  }
-
-  /**
-   * A function to darken or lighten rgb color strings
-   * @param {string} color
-   * @param {number} factor
-   * @returns {string}
-   */
-  function modifyRgb(color, factor) {
-    const
-      regexp = /rgb\((\d+),(\d+),(\d+)\)/g,
-      matches = regexp.exec(color);
-
-    let
-      colors = [
-        matches[1],
-        matches[2],
-        matches[3]
-      ];
-
-    colors.forEach(function (color, index, colors) {
-      colors[index] = Math.floor(color * factor);
-    });
-
-    return `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-  }
 
   /**
    * Seeded PRNG
