@@ -52,7 +52,6 @@ import KeyMap from './KeyMap.js';
         play();
         random = new SeededRandom(randomSeed);
         randomSeed = +(new Date());
-        frameCount = 0;
         game.restart();
       });
     };
@@ -74,7 +73,6 @@ import KeyMap from './KeyMap.js';
           }
         } else {
           game.onProceed = undefined;
-          frameCount = 0;
           random = new SeededRandom(randomSeed);
           joystick.start();
           start();
@@ -139,6 +137,7 @@ import KeyMap from './KeyMap.js';
       playerScore.set(0);
       staticBricks = [];
       activeShape = spawnShape();
+      frameCount = 0;
     }
 
     function checkFilledRegions() {
