@@ -1,6 +1,7 @@
 import Joystick from './Joystick.js';
 import Shape from './Shape.js';
 import SeededRandom from './SeededRandom.js';
+import KeyMap from './KeyMap.js';
 
 (function (undefined) {
   'use strict';
@@ -14,23 +15,12 @@ import SeededRandom from './SeededRandom.js';
     normalBoardColor = 'rgb(69,90,100)',
     turboBoardColor = 'rgba(69,90,100,0.12)',
 
-    keyMap = Object.freeze({
-      // Arrow controls
-      'ArrowLeft': Shape.prototype.actions.MOVE_LEFT,
-      'ArrowRight': Shape.prototype.actions.MOVE_RIGHT,
-      'ArrowUp': Shape.prototype.actions.ROTATE,
-      'ArrowDown': Shape.prototype.actions.DROP,
-      // WASD controls
-      'KeyW': Shape.prototype.actions.ROTATE,
-      'KeyA': Shape.prototype.actions.MOVE_LEFT,
-      'KeyS': Shape.prototype.actions.DROP,
-      'KeyD': Shape.prototype.actions.MOVE_RIGHT,
-      // VIM controls
-      'KeyH': Shape.prototype.actions.MOVE_LEFT,
-      'KeyJ': Shape.prototype.actions.DROP,
-      'KeyK': Shape.prototype.actions.ROTATE,
-      'KeyL': Shape.prototype.actions.MOVE_RIGHT,
-    }),
+    keyMaps = [
+      new KeyMap('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'),
+      new KeyMap('KeyA', 'KeyD', 'KeyW', 'KeyS'), // W-A-S-D
+      new KeyMap('KeyH', 'KeyL', 'KeyK', 'KeyJ')  // VIM
+    ],
+    keyMap = Object.assign(...keyMaps),
     domElement = document.querySelector('canvas#board'),
     context = domElement.getContext("2d");
 
