@@ -1,8 +1,9 @@
 // noinspection JSUnusedGlobalSymbols
 export default {
-  input: 'src/Tetris.js',
+  input: 'src/Game.js',
   output: {
-    file: 'bundle.js',
+    file: 'dist/tetris.js',
+    name: 'Tetris',
     format: 'iife',
     sourcemap: 'inline'
   }

@@ -1,5 +1,3 @@
-import Game from "./Game";
-
 const
   brickSize = 20,
   boardRows = 22,
@@ -16,7 +14,7 @@ domElement.style.height = `${boardHeight}px`;
 const context = domElement.getContext("2d");
 context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-new Game({
+new Tetris({
   context,
   board: {
     boardWidth, boardHeight, brickSize
