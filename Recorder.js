@@ -1,5 +1,3 @@
-import SeededRandom from "./SeededRandom";
-
 export default function Recorder(joystick, game) {
   const tape = [];
   let lastFrame = Infinity;
@@ -15,10 +13,8 @@ export default function Recorder(joystick, game) {
       stop();
       tape.pop();
       play();
-      game.setRandom(new SeededRandom(game.getRandomSeed()));
-      // random = new SeededRandom(randomSeed);
+      game.resetRandom();
       game.setRandomSeed(+(new Date()));
-      // randomSeed = +(new Date());
       game.restart();
     });
   };
@@ -38,8 +34,7 @@ export default function Recorder(joystick, game) {
         }
       } else {
         game.onProceed = undefined;
-        game.setRandom(new SeededRandom(game.getRandomSeed()));
-        // random = new SeededRandom(randomSeed);
+        game.resetRandom();
         joystick.start();
         start();
         game.restart();
