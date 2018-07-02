@@ -1,27 +1,25 @@
 import Game from "./Game";
 
-const domElement = document.querySelector('canvas#board');
-const config = {
-  domElement,
-  board: {
-    rows: 22,
-    cols: 10,
-    brickSize: 20
-  }
-};
-
-const tetris = new Game(config);
-
 const
-  brickSize = config.board.brickSize,
-  boardRows = config.board.rows,
-  boardCols = config.board.cols,
+  brickSize = 20,
+  boardRows = 22,
+  boardCols = 10,
   boardWidth = brickSize * boardCols,
   boardHeight = brickSize * boardRows;
 
+const domElement = document.querySelector('canvas#board');
 domElement.width = boardWidth * window.devicePixelRatio;
 domElement.height = boardHeight * window.devicePixelRatio;
 domElement.style.width = `${boardWidth}px`;
 domElement.style.height = `${boardHeight}px`;
 
-domElement.getContext("2d").scale(window.devicePixelRatio, window.devicePixelRatio);
+const context = domElement.getContext("2d");
+context.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+new Game({
+  context,
+  board: {
+    boardWidth, boardHeight, brickSize
+  },
+  customControls: [[]]
+});

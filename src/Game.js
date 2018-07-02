@@ -6,12 +6,7 @@ import Joystick from "./Joystick";
 import Recorder from "./Recorder";
 
 export default function Game(config) {
-  const
-    brickSize = config.board.brickSize,
-    boardRows = config.board.rows,
-    boardCols = config.board.cols,
-    boardWidth = brickSize * boardCols,
-    boardHeight = brickSize * boardRows;
+  const context = config.context;
 
   const keyMaps = [
       new KeyMap('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'),
@@ -20,20 +15,13 @@ export default function Game(config) {
     ],
     keyMap = Object.assign(...keyMaps);
 
+  // todo: custom controls would go somewhere here...
+
   const joystick = new Joystick(keyMap);
   const recorder = new Recorder(joystick, this);
 
   joystick.start();
   recorder.start();
-
-  const mainLoop = () => {
-    this.proceed();
-    requestAnimationFrame(mainLoop);
-  };
-
-  requestAnimationFrame(mainLoop);
-
-  const context = config.domElement.getContext("2d");
 
   this.randomSeed = +(new Date());
   this.random = new SeededRandom(this.randomSeed);
@@ -63,7 +51,7 @@ export default function Game(config) {
     };
   })();
 
-  let board = new Board(this, boardWidth, boardHeight, config.board.brickSize, this.random);
+  let board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
   let frameCount = 0;
   // noinspection JSUnusedLocalSymbols
   this.onProceed = undefined;
@@ -87,7 +75,7 @@ export default function Game(config) {
     frameCount = 0;
     difficulty = 1;
     turboMode = false;
-    board = new Board(this, boardWidth, boardHeight, config.board.brickSize, this.random);
+    board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
   };
 
   this.setRandomSeed = (newSeed) => {
@@ -141,9 +129,9 @@ export default function Game(config) {
           }
 
           if (
-            temp.bricks[i].x >= boardWidth ||
+            temp.bricks[i].x >= config.board.boardWidth ||
             temp.bricks[i].x <= 0 ||
-            temp.bricks[i].y >= boardHeight
+            temp.bricks[i].y >= config.board.boardHeight
           ) {
             return true;
           }
@@ -196,4 +184,11 @@ export default function Game(config) {
     board.drawStaticBricks(context);
     board.drawScore(context);
   };
+
+  const mainLoop = () => {
+    this.proceed();
+    requestAnimationFrame(mainLoop);
+  };
+
+  requestAnimationFrame(mainLoop);
 }
