@@ -1,7 +1,8 @@
-import Joystick from './Joystick.js';
-import Shape from './Shape.js';
-import SeededRandom from './SeededRandom.js';
-import KeyMap from './KeyMap.js';
+import Joystick from './Joystick';
+import Shape from './Shape';
+import SeededRandom from './SeededRandom';
+import KeyMap from './KeyMap';
+import Recorder from "./Recorder";
 
 (function (undefined) {
   'use strict';
@@ -325,65 +326,14 @@ import KeyMap from './KeyMap.js';
      */
     return {
       onProceed, proceed, restart, drawReplay,
-      getFrameCount: () => frameCount
+      getFrameCount: () => frameCount,
+      getRandomSeed: () => randomSeed,
+      setRandom: (newRandom) => { random = newRandom },
+      setRandomSeed: (newRandomSeed) => { randomSeed = newRandomSeed }
     };
   })();
 
-  const recorder = ((joystick, game) => {
-    const tape = [];
-    let lastFrame = Infinity;
-
-    const start = () => {
-      joystick.setCallback('anyKey', (key) => {
-        tape.push({ key, frame: game.getFrameCount() });
-      });
-
-      joystick.setCallback('Escape', () => {
-        joystick.stop();
-        lastFrame = game.getFrameCount();
-        stop();
-        tape.pop();
-        play();
-        random = new SeededRandom(randomSeed);
-        randomSeed = +(new Date());
-        game.restart();
-      });
-    };
-
-    const stop = () => {
-      joystick.setCallback('anyKey', undefined);
-      joystick.setCallback('Escape', undefined);
-    };
-
-    const play = () => {
-      game.onProceed = () => {
-        if (game.getFrameCount() !== lastFrame) {
-          game.drawReplay();
-
-          if (tape.length && game.getFrameCount() === tape[0].frame) {
-            joystick.keyQueue.push(tape.shift().key);
-          }
-        } else {
-          game.onProceed = undefined;
-          random = new SeededRandom(randomSeed);
-          joystick.start();
-          start();
-          game.restart();
-        }
-      };
-    };
-
-    /**
-     * Public
-     */
-    return {
-      tape,
-      lastFrame,
-      start,
-      stop,
-      play
-    };
-  })(joystick, game);
+  const recorder = new Recorder(joystick, game);
 
   joystick.start();
   recorder.start();
