@@ -13,7 +13,6 @@ export default function Recorder(joystick, game) {
       stop();
       tape.pop();
       play();
-      // game.resetRandom();
       game.restart();
       game.setRandomSeed(+(new Date()));
     });
@@ -34,7 +33,6 @@ export default function Recorder(joystick, game) {
         }
       } else {
         game.onProceed = undefined;
-        // game.resetRandom();
         joystick.start();
         start();
         game.restart();

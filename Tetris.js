@@ -326,15 +326,8 @@ import Recorder from "./Recorder";
     return {
       onProceed, proceed, restart, drawReplay,
       getFrameCount: () => frameCount,
-      getRandomSeed: () => randomSeed,
-      setRandom: (newRandom) => {
-        random = newRandom
-      },
       setRandomSeed: (newRandomSeed) => {
         randomSeed = newRandomSeed
-      },
-      resetRandom: () => {
-        random = new SeededRandom(randomSeed)
       }
     };
   })();
