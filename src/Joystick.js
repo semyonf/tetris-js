@@ -37,10 +37,11 @@ export default function Joystick(keyMap) {
   }
 
   /**
-   * Public interface
+   * Public
    */
   return {
     keys: keyStates,
+    keyMap,
     keyQueue,
     start() {
       addEventListener('keyup', keyEvents);
