@@ -5,6 +5,7 @@ import KeyMap from "./KeyMap";
 import Joystick from "./Joystick";
 import Recorder from "./Recorder";
 
+// noinspection JSUnusedGlobalSymbols
 export default function Game(config) {
   const context = config.context;
 
@@ -55,12 +56,13 @@ export default function Game(config) {
   let frameCount = 0;
   // noinspection JSUnusedLocalSymbols
   this.onProceed = undefined;
-  let difficulty = 1, turboMode = false;
+  let difficulty = 1;
+  this.turboMode = false;
 
   const gravityIsActive = () => {
     const gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-    return turboMode || frameCount % gameSpeeds[difficulty] === 0;
+    return this.turboMode || frameCount % gameSpeeds[difficulty] === 0;
   };
 
   this.drawReplay = () => {
@@ -74,7 +76,7 @@ export default function Game(config) {
     this.playerScore.set(0);
     frameCount = 0;
     difficulty = 1;
-    turboMode = false;
+    this.turboMode = false;
     board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
   };
 
@@ -96,7 +98,7 @@ export default function Game(config) {
 
         default:
           if (action === Shape.prototype.actions.DROP) {
-            turboMode = true;
+            this.turboMode = true;
           }
 
           board.activeShape.performAction(action);
@@ -167,7 +169,7 @@ export default function Game(config) {
       }
 
       board.checkFilledRegions();
-      turboMode = false;
+      this.turboMode = false;
       board.activeShape = board.spawnShape();
 
       if (board.isFull()) {
