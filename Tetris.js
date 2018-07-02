@@ -49,7 +49,7 @@ import Recorder from "./Recorder";
       context.fillText('REPLAY...', 0, 20);
     }
 
-    let activeShape, difficulty = 1, staticBricks, turboMode = false;
+    let activeShape, difficulty, staticBricks, turboMode;
 
     const playerScore = (() => {
       let _playerScore = 0;
@@ -84,6 +84,8 @@ import Recorder from "./Recorder";
       staticBricks = [];
       activeShape = spawnShape();
       frameCount = 0;
+      difficulty = 1;
+      turboMode = false;
     }
 
     function checkFilledRegions() {
