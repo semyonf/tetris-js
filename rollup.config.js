@@ -5,6 +5,6 @@ export default {
     file: 'dist/tetris.js',
     name: 'Tetris',
     format: 'iife',
-    sourcemap: 'inline'
+    sourcemap: true
   }
 };
