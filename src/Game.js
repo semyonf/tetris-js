@@ -1,8 +1,40 @@
 import SeededRandom from "./SeededRandom";
 import Shape from "./Shape";
 import Board from "./Board";
+import KeyMap from "./KeyMap";
+import Joystick from "./Joystick";
+import Recorder from "./Recorder";
 
-export default function Game(joystick, boardConfig, context) {
+export default function Game(config) {
+  const
+    brickSize = config.board.brickSize,
+    boardRows = config.board.rows,
+    boardCols = config.board.cols,
+    boardWidth = brickSize * boardCols,
+    boardHeight = brickSize * boardRows;
+
+  const keyMaps = [
+      new KeyMap('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'),
+      new KeyMap('KeyA', 'KeyD', 'KeyW', 'KeyS'), // W-A-S-D
+      new KeyMap('KeyH', 'KeyL', 'KeyK', 'KeyJ')  // VIM
+    ],
+    keyMap = Object.assign(...keyMaps);
+
+  const joystick = new Joystick(keyMap);
+  const recorder = new Recorder(joystick, this);
+
+  joystick.start();
+  recorder.start();
+
+  const mainLoop = () => {
+    this.proceed();
+    requestAnimationFrame(mainLoop);
+  };
+
+  requestAnimationFrame(mainLoop);
+
+  const context = config.domElement.getContext("2d");
+
   this.randomSeed = +(new Date());
   this.random = new SeededRandom(this.randomSeed);
 
@@ -31,7 +63,7 @@ export default function Game(joystick, boardConfig, context) {
     };
   })();
 
-  let board = new Board(this, boardConfig.width, boardConfig.height, boardConfig.brickSize, this.random);
+  let board = new Board(this, boardWidth, boardHeight, config.board.brickSize, this.random);
   let frameCount = 0;
   // noinspection JSUnusedLocalSymbols
   this.onProceed = undefined;
@@ -55,7 +87,7 @@ export default function Game(joystick, boardConfig, context) {
     frameCount = 0;
     difficulty = 1;
     turboMode = false;
-    board = new Board(this, boardConfig.width, boardConfig.height, boardConfig.brickSize, this.random);
+    board = new Board(this, boardWidth, boardHeight, config.board.brickSize, this.random);
   };
 
   this.setRandomSeed = (newSeed) => {
@@ -109,9 +141,9 @@ export default function Game(joystick, boardConfig, context) {
           }
 
           if (
-            temp.bricks[i].x >= boardConfig.width ||
+            temp.bricks[i].x >= boardWidth ||
             temp.bricks[i].x <= 0 ||
-            temp.bricks[i].y >= boardConfig.height
+            temp.bricks[i].y >= boardHeight
           ) {
             return true;
           }
