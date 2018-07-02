@@ -33,7 +33,7 @@ import Recorder from "./Recorder";
 
   let
     randomSeed = +(new Date()),
-    random = new SeededRandom(randomSeed),
+    random,
     frameCount = 0;
 
   const joystick = new Joystick(keyMap);
@@ -49,11 +49,7 @@ import Recorder from "./Recorder";
       context.fillText('REPLAY...', 0, 20);
     }
 
-    let
-      activeShape = spawnShape(),
-      difficulty = 1,
-      staticBricks = [],
-      turboMode = false;
+    let activeShape, difficulty = 1, staticBricks, turboMode = false;
 
     const playerScore = (() => {
       let _playerScore = 0;
@@ -83,6 +79,7 @@ import Recorder from "./Recorder";
     let onProceed;
 
     function restart() {
+      random = new SeededRandom(randomSeed);
       playerScore.set(0);
       staticBricks = [];
       activeShape = spawnShape();
@@ -319,6 +316,8 @@ import Recorder from "./Recorder";
       drawStaticBricks();
       drawScore();
     }
+
+    restart();
 
     /**
      * Public interface
