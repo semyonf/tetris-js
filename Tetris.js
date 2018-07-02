@@ -35,69 +35,17 @@ import KeyMap from './KeyMap.js';
     random = new SeededRandom(randomSeed),
     frameCount = 0;
 
-  const recorder = (() => {
-    const tape = [];
-    let lastFrame = Infinity;
-
-    const start = () => {
-      joystick.setCallback('anyKey', (key) => {
-        tape.push({key, frame: frameCount});
-      });
-
-      joystick.setCallback('Escape', () => {
-        joystick.stop();
-        lastFrame = frameCount;
-        stop();
-        tape.pop();
-        play();
-        random = new SeededRandom(randomSeed);
-        randomSeed = +(new Date());
-        game.restart();
-      });
-    };
-
-    const stop = () => {
-      joystick.setCallback('anyKey', undefined);
-      joystick.setCallback('Escape', undefined);
-    };
-
-    const play = () => {
-      game.onProceed = () => {
-        if (frameCount !== lastFrame) {
-          context.fillStyle = 'white';
-          context.font = '12px Courier';
-          context.fillText('REPLAY...', 0, 20);
-
-          if (tape.length && frameCount === tape[0].frame) {
-            joystick.keyQueue.push(tape.shift().key);
-          }
-        } else {
-          game.onProceed = undefined;
-          random = new SeededRandom(randomSeed);
-          joystick.start();
-          start();
-          game.restart();
-        }
-      };
-    };
-
-    /**
-     * Public
-     */
-    return {
-      tape,
-      lastFrame,
-      start,
-      stop,
-      play
-    };
-  })();
-
   const joystick = new Joystick(keyMap);
 
   const game = (() => {
     function spawnShape() {
       return new Shape(boardWidth, brickSize, random);
+    }
+
+    function drawReplay() {
+      context.fillStyle = 'white';
+      context.font = '12px Courier';
+      context.fillText('REPLAY...', 0, 20);
     }
 
     let
@@ -375,8 +323,67 @@ import KeyMap from './KeyMap.js';
      * Public interface
      * @type {{onProceed: [function], proceed: void, restart: void}}
      */
-    return {onProceed, proceed, restart};
+    return {
+      onProceed, proceed, restart, drawReplay,
+      getFrameCount: () => frameCount
+    };
   })();
+
+  const recorder = ((joystick, game) => {
+    const tape = [];
+    let lastFrame = Infinity;
+
+    const start = () => {
+      joystick.setCallback('anyKey', (key) => {
+        tape.push({ key, frame: game.getFrameCount() });
+      });
+
+      joystick.setCallback('Escape', () => {
+        joystick.stop();
+        lastFrame = game.getFrameCount();
+        stop();
+        tape.pop();
+        play();
+        random = new SeededRandom(randomSeed);
+        randomSeed = +(new Date());
+        game.restart();
+      });
+    };
+
+    const stop = () => {
+      joystick.setCallback('anyKey', undefined);
+      joystick.setCallback('Escape', undefined);
+    };
+
+    const play = () => {
+      game.onProceed = () => {
+        if (game.getFrameCount() !== lastFrame) {
+          game.drawReplay();
+
+          if (tape.length && game.getFrameCount() === tape[0].frame) {
+            joystick.keyQueue.push(tape.shift().key);
+          }
+        } else {
+          game.onProceed = undefined;
+          random = new SeededRandom(randomSeed);
+          joystick.start();
+          start();
+          game.restart();
+        }
+      };
+    };
+
+    /**
+     * Public
+     */
+    return {
+      tape,
+      lastFrame,
+      start,
+      stop,
+      play
+    };
+  })(joystick, game);
 
   joystick.start();
   recorder.start();
