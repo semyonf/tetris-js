@@ -1,7 +1,3 @@
-'use strict';
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 /**
  * MIT License
  *
@@ -26,6 +22,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * SOFTWARE.
  */
 
+'use strict';
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var Tetris = function () {
   'use strict';
 
@@ -36,12 +36,6 @@ var Tetris = function () {
       return this._seed = this._seed * 16807 % 2147483647;
     };
 
-    /**
-     * Random integer generator
-     * @param {number} max - not included
-     * @param {number} [min] - included
-     * @returns {number}
-     */
     this.nextInRange = function (max, min) {
       min = min === undefined ? 0 : min;
       --max;
@@ -82,16 +76,8 @@ var Tetris = function () {
       context.closePath();
       context.fill();
     };
-
-    return this;
   }
 
-  /**
-   * A function to darken or lighten rgb color strings
-   * @param {string} color
-   * @param {number} factor
-   * @returns {string}
-   */
   function modifyRgb(color, factor) {
     var regexp = /rgb\((\d+),(\d+),(\d+)\)/g,
         matches = regexp.exec(color);
@@ -161,7 +147,6 @@ var Tetris = function () {
 
       var oriented = [];
 
-      // Dot product of a type matrix and an orientation matrix
       for (var i = 0; i < 3; ++i) {
         oriented[i] = [];
         for (var j = 0; j < 2; ++j) {
@@ -280,8 +265,6 @@ var Tetris = function () {
           game.playerScore.add(rowsCleared);
         } else {
           rows[i].bricks.forEach(function (brick) {
-            // todo: investigate brick.y
-            // noinspection JSUndefinedPropertyAssignment
             brick.y += rowsCleared * brickSize;
           });
         }
@@ -365,7 +348,6 @@ var Tetris = function () {
       anyKey: false
     }, keyMap));
 
-    // todo: investigate linter warning
     Object.keys(keyStates).forEach(function (keyState) {
       return keyState = false;
     });
@@ -398,9 +380,6 @@ var Tetris = function () {
       }
     }
 
-    /**
-     * Public
-     */
     return {
       keys: keyStates,
       keyMap: keyMap,
@@ -461,9 +440,6 @@ var Tetris = function () {
       };
     };
 
-    /**
-     * Public
-     */
     return {
       tape: tape,
       lastFrame: lastFrame,
@@ -473,18 +449,16 @@ var Tetris = function () {
     };
   }
 
-  // noinspection JSUnusedGlobalSymbols
   function Game(config) {
     var _this4 = this;
 
     var context = config.context;
 
-    var keyMaps = [new Controls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'), new Controls('KeyA', 'KeyD', 'KeyW', 'KeyS'), // W-A-S-D
-    new Controls('KeyH', 'KeyL', 'KeyK', 'KeyJ') // VIM
+    var keyMaps = [new Controls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'), new Controls('KeyA', 'KeyD', 'KeyW', 'KeyS'), 
+    new Controls('KeyH', 'KeyL', 'KeyK', 'KeyJ') 
     ],
         keyMap = Object.assign.apply(Object, keyMaps);
 
-    // todo: custom controls would go somewhere here...
 
     var joystick = new Joystick(keyMap);
     var recorder = new Recorder(joystick, this);
@@ -522,7 +496,6 @@ var Tetris = function () {
 
     var board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
     var frameCount = 0;
-    // noinspection JSUnusedLocalSymbols
     this.onProceed = undefined;
     var difficulty = 1;
     this.turboMode = false;
@@ -657,4 +630,3 @@ var Tetris = function () {
 
   return Game;
 }();
-//# sourceMappingURL=tetris.js.map

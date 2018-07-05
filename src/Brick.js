@@ -20,8 +20,6 @@ export default function Brick(x, y, rgb, brickSize) {
     context.closePath();
     context.fill();
   };
-
-  return this;
 }
 
 /**
