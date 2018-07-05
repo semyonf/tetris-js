@@ -7,8 +7,7 @@ export default function Joystick(keyMap) {
     }, keyMap)
   );
 
-  // todo: investigate linter warning
-  Object.keys(keyStates).forEach(keyState => keyState = false);
+  Object.keys(keyStates).forEach(keyState => keyStates[keyState] = false);
 
   const callbacks = {}, keyQueue = [];
 
