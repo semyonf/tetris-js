@@ -1,8 +1,13 @@
-import {Brick, modifyRgb} from './../src/Brick.js';
+import Brick, {modifyRgb} from "../src/Brick";
 
-xdescribe('Brick', () => {
-  xit('kinda works', () => {
-    expect(new Brick(0,0,0x002, 15)).toEqual({});
+describe('Brick', () => {
+  it('is able to initialize', () => {
+    expect(new Brick(0, 0, 'rgb(250,250,250)', 15)).toEqual({
+      x: 0,
+      y: 0,
+      rgb: 'rgb(250,250,250)',
+      size: 15
+    });
   });
 });
 
