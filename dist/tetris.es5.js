@@ -24,7 +24,11 @@
 
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Tetris = function () {
   'use strict';
@@ -52,35 +56,46 @@ var Tetris = function () {
     }
   }
 
-  function Brick(x, y, rgb, brickSize) {
-    var _this = this;
+  var Brick = function () {
+    function Brick(x, y, rgb, size) {
+      _classCallCheck(this, Brick);
 
-    this.x = x;
-    this.y = y;
-    this.rgb = rgb;
-    this.draw = function (context) {
-      context.fillStyle = _this.rgb;
-      context.beginPath();
-      context.moveTo(_this.x, _this.y);
-      context.lineTo(_this.x + brickSize - 1, _this.y);
-      context.lineTo(_this.x, _this.y + brickSize - 1);
-      context.closePath();
-      context.fill();
+      this.x = x;
+      this.y = y;
+      this.rgb = rgb;
+      this.size = size;
+    }
 
-      context.fillStyle = modifyRgb(_this.rgb, 0.9);
-      context.beginPath();
-      context.moveTo(_this.x + brickSize - 1, _this.y);
-      context.lineTo(_this.x, _this.y + brickSize - 1);
-      context.lineTo(_this.x, _this.y + brickSize - 1);
-      context.lineTo(_this.x + brickSize - 1, _this.y + brickSize - 1);
-      context.closePath();
-      context.fill();
-    };
-  }
+    _createClass(Brick, [{
+      key: 'draw',
+      value: function draw(context) {
+        context.fillStyle = this.rgb;
+        context.beginPath();
+        context.moveTo(this.x, this.y);
+        context.lineTo(this.x + this.size - 1, this.y);
+        context.lineTo(this.x, this.y + this.size - 1);
+        context.closePath();
+        context.fill();
+
+        context.fillStyle = modifyRgb(this.rgb, 0.9);
+        context.beginPath();
+        context.moveTo(this.x + this.size - 1, this.y);
+        context.lineTo(this.x, this.y + this.size - 1);
+        context.lineTo(this.x, this.y + this.size - 1);
+        context.lineTo(this.x + this.size - 1, this.y + this.size - 1);
+        context.closePath();
+        context.fill();
+      }
+    }]);
+
+    return Brick;
+  }();
+
+
 
   function modifyRgb(color, factor) {
-    var regexp = /rgb\((\d+),(\d+),(\d+)\)/g,
-        matches = regexp.exec(color);
+    var regexp = /rgb\((\d+) ?, ?(\d+) ?, ?(\d+)\)/g;
+    var matches = regexp.exec(color);
 
     var colors = [matches[1], matches[2], matches[3]];
 
@@ -88,11 +103,11 @@ var Tetris = function () {
       colors[index] = Math.floor(color * factor);
     });
 
-    return 'rgb(' + colors[0] + ', ' + colors[1] + ', ' + colors[2] + ')';
+    return 'rgb(' + colors[0] + ',' + colors[1] + ',' + colors[2] + ')';
   }
 
   function Shape(boardWidth, brickSize, random) {
-    var _this2 = this;
+    var _this = this;
 
     this.startX = boardWidth / 2;
     this.startY = brickSize;
@@ -103,7 +118,7 @@ var Tetris = function () {
     this.bricks = [];
 
     this.draw = function (context) {
-      _this2.bricks.forEach(function (brick) {
+      _this.bricks.forEach(function (brick) {
         return brick.draw(context);
       });
     };
@@ -111,14 +126,14 @@ var Tetris = function () {
     this.performAction = function (movement) {
       switch (movement) {
         case Shape.prototype.actions.ROTATE:
-          if (Shape.prototype.parameters.types[_this2.type].name !== 'O') {
-            _this2.orientaion = _this2.orientaion === 3 ? 0 : ++_this2.orientaion;
-            _this2.applyOrientation();
+          if (Shape.prototype.parameters.types[_this.type].name !== 'O') {
+            _this.orientaion = _this.orientaion === 3 ? 0 : ++_this.orientaion;
+            _this.applyOrientation();
           }
           break;
 
         case Shape.prototype.actions.FALL:
-          _this2.bricks.forEach(function (brick) {
+          _this.bricks.forEach(function (brick) {
             brick.y += brickSize;
           });
           break;
@@ -127,9 +142,9 @@ var Tetris = function () {
         case Shape.prototype.actions.MOVE_LEFT:
           for (var i = 0; i < 4; ++i) {
             if (movement === Shape.prototype.actions.MOVE_LEFT) {
-              _this2.bricks[i].x -= brickSize;
+              _this.bricks[i].x -= brickSize;
             } else {
-              _this2.bricks[i].x += brickSize;
+              _this.bricks[i].x += brickSize;
             }
           }
           break;
@@ -138,12 +153,12 @@ var Tetris = function () {
           break;
       }
 
-      return _this2;
+      return _this;
     };
 
     this.applyOrientation = function () {
-      var type = Shape.prototype.parameters.types[_this2.type].matrix,
-          orientation = Shape.prototype.parameters.orientations[_this2.orientaion].matrix;
+      var type = Shape.prototype.parameters.types[_this.type].matrix,
+          orientation = Shape.prototype.parameters.orientations[_this.orientaion].matrix;
 
       var oriented = [];
 
@@ -157,14 +172,14 @@ var Tetris = function () {
         }
       }
 
-      var center = _this2.bricks[0];
+      var center = _this.bricks[0];
 
       for (var _i = 0; _i < 3; ++_i) {
-        _this2.bricks[_i + 1].x = center.x + oriented[_i][0] * brickSize;
-        _this2.bricks[_i + 1].y = center.y + oriented[_i][1] * brickSize;
+        _this.bricks[_i + 1].x = center.x + oriented[_i][0] * brickSize;
+        _this.bricks[_i + 1].y = center.y + oriented[_i][1] * brickSize;
       }
 
-      return _this2;
+      return _this;
     };
 
     for (var i = 0; i < 4; ++i) {
@@ -191,7 +206,7 @@ var Tetris = function () {
   });
 
   function Board(game, boardWidth, boardHeight, brickSize, random) {
-    var _this3 = this;
+    var _this2 = this;
 
     var colors = {
       normal: 'rgb(69,90,100)',
@@ -205,7 +220,7 @@ var Tetris = function () {
     this.staticBricks = [];
 
     this.drawStaticBricks = function (context) {
-      _this3.staticBricks.forEach(function (staticBrick) {
+      _this2.staticBricks.forEach(function (staticBrick) {
         return staticBrick.draw(context);
       });
     };
@@ -228,7 +243,7 @@ var Tetris = function () {
     };
 
     this.isFull = function () {
-      return _this3.staticBricks.some(function (brick) {
+      return _this2.staticBricks.some(function (brick) {
         return brick.y < brickSize * 2;
       });
     };
@@ -239,7 +254,7 @@ var Tetris = function () {
           bricksChecked = 0;
 
       var _loop = function _loop(i) {
-        bricks = _this3.staticBricks.filter(function (brick) {
+        bricks = _this2.staticBricks.filter(function (brick) {
           return brick.y === i;
         });
 
@@ -251,7 +266,7 @@ var Tetris = function () {
         bricksChecked += bricks.length;
       };
 
-      for (var i = boardHeight - brickSize; bricksChecked !== _this3.staticBricks.length; i -= brickSize) {
+      for (var i = boardHeight - brickSize; bricksChecked !== _this2.staticBricks.length; i -= brickSize) {
         _loop(i);
       }
 
@@ -272,7 +287,7 @@ var Tetris = function () {
         newBricks = newBricks.concat(rows[i].bricks);
       }
 
-      _this3.staticBricks = newBricks;
+      _this2.staticBricks = newBricks;
     };
 
     this.checkCollisions = function (callback) {
@@ -296,7 +311,7 @@ var Tetris = function () {
           } else {
             var collision = false;
 
-            _this3.staticBricks.forEach(function (staticBrick) {
+            _this2.staticBricks.forEach(function (staticBrick) {
               switch (side) {
                 case 'bottom':
                   {
@@ -323,7 +338,7 @@ var Tetris = function () {
         };
       };
 
-      _this3.activeShape.bricks.forEach(function (brick) {
+      _this2.activeShape.bricks.forEach(function (brick) {
         ['bottom', 'left', 'right'].forEach(function (side) {
           if (checkAgainst('board', side)(brick) || checkAgainst('static', side)(brick)) {
             collisions[side] = true;
@@ -450,7 +465,7 @@ var Tetris = function () {
   }
 
   function Game(config) {
-    var _this4 = this;
+    var _this3 = this;
 
     var context = config.context;
 
@@ -503,7 +518,7 @@ var Tetris = function () {
     var gravityIsActive = function gravityIsActive() {
       var gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-      return _this4.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+      return _this3.turboMode || frameCount % gameSpeeds[difficulty] === 0;
     };
 
     this.drawReplay = function () {
@@ -515,16 +530,16 @@ var Tetris = function () {
     };
 
     this.restart = function () {
-      _this4.random = new SeededRandom(_this4.randomSeed);
-      _this4.playerScore.set(0);
+      _this3.random = new SeededRandom(_this3.randomSeed);
+      _this3.playerScore.set(0);
       frameCount = 0;
       difficulty = 1;
-      _this4.turboMode = false;
-      board = new Board(_this4, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this4.random);
+      _this3.turboMode = false;
+      board = new Board(_this3, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this3.random);
     };
 
     this.setRandomSeed = function (newSeed) {
-      _this4.randomSeed = newSeed;
+      _this3.randomSeed = newSeed;
     };
 
     var processAction = function processAction(action) {
@@ -541,7 +556,7 @@ var Tetris = function () {
 
           default:
             if (action === Shape.prototype.actions.DROP) {
-              _this4.turboMode = true;
+              _this3.turboMode = true;
             }
 
             board.activeShape.performAction(action);
@@ -590,8 +605,8 @@ var Tetris = function () {
       ++frameCount;
       board.drawBackground(context);
 
-      if (_this4.onProceed !== undefined) {
-        _this4.onProceed();
+      if (_this3.onProceed !== undefined) {
+        _this3.onProceed();
       }
 
       readAction();
@@ -602,11 +617,11 @@ var Tetris = function () {
         }
 
         board.checkFilledRegions();
-        _this4.turboMode = false;
+        _this3.turboMode = false;
         board.activeShape = board.spawnShape();
 
         if (board.isFull()) {
-          _this4.restart();
+          _this3.restart();
         }
       } else {
         if (gravityIsActive()) {
@@ -621,7 +636,7 @@ var Tetris = function () {
     };
 
     var mainLoop = function mainLoop() {
-      _this4.proceed();
+      _this3.proceed();
       requestAnimationFrame(mainLoop);
     };
 
