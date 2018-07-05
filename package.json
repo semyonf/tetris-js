@@ -4,7 +4,8 @@
   "description": "Tetris with VIM controls, HiDPI support and screen recording written in vanilla ES6!",
   "main": "src/Game.js",
   "scripts": {
-    "test": "jest --no-cache ./test/*.spec.js"
+    "test": "jest --no-cache ./test/*.spec.js",
+    "postinstall": "gulp clean; rollup -c; gulp;"
   },
   "babel": {
     "presets": [
