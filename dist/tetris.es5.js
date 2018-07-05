@@ -364,7 +364,7 @@ var Tetris = function () {
     }, keyMap));
 
     Object.keys(keyStates).forEach(function (keyState) {
-      return keyState = false;
+      return keyStates[keyState] = false;
     });
 
     var callbacks = {},
