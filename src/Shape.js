@@ -38,15 +38,11 @@ export default function Shape() {
   } else {
     this._defaultConstructor.apply(this, arguments)
   }
-
-  this.draw = (context) => {
-    this.bricks.forEach((brick) => brick.draw(context));
-  };
-
-  this.executeCommand = (shapeCommand) => {
-    return shapeCommand.execute.call(this)
-  };
 }
+
+Shape.prototype.draw = function (context) {
+  this.bricks.forEach((brick) => brick.draw(context));
+};
 
 Shape.prototype.applyOrientation = function () {
   const
