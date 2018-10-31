@@ -1,4 +1,4 @@
-import Brick from './Brick.js';
+import Brick from '../Brick.js';
 
 Shape.prototype._copyingConstructor = function (sourceShape) {
   this.color = sourceShape.color

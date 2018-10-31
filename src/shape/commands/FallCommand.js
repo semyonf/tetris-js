@@ -3,7 +3,7 @@ export default class FallCommand {
     // console.log('FallCommand executed')
 
     this.bricks.forEach(function (brick) {
-      brick.y += brickSize;
+      brick.y += board.brickSize;
     });
   }
 }

@@ -193,152 +193,158 @@ var Tetris = function () {
     DROP: 'drop'
   });
 
-  function Board(game, boardWidth, boardHeight, brickSize, random) {
+  Board.prototype.drawBackground = function (context) {
+    context.fillStyle = this.game.turboMode ? this.colors.turbo : this.colors.normal;
+    context.fillRect(0, 0, this.width, this.height);
+  };
+
+  Board.prototype.drawStaticBricks = function (context) {
+    this.staticBricks.forEach(function (staticBrick) {
+      return staticBrick.draw(context);
+    });
+  };
+
+  Board.prototype.drawReplay = function (context) {
+    context.fillStyle = 'white';
+    context.font = '12px Courier';
+    context.fillText('REPLAY...', 0, 20);
+  };
+
+  Board.prototype.drawScore = function (context) {
+    context.fillStyle = 'white';
+    context.font = '12px Courier';
+    context.fillText('Score: ' + this.game.playerScore.get(), 0, 10);
+  };
+
+  Board.prototype.spawnShape = function () {
+    return new Shape(this.width, this.brickSize, this.random);
+  };
+
+  Board.prototype.isFull = function () {
     var _this = this;
 
-    this.width = boardWidth;
-    this.height = boardHeight;
-    this.game = game;
+    return this.staticBricks.some(function (brick) {
+      return brick.y < _this.brickSize * 2;
+    });
+  };
 
-    var colors = {
-      normal: 'rgb(69,90,100)',
-      turbo: 'rgba(69,90,100,0.12)'
-    };
+  Board.prototype.checkFilledRegions = function () {
+    var _this2 = this;
 
-    this.spawnShape = function () {
-      return new Shape(boardWidth, brickSize, random);
-    };
-    this.activeShape = this.spawnShape();
-    this.staticBricks = [];
+    var rows = [],
+        bricks = void 0,
+        bricksChecked = 0;
 
-    this.drawStaticBricks = function (context) {
-      _this.staticBricks.forEach(function (staticBrick) {
-        return staticBrick.draw(context);
+    var _loop = function _loop(i) {
+      bricks = _this2.staticBricks.filter(function (brick) {
+        return brick.y === i;
       });
-    };
 
-    this.drawBackground = function (context) {
-      context.fillStyle = game.turboMode ? colors.turbo : colors.normal;
-      context.fillRect(0, 0, boardWidth, boardHeight);
-    };
-
-    this.drawReplay = function (context) {
-      context.fillStyle = 'white';
-      context.font = '12px Courier';
-      context.fillText('REPLAY...', 0, 20);
-    };
-
-    this.drawScore = function (context) {
-      context.fillStyle = 'white';
-      context.font = '12px Courier';
-      context.fillText('Score: ' + game.playerScore.get(), 0, 10);
-    };
-
-    this.isFull = function () {
-      return _this.staticBricks.some(function (brick) {
-        return brick.y < brickSize * 2;
+      rows.push({
+        bricks: bricks,
+        isFull: bricks.length === _this2.width / _this2.brickSize
       });
+
+      bricksChecked += bricks.length;
     };
 
-    this.checkFilledRegions = function () {
-      var rows = [],
-          bricks = void 0,
-          bricksChecked = 0;
+    for (var i = this.height - this.brickSize; bricksChecked !== this.staticBricks.length; i -= this.brickSize) {
+      _loop(i);
+    }
 
-      var _loop = function _loop(i) {
-        bricks = _this.staticBricks.filter(function (brick) {
-          return brick.y === i;
+    var newBricks = [],
+        rowsCleared = 0;
+
+    for (var i = 0; i < rows.length; ++i) {
+      if (rows[i].isFull) {
+        rows[i].bricks = [];
+        ++rowsCleared;
+        this.game.playerScore.add(rowsCleared);
+      } else {
+        rows[i].bricks.forEach(function (brick) {
+          brick.y += rowsCleared * _this2.brickSize;
         });
-
-        rows.push({
-          bricks: bricks,
-          isFull: bricks.length === boardWidth / brickSize
-        });
-
-        bricksChecked += bricks.length;
-      };
-
-      for (var i = boardHeight - brickSize; bricksChecked !== _this.staticBricks.length; i -= brickSize) {
-        _loop(i);
       }
 
-      var newBricks = [],
-          rowsCleared = 0;
+      newBricks = newBricks.concat(rows[i].bricks);
+    }
 
-      for (var i = 0; i < rows.length; ++i) {
-        if (rows[i].isFull) {
-          rows[i].bricks = [];
-          ++rowsCleared;
-          game.playerScore.add(rowsCleared);
+    this.staticBricks = newBricks;
+  };
+
+  Board.prototype.checkCollisions = function (callback) {
+    var _this3 = this;
+
+    var collisions = Object.seal({
+      left: false,
+      right: false,
+      bottom: false
+    });
+
+    var checkAgainst = function checkAgainst(obstacle, side) {
+      return function (brick) {
+        if (obstacle === 'board') {
+          switch (side) {
+            case 'bottom':
+              return brick.y === _this3.height - _this3.brickSize;
+            case 'left':
+              return brick.x === 0;
+            case 'right':
+              return brick.x === _this3.width - _this3.brickSize;
+          }
         } else {
-          rows[i].bricks.forEach(function (brick) {
-            brick.y += rowsCleared * brickSize;
-          });
-        }
+          var collision = false;
 
-        newBricks = newBricks.concat(rows[i].bricks);
-      }
-
-      _this.staticBricks = newBricks;
-    };
-
-    this.checkCollisions = function (callback) {
-      var collisions = Object.seal({
-        left: false,
-        right: false,
-        bottom: false
-      });
-
-      var checkAgainst = function checkAgainst(obstacle, side) {
-        return function (brick) {
-          if (obstacle === 'board') {
+          _this3.staticBricks.forEach(function (staticBrick) {
             switch (side) {
               case 'bottom':
-                return brick.y === boardHeight - brickSize;
+                {
+                  collision = collision || brick.y === staticBrick.y - _this3.brickSize && brick.x === staticBrick.x;
+                  break;
+                }
+
               case 'left':
-                return brick.x === 0;
+                {
+                  collision = collision || brick.y === staticBrick.y && brick.x - _this3.brickSize === staticBrick.x;
+                  break;
+                }
+
               case 'right':
-                return brick.x === boardWidth - brickSize;
+                {
+                  collision = collision || brick.y === staticBrick.y && brick.x + _this3.brickSize === staticBrick.x;
+                  break;
+                }
             }
-          } else {
-            var collision = false;
+          });
 
-            _this.staticBricks.forEach(function (staticBrick) {
-              switch (side) {
-                case 'bottom':
-                  {
-                    collision = collision || brick.y === staticBrick.y - brickSize && brick.x === staticBrick.x;
-                    break;
-                  }
-
-                case 'left':
-                  {
-                    collision = collision || brick.y === staticBrick.y && brick.x - brickSize === staticBrick.x;
-                    break;
-                  }
-
-                case 'right':
-                  {
-                    collision = collision || brick.y === staticBrick.y && brick.x + brickSize === staticBrick.x;
-                    break;
-                  }
-              }
-            });
-
-            return collision;
-          }
-        };
+          return collision;
+        }
       };
+    };
 
-      _this.activeShape.bricks.forEach(function (brick) {
-        ['bottom', 'left', 'right'].forEach(function (side) {
-          if (checkAgainst('board', side)(brick) || checkAgainst('static', side)(brick)) {
-            collisions[side] = true;
-          }
-        });
+    this.activeShape.bricks.forEach(function (brick) {
+      ['bottom', 'left', 'right'].forEach(function (side) {
+        if (checkAgainst('board', side)(brick) || checkAgainst('static', side)(brick)) {
+          collisions[side] = true;
+        }
       });
+    });
 
-      callback(collisions);
+    callback(collisions);
+  };
+
+  function Board(game, boardWidth, boardHeight, brickSize, random) {
+    this.staticBricks = [];
+    this.width = boardWidth;
+    this.height = boardHeight;
+    this.brickSize = brickSize;
+    this.random = random;
+    this.activeShape = this.spawnShape();
+    this.game = game;
+
+    this.colors = {
+      normal: 'rgb(69,90,100)',
+      turbo: 'rgba(69,90,100,0.12)'
     };
   }
 
@@ -385,13 +391,13 @@ var Tetris = function () {
     _createClass(MoveLeftCommand, [{
       key: 'execute',
       value: function execute(board) {
-        var _this2 = this;
+        var _this4 = this;
 
 
         board.checkCollisions(function (collisions) {
           if (!collisions.left) {
             for (var i = 0; i < 4; ++i) {
-              _this2.bricks[i].x -= brickSize;
+              _this4.bricks[i].x -= brickSize;
             }
           }
         });
@@ -409,13 +415,13 @@ var Tetris = function () {
     _createClass(MoveRightCommand, [{
       key: 'execute',
       value: function execute(board) {
-        var _this3 = this;
+        var _this5 = this;
 
 
         board.checkCollisions(function (collisions) {
           if (!collisions.right) {
             for (var i = 0; i < 4; ++i) {
-              _this3.bricks[i].x += brickSize;
+              _this5.bricks[i].x += brickSize;
             }
           }
         });
@@ -564,7 +570,7 @@ var Tetris = function () {
       value: function execute(board) {
 
         this.bricks.forEach(function (brick) {
-          brick.y += brickSize;
+          brick.y += board.brickSize;
         });
       }
     }]);
@@ -573,7 +579,7 @@ var Tetris = function () {
   }();
 
   function Game(config) {
-    var _this4 = this;
+    var _this6 = this;
 
     var context = config.context;
 
@@ -626,7 +632,7 @@ var Tetris = function () {
     var gravityIsActive = function gravityIsActive() {
       var gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-      return _this4.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+      return _this6.turboMode || frameCount % gameSpeeds[difficulty] === 0;
     };
 
     this.drawReplay = function () {
@@ -638,16 +644,16 @@ var Tetris = function () {
     };
 
     this.restart = function () {
-      _this4.random = new SeededRandom(_this4.randomSeed);
-      _this4.playerScore.set(0);
+      _this6.random = new SeededRandom(_this6.randomSeed);
+      _this6.playerScore.set(0);
       frameCount = 0;
       difficulty = 1;
-      _this4.turboMode = false;
-      board = new Board(_this4, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this4.random);
+      _this6.turboMode = false;
+      board = new Board(_this6, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this6.random);
     };
 
     this.setRandomSeed = function (newSeed) {
-      _this4.randomSeed = newSeed;
+      _this6.randomSeed = newSeed;
     };
 
     var readCommand = function readCommand() {
@@ -663,8 +669,8 @@ var Tetris = function () {
       ++frameCount;
       board.drawBackground(context);
 
-      if (_this4.onProceed !== undefined) {
-        _this4.onProceed();
+      if (_this6.onProceed !== undefined) {
+        _this6.onProceed();
       }
 
       readCommand();
@@ -679,11 +685,11 @@ var Tetris = function () {
         }
 
         board.checkFilledRegions();
-        _this4.turboMode = false;
+        _this6.turboMode = false;
         board.activeShape = board.spawnShape();
 
         if (board.isFull()) {
-          _this4.restart();
+          _this6.restart();
         }
       } else {
         if (gravityIsActive()) {
@@ -698,7 +704,7 @@ var Tetris = function () {
     };
 
     var mainLoop = function mainLoop() {
-      _this4.proceed();
+      _this6.proceed();
       requestAnimationFrame(mainLoop);
     };
 

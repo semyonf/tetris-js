@@ -1,4 +1,4 @@
-import Shape from "./Shape";
+import Shape from "./shape/Shape";
 
 Board.prototype.drawBackground = function (context) {
   context.fillStyle = this.game.turboMode ? this.colors.turbo : this.colors.normal;
@@ -26,22 +26,22 @@ Board.prototype.spawnShape = function () {
 }
 
 Board.prototype.isFull = function () {
-  return this.staticBricks.some((brick) => brick.y < brickSize * 2);
+  return this.staticBricks.some((brick) => brick.y < this.brickSize * 2);
 }
 
 Board.prototype.checkFilledRegions = function () {
   let rows = [], bricks, bricksChecked = 0;
 
   for (
-    let i = boardHeight - brickSize;
+    let i = this.height - this.brickSize;
     bricksChecked !== this.staticBricks.length;
-    i -= brickSize
+    i -= this.brickSize
   ) {
     bricks = this.staticBricks.filter((brick) => brick.y === i);
 
     rows.push({
       bricks: bricks,
-      isFull: bricks.length === boardWidth / brickSize
+      isFull: bricks.length === this.width / this.brickSize
     });
 
     bricksChecked += bricks.length;
@@ -58,7 +58,7 @@ Board.prototype.checkFilledRegions = function () {
       rows[i].bricks.forEach((brick) => {
         // todo: investigate brick.y
         // noinspection JSUndefinedPropertyAssignment
-        brick.y += rowsCleared * brickSize;
+        brick.y += rowsCleared * this.brickSize;
       });
     }
 
@@ -80,11 +80,11 @@ Board.prototype.checkCollisions = function (callback) {
       if (obstacle === 'board') {
         switch (side) {
         case 'bottom':
-          return brick.y === boardHeight - brickSize;
+          return brick.y === this.height - this.brickSize;
         case 'left':
           return brick.x === 0;
         case 'right':
-          return brick.x === boardWidth - brickSize;
+          return brick.x === this.width - this.brickSize;
         }
       } else {
         let collision = false;
@@ -93,7 +93,7 @@ Board.prototype.checkCollisions = function (callback) {
           switch (side) {
           case 'bottom': {
             collision = collision ||
-              brick.y === staticBrick.y - brickSize &&
+              brick.y === staticBrick.y - this.brickSize &&
               brick.x === staticBrick.x;
             break;
           }
@@ -101,14 +101,14 @@ Board.prototype.checkCollisions = function (callback) {
           case 'left': {
             collision = collision ||
               brick.y === staticBrick.y &&
-              brick.x - brickSize === staticBrick.x;
+              brick.x - this.brickSize === staticBrick.x;
             break;
           }
 
           case 'right': {
             collision = collision ||
               brick.y === staticBrick.y &&
-              brick.x + brickSize === staticBrick.x;
+              brick.x + this.brickSize === staticBrick.x;
             break;
           }
           }
