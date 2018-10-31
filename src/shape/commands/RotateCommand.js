@@ -2,7 +2,7 @@ import Shape from "../../Shape";
 
 export default class RotateCommand {
   execute(board) {
-    console.log('RotateCommand executed')
+    // console.log('RotateCommand executed')
 
     const temp = new Shape(board.activeShape)
 

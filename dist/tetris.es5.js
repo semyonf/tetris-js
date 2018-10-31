@@ -135,8 +135,6 @@ var Tetris = function () {
   };
 
   function Shape() {
-    var _this = this;
-
     this.bricks = [];
     this.isFrozen = false;
 
@@ -145,17 +143,13 @@ var Tetris = function () {
     } else {
       this._defaultConstructor.apply(this, arguments);
     }
-
-    this.draw = function (context) {
-      _this.bricks.forEach(function (brick) {
-        return brick.draw(context);
-      });
-    };
-
-    this.executeCommand = function (shapeCommand) {
-      return shapeCommand.execute.call(_this);
-    };
   }
+
+  Shape.prototype.draw = function (context) {
+    this.bricks.forEach(function (brick) {
+      return brick.draw(context);
+    });
+  };
 
   Shape.prototype.applyOrientation = function () {
     var type = Shape.prototype.parameters.types[this.type].matrix,
@@ -198,7 +192,7 @@ var Tetris = function () {
   });
 
   function Board(game, boardWidth, boardHeight, brickSize, random) {
-    var _this2 = this;
+    var _this = this;
 
     this.width = boardWidth;
     this.height = boardHeight;
@@ -216,7 +210,7 @@ var Tetris = function () {
     this.staticBricks = [];
 
     this.drawStaticBricks = function (context) {
-      _this2.staticBricks.forEach(function (staticBrick) {
+      _this.staticBricks.forEach(function (staticBrick) {
         return staticBrick.draw(context);
       });
     };
@@ -239,7 +233,7 @@ var Tetris = function () {
     };
 
     this.isFull = function () {
-      return _this2.staticBricks.some(function (brick) {
+      return _this.staticBricks.some(function (brick) {
         return brick.y < brickSize * 2;
       });
     };
@@ -250,7 +244,7 @@ var Tetris = function () {
           bricksChecked = 0;
 
       var _loop = function _loop(i) {
-        bricks = _this2.staticBricks.filter(function (brick) {
+        bricks = _this.staticBricks.filter(function (brick) {
           return brick.y === i;
         });
 
@@ -262,7 +256,7 @@ var Tetris = function () {
         bricksChecked += bricks.length;
       };
 
-      for (var i = boardHeight - brickSize; bricksChecked !== _this2.staticBricks.length; i -= brickSize) {
+      for (var i = boardHeight - brickSize; bricksChecked !== _this.staticBricks.length; i -= brickSize) {
         _loop(i);
       }
 
@@ -283,7 +277,7 @@ var Tetris = function () {
         newBricks = newBricks.concat(rows[i].bricks);
       }
 
-      _this2.staticBricks = newBricks;
+      _this.staticBricks = newBricks;
     };
 
     this.checkCollisions = function (callback) {
@@ -307,7 +301,7 @@ var Tetris = function () {
           } else {
             var collision = false;
 
-            _this2.staticBricks.forEach(function (staticBrick) {
+            _this.staticBricks.forEach(function (staticBrick) {
               switch (side) {
                 case 'bottom':
                   {
@@ -334,7 +328,7 @@ var Tetris = function () {
         };
       };
 
-      _this2.activeShape.bricks.forEach(function (brick) {
+      _this.activeShape.bricks.forEach(function (brick) {
         ['bottom', 'left', 'right'].forEach(function (side) {
           if (checkAgainst('board', side)(brick) || checkAgainst('static', side)(brick)) {
             collisions[side] = true;
@@ -354,7 +348,6 @@ var Tetris = function () {
     _createClass(RotateCommand, [{
       key: 'execute',
       value: function execute(board) {
-        console.log('RotateCommand executed');
 
         var temp = new Shape(board.activeShape);
 
@@ -390,14 +383,13 @@ var Tetris = function () {
     _createClass(MoveLeftCommand, [{
       key: 'execute',
       value: function execute(board) {
-        var _this3 = this;
+        var _this2 = this;
 
-        console.log('MoveLeftCommand executed');
 
         board.checkCollisions(function (collisions) {
           if (!collisions.left) {
             for (var i = 0; i < 4; ++i) {
-              _this3.bricks[i].x -= brickSize;
+              _this2.bricks[i].x -= brickSize;
             }
           }
         });
@@ -415,14 +407,13 @@ var Tetris = function () {
     _createClass(MoveRightCommand, [{
       key: 'execute',
       value: function execute(board) {
-        var _this4 = this;
+        var _this3 = this;
 
-        console.log('MoveRightCommand executed');
 
         board.checkCollisions(function (collisions) {
           if (!collisions.right) {
             for (var i = 0; i < 4; ++i) {
-              _this4.bricks[i].x += brickSize;
+              _this3.bricks[i].x += brickSize;
             }
           }
         });
@@ -440,7 +431,6 @@ var Tetris = function () {
     _createClass(DropCommand, [{
       key: 'execute',
       value: function execute(board) {
-        console.log('DropCommand executed');
         board.game.turboMode = true;
       }
     }]);
@@ -570,7 +560,6 @@ var Tetris = function () {
     _createClass(FallCommand, [{
       key: 'execute',
       value: function execute(board) {
-        console.log('FallCommand executed');
 
         this.bricks.forEach(function (brick) {
           brick.y += brickSize;
@@ -582,7 +571,7 @@ var Tetris = function () {
   }();
 
   function Game(config) {
-    var _this5 = this;
+    var _this4 = this;
 
     var context = config.context;
 
@@ -635,7 +624,7 @@ var Tetris = function () {
     var gravityIsActive = function gravityIsActive() {
       var gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-      return _this5.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+      return _this4.turboMode || frameCount % gameSpeeds[difficulty] === 0;
     };
 
     this.drawReplay = function () {
@@ -647,16 +636,16 @@ var Tetris = function () {
     };
 
     this.restart = function () {
-      _this5.random = new SeededRandom(_this5.randomSeed);
-      _this5.playerScore.set(0);
+      _this4.random = new SeededRandom(_this4.randomSeed);
+      _this4.playerScore.set(0);
       frameCount = 0;
       difficulty = 1;
-      _this5.turboMode = false;
-      board = new Board(_this5, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this5.random);
+      _this4.turboMode = false;
+      board = new Board(_this4, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this4.random);
     };
 
     this.setRandomSeed = function (newSeed) {
-      _this5.randomSeed = newSeed;
+      _this4.randomSeed = newSeed;
     };
 
     var readCommand = function readCommand() {
@@ -672,8 +661,8 @@ var Tetris = function () {
       ++frameCount;
       board.drawBackground(context);
 
-      if (_this5.onProceed !== undefined) {
-        _this5.onProceed();
+      if (_this4.onProceed !== undefined) {
+        _this4.onProceed();
       }
 
       readCommand();
@@ -688,11 +677,11 @@ var Tetris = function () {
         }
 
         board.checkFilledRegions();
-        _this5.turboMode = false;
+        _this4.turboMode = false;
         board.activeShape = board.spawnShape();
 
         if (board.isFull()) {
-          _this5.restart();
+          _this4.restart();
         }
       } else {
         if (gravityIsActive()) {
@@ -707,7 +696,7 @@ var Tetris = function () {
     };
 
     var mainLoop = function mainLoop() {
-      _this5.proceed();
+      _this4.proceed();
       requestAnimationFrame(mainLoop);
     };
 

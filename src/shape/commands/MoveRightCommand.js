@@ -1,6 +1,6 @@
 export default class MoveRightCommand {
   execute(board) {
-    console.log('MoveRightCommand executed')
+    // console.log('MoveRightCommand executed')
 
     board.checkCollisions(collisions => {
       if (!collisions.right) {
