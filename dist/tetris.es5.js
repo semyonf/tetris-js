@@ -397,7 +397,7 @@ var Tetris = function () {
         board.checkCollisions(function (collisions) {
           if (!collisions.left) {
             for (var i = 0; i < 4; ++i) {
-              _this4.bricks[i].x -= brickSize;
+              _this4.bricks[i].x -= board.brickSize;
             }
           }
         });
@@ -421,7 +421,7 @@ var Tetris = function () {
         board.checkCollisions(function (collisions) {
           if (!collisions.right) {
             for (var i = 0; i < 4; ++i) {
-              _this5.bricks[i].x += brickSize;
+              _this5.bricks[i].x += board.brickSize;
             }
           }
         });
