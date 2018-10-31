@@ -5,7 +5,7 @@ export default class MoveRightCommand {
     board.checkCollisions(collisions => {
       if (!collisions.right) {
         for (let i = 0; i < 4; ++i) {
-          this.bricks[i].x += brickSize;
+          this.bricks[i].x += board.brickSize;
         }
       }
     })
