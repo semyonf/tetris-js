@@ -58,7 +58,7 @@ export default function Game(config) {
     config.board.brickSize,
     this.random
   );
-  let frameCount = 0;
+  this.frameCount = 0;
   this.onProceed = undefined;
   let difficulty = 1;
   this.turboMode = false;
@@ -66,19 +66,17 @@ export default function Game(config) {
   const gravityIsActive = () => {
     const gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-    return this.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+    return this.turboMode || this.frameCount % gameSpeeds[difficulty] === 0;
   };
 
   this.drawReplay = () => {
     board.drawReplay(context);
   };
 
-  this.getFrameCount = () => frameCount;
-
   this.restart = () => {
     this.random = new SeededRandom(this.randomSeed);
     this.playerScore.set(0);
-    frameCount = 0;
+    this.frameCount = 0;
     difficulty = 1;
     this.turboMode = false;
     board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
@@ -97,8 +95,10 @@ export default function Game(config) {
     }
   };
 
+  this.fallCommand = new FallCommand();
+
   this.proceed = () => {
-    ++frameCount;
+    this.frameCount++;
     board.drawBackground(context);
 
     if (this.onProceed !== undefined) {
@@ -125,7 +125,7 @@ export default function Game(config) {
       }
     } else {
       if (gravityIsActive()) {
-        (new FallCommand()).execute.call(board.activeShape, board)
+        this.fallCommand.execute.call(board.activeShape, board)
       }
 
       board.activeShape.draw(context);

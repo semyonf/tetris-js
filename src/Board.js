@@ -56,8 +56,6 @@ Board.prototype.checkFilledRegions = function () {
       this.game.playerScore.add(rowsCleared);
     } else {
       rows[i].bricks.forEach((brick) => {
-        // todo: investigate brick.y
-        // noinspection JSUndefinedPropertyAssignment
         brick.y += rowsCleared * this.brickSize;
       });
     }

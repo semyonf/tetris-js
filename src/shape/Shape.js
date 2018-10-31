@@ -43,7 +43,9 @@ export default function Shape() {
 }
 
 Shape.prototype.draw = function (context) {
-  this.bricks.forEach((brick) => brick.draw(context));
+  for (const brick of this.bricks) {
+    brick.draw(context)
+  }
 };
 
 Shape.prototype.applyOrientation = function () {
