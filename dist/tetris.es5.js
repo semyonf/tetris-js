@@ -113,6 +113,8 @@ var Tetris = function () {
   Shape.prototype._copyingConstructor = function (sourceShape) {
     this.color = sourceShape.color;
     this.type = sourceShape.type;
+    this.startX = sourceShape.startX;
+    this.startY = sourceShape.startY;
     this.orientaion = sourceShape.orientaion;
 
     for (var i = 0; i < 4; ++i) {
@@ -170,8 +172,8 @@ var Tetris = function () {
     var center = this.bricks[0];
 
     for (var _i = 0; _i < 3; ++_i) {
-      this.bricks[_i + 1].x = center.x + oriented[_i][0] * brickSize;
-      this.bricks[_i + 1].y = center.y + oriented[_i][1] * brickSize;
+      this.bricks[_i + 1].x = center.x + oriented[_i][0] * this.startY;
+      this.bricks[_i + 1].y = center.y + oriented[_i][1] * this.startY;
     }
 
     return this;

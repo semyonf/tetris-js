@@ -3,6 +3,8 @@ import Brick from './Brick.js';
 Shape.prototype._copyingConstructor = function (sourceShape) {
   this.color = sourceShape.color
   this.type = sourceShape.type
+  this.startX = sourceShape.startX
+  this.startY = sourceShape.startY
   this.orientaion = sourceShape.orientaion
 
   for (let i = 0; i < 4; ++i) {
@@ -65,8 +67,8 @@ Shape.prototype.applyOrientation = function () {
   const center = this.bricks[0];
 
   for (let i = 0; i < 3; ++i) {
-    this.bricks[i + 1].x = center.x + oriented[i][0] * brickSize;
-    this.bricks[i + 1].y = center.y + oriented[i][1] * brickSize;
+    this.bricks[i + 1].x = center.x + oriented[i][0] * this.startY;
+    this.bricks[i + 1].y = center.y + oriented[i][1] * this.startY;
   }
 
   return this;
