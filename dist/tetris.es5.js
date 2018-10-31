@@ -148,9 +148,30 @@ var Tetris = function () {
   }
 
   Shape.prototype.draw = function (context) {
-    this.bricks.forEach(function (brick) {
-      return brick.draw(context);
-    });
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.bricks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var brick = _step.value;
+
+        brick.draw(context);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
   };
 
   Shape.prototype.applyOrientation = function () {
@@ -515,12 +536,12 @@ var Tetris = function () {
 
     var start = function start() {
       joystick.setCallback('anyKey', function (key) {
-        tape.push({ key: key, frame: game.getFrameCount() });
+        tape.push({ key: key, frame: game.frameCount });
       });
 
       joystick.setCallback('Escape', function () {
         joystick.stop();
-        lastFrame = game.getFrameCount();
+        lastFrame = game.frameCount;
         stop();
         tape.pop();
         play();
@@ -536,10 +557,10 @@ var Tetris = function () {
 
     var play = function play() {
       game.onProceed = function () {
-        if (game.getFrameCount() !== lastFrame) {
+        if (game.frameCount !== lastFrame) {
           game.drawReplay();
 
-          if (tape.length && game.getFrameCount() === tape[0].frame) {
+          if (tape.length && game.frameCount === tape[0].frame) {
             joystick.keyQueue.push(tape.shift().key);
           }
         } else {
@@ -624,7 +645,7 @@ var Tetris = function () {
     }();
 
     var board = new Board(this, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, this.random);
-    var frameCount = 0;
+    this.frameCount = 0;
     this.onProceed = undefined;
     var difficulty = 1;
     this.turboMode = false;
@@ -632,21 +653,17 @@ var Tetris = function () {
     var gravityIsActive = function gravityIsActive() {
       var gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-      return _this6.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+      return _this6.turboMode || _this6.frameCount % gameSpeeds[difficulty] === 0;
     };
 
     this.drawReplay = function () {
       board.drawReplay(context);
     };
 
-    this.getFrameCount = function () {
-      return frameCount;
-    };
-
     this.restart = function () {
       _this6.random = new SeededRandom(_this6.randomSeed);
       _this6.playerScore.set(0);
-      frameCount = 0;
+      _this6.frameCount = 0;
       difficulty = 1;
       _this6.turboMode = false;
       board = new Board(_this6, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this6.random);
@@ -665,8 +682,10 @@ var Tetris = function () {
       }
     };
 
+    this.fallCommand = new FallCommand();
+
     this.proceed = function () {
-      ++frameCount;
+      _this6.frameCount++;
       board.drawBackground(context);
 
       if (_this6.onProceed !== undefined) {
@@ -693,7 +712,7 @@ var Tetris = function () {
         }
       } else {
         if (gravityIsActive()) {
-          new FallCommand().execute.call(board.activeShape, board);
+          _this6.fallCommand.execute.call(board.activeShape, board);
         }
 
         board.activeShape.draw(context);
