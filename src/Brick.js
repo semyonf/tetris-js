@@ -1,36 +1,49 @@
-export default class Brick {
-  /**
-   * Smallest building block of any Shape
-   * @param {number} x
-   * @param {number} y
-   * @param {string} rgb
-   * @param {number} size
-   */
-  constructor(x, y, rgb, size) {
-    this.x = x;
-    this.y = y;
-    this.rgb = rgb;
-    this.size = size;
+export default function Brick() {
+  if (arguments.length === 1 && arguments[0] instanceof Brick) {
+    this._copyingConstructor(...arguments)
+  } else {
+    this._defaultConstructor(...arguments)
   }
+}
 
-  draw(context) {
-    context.fillStyle = this.rgb;
-    context.beginPath();
-    context.moveTo(this.x, this.y);
-    context.lineTo(this.x + this.size - 1, this.y);
-    context.lineTo(this.x, this.y + this.size - 1);
-    context.closePath();
-    context.fill();
+/**
+ * Smallest building block of any Shape
+ * @param {number} x
+ * @param {number} y
+ * @param {string} rgb
+ * @param {number} size
+ */
+Brick.prototype._defaultConstructor = function (x, y, rgb, size) {
+  this.x = x;
+  this.y = y;
+  this.rgb = rgb;
+  this.size = size;
+}
 
-    context.fillStyle = modifyRgb(this.rgb, 0.9);
-    context.beginPath();
-    context.moveTo(this.x + this.size - 1, this.y);
-    context.lineTo(this.x, this.y + this.size - 1);
-    context.lineTo(this.x, this.y + this.size - 1);
-    context.lineTo(this.x + this.size - 1, this.y + this.size - 1);
-    context.closePath();
-    context.fill();
-  }
+Brick.prototype._copyingConstructor = function (sourceBrick) {
+  this.x = sourceBrick.x;
+  this.y = sourceBrick.y;
+  this.rgb = sourceBrick.rgb;
+  this.size = sourceBrick.size;
+}
+
+Brick.prototype.draw = function (context) {
+  context.fillStyle = this.rgb;
+  context.beginPath();
+  context.moveTo(this.x, this.y);
+  context.lineTo(this.x + this.size - 1, this.y);
+  context.lineTo(this.x, this.y + this.size - 1);
+  context.closePath();
+  context.fill();
+
+  context.fillStyle = modifyRgb(this.rgb, 0.9);
+  context.beginPath();
+  context.moveTo(this.x + this.size - 1, this.y);
+  context.lineTo(this.x, this.y + this.size - 1);
+  context.lineTo(this.x, this.y + this.size - 1);
+  context.lineTo(this.x + this.size - 1, this.y + this.size - 1);
+  context.closePath();
+  context.fill();
 }
 
 /**
@@ -43,12 +56,11 @@ export function modifyRgb(color, factor) {
   const regexp = /rgb\((\d+) ?, ?(\d+) ?, ?(\d+)\)/g;
   const matches = regexp.exec(color);
 
-  let
-    colors = [
-      matches[1],
-      matches[2],
-      matches[3]
-    ];
+  let colors = [
+    matches[1],
+    matches[2],
+    matches[3]
+  ];
 
   colors.forEach(function (color, index, colors) {
     colors[index] = Math.floor(color * factor);

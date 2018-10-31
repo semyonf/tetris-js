@@ -1,6 +1,10 @@
 import Shape from "./Shape";
 
 export default function Board(game, boardWidth, boardHeight, brickSize, random) {
+  this.width = boardWidth
+  this.height = boardHeight
+  this.game = game
+
   const colors = {
     normal: 'rgb(69,90,100)',
     turbo: 'rgba(69,90,100,0.12)'
@@ -83,38 +87,38 @@ export default function Board(game, boardWidth, boardHeight, brickSize, random) 
       return (brick) => {
         if (obstacle === 'board') {
           switch (side) {
-            case 'bottom':
-              return brick.y === boardHeight - brickSize;
-            case 'left':
-              return brick.x === 0;
-            case 'right':
-              return brick.x === boardWidth - brickSize;
+          case 'bottom':
+            return brick.y === boardHeight - brickSize;
+          case 'left':
+            return brick.x === 0;
+          case 'right':
+            return brick.x === boardWidth - brickSize;
           }
         } else {
           let collision = false;
 
           this.staticBricks.forEach((staticBrick) => {
             switch (side) {
-              case 'bottom': {
-                collision = collision ||
-                  brick.y === staticBrick.y - brickSize &&
-                  brick.x === staticBrick.x;
-                break;
-              }
+            case 'bottom': {
+              collision = collision ||
+                brick.y === staticBrick.y - brickSize &&
+                brick.x === staticBrick.x;
+              break;
+            }
 
-              case 'left': {
-                collision = collision ||
-                  brick.y === staticBrick.y &&
-                  brick.x - brickSize === staticBrick.x;
-                break;
-              }
+            case 'left': {
+              collision = collision ||
+                brick.y === staticBrick.y &&
+                brick.x - brickSize === staticBrick.x;
+              break;
+            }
 
-              case 'right': {
-                collision = collision ||
-                  brick.y === staticBrick.y &&
-                  brick.x + brickSize === staticBrick.x;
-                break;
-              }
+            case 'right': {
+              collision = collision ||
+                brick.y === staticBrick.y &&
+                brick.x + brickSize === staticBrick.x;
+              break;
+            }
             }
           });
 

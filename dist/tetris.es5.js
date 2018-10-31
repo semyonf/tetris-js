@@ -56,42 +56,46 @@ var Tetris = function () {
     }
   }
 
-  var Brick = function () {
-    function Brick(x, y, rgb, size) {
-      _classCallCheck(this, Brick);
-
-      this.x = x;
-      this.y = y;
-      this.rgb = rgb;
-      this.size = size;
+  function Brick() {
+    if (arguments.length === 1 && arguments[0] instanceof Brick) {
+      this._copyingConstructor.apply(this, arguments);
+    } else {
+      this._defaultConstructor.apply(this, arguments);
     }
+  }
 
-    _createClass(Brick, [{
-      key: 'draw',
-      value: function draw(context) {
-        context.fillStyle = this.rgb;
-        context.beginPath();
-        context.moveTo(this.x, this.y);
-        context.lineTo(this.x + this.size - 1, this.y);
-        context.lineTo(this.x, this.y + this.size - 1);
-        context.closePath();
-        context.fill();
+  Brick.prototype._defaultConstructor = function (x, y, rgb, size) {
+    this.x = x;
+    this.y = y;
+    this.rgb = rgb;
+    this.size = size;
+  };
 
-        context.fillStyle = modifyRgb(this.rgb, 0.9);
-        context.beginPath();
-        context.moveTo(this.x + this.size - 1, this.y);
-        context.lineTo(this.x, this.y + this.size - 1);
-        context.lineTo(this.x, this.y + this.size - 1);
-        context.lineTo(this.x + this.size - 1, this.y + this.size - 1);
-        context.closePath();
-        context.fill();
-      }
-    }]);
+  Brick.prototype._copyingConstructor = function (sourceBrick) {
+    this.x = sourceBrick.x;
+    this.y = sourceBrick.y;
+    this.rgb = sourceBrick.rgb;
+    this.size = sourceBrick.size;
+  };
 
-    return Brick;
-  }();
+  Brick.prototype.draw = function (context) {
+    context.fillStyle = this.rgb;
+    context.beginPath();
+    context.moveTo(this.x, this.y);
+    context.lineTo(this.x + this.size - 1, this.y);
+    context.lineTo(this.x, this.y + this.size - 1);
+    context.closePath();
+    context.fill();
 
-
+    context.fillStyle = modifyRgb(this.rgb, 0.9);
+    context.beginPath();
+    context.moveTo(this.x + this.size - 1, this.y);
+    context.lineTo(this.x, this.y + this.size - 1);
+    context.lineTo(this.x, this.y + this.size - 1);
+    context.lineTo(this.x + this.size - 1, this.y + this.size - 1);
+    context.closePath();
+    context.fill();
+  };
 
   function modifyRgb(color, factor) {
     var regexp = /rgb\((\d+) ?, ?(\d+) ?, ?(\d+)\)/g;
@@ -106,16 +110,41 @@ var Tetris = function () {
     return 'rgb(' + colors[0] + ',' + colors[1] + ',' + colors[2] + ')';
   }
 
-  function Shape(boardWidth, brickSize, random) {
-    var _this = this;
+  Shape.prototype._copyingConstructor = function (sourceShape) {
+    this.color = sourceShape.color;
+    this.type = sourceShape.type;
+    this.orientaion = sourceShape.orientaion;
 
+    for (var i = 0; i < 4; ++i) {
+      this.bricks.push(new Brick(sourceShape.bricks[i]));
+    }
+  };
+
+  Shape.prototype._defaultConstructor = function (boardWidth, brickSize, random) {
     this.startX = boardWidth / 2;
     this.startY = brickSize;
-    this.isFrozen = false;
     this.color = random.nextInRange(Shape.prototype.parameters.colors.length);
     this.type = random.nextInRange(Shape.prototype.parameters.types.length);
     this.orientaion = random.nextInRange(Shape.prototype.parameters.orientations.length);
+
+    for (var i = 0; i < 4; ++i) {
+      this.bricks.push(new Brick(this.startX, this.startY, Shape.prototype.parameters.colors[this.color].rgb, brickSize));
+    }
+
+    this.applyOrientation();
+  };
+
+  function Shape() {
+    var _this = this;
+
     this.bricks = [];
+    this.isFrozen = false;
+
+    if (arguments.length === 1 && arguments[0] instanceof Shape) {
+      this._copyingConstructor.apply(this, arguments);
+    } else {
+      this._defaultConstructor.apply(this, arguments);
+    }
 
     this.draw = function (context) {
       _this.bricks.forEach(function (brick) {
@@ -123,73 +152,36 @@ var Tetris = function () {
       });
     };
 
-    this.performAction = function (movement) {
-      switch (movement) {
-        case Shape.prototype.actions.ROTATE:
-          if (Shape.prototype.parameters.types[_this.type].name !== 'O') {
-            _this.orientaion = _this.orientaion === 3 ? 0 : ++_this.orientaion;
-            _this.applyOrientation();
-          }
-          break;
-
-        case Shape.prototype.actions.FALL:
-          _this.bricks.forEach(function (brick) {
-            brick.y += brickSize;
-          });
-          break;
-
-        case Shape.prototype.actions.MOVE_RIGHT:
-        case Shape.prototype.actions.MOVE_LEFT:
-          for (var i = 0; i < 4; ++i) {
-            if (movement === Shape.prototype.actions.MOVE_LEFT) {
-              _this.bricks[i].x -= brickSize;
-            } else {
-              _this.bricks[i].x += brickSize;
-            }
-          }
-          break;
-
-        case Shape.prototype.actions.DROP:
-          break;
-      }
-
-      return _this;
+    this.executeCommand = function (shapeCommand) {
+      return shapeCommand.execute.call(_this);
     };
+  }
 
-    this.applyOrientation = function () {
-      var type = Shape.prototype.parameters.types[_this.type].matrix,
-          orientation = Shape.prototype.parameters.orientations[_this.orientaion].matrix;
+  Shape.prototype.applyOrientation = function () {
+    var type = Shape.prototype.parameters.types[this.type].matrix,
+        orientation = Shape.prototype.parameters.orientations[this.orientaion].matrix;
 
-      var oriented = [];
+    var oriented = [];
 
-      for (var i = 0; i < 3; ++i) {
-        oriented[i] = [];
-        for (var j = 0; j < 2; ++j) {
-          oriented[i][j] = 0;
-          for (var k = 0; k < 2; ++k) {
-            oriented[i][j] += type[i][k] * orientation[k][j];
-          }
+    for (var i = 0; i < 3; ++i) {
+      oriented[i] = [];
+      for (var j = 0; j < 2; ++j) {
+        oriented[i][j] = 0;
+        for (var k = 0; k < 2; ++k) {
+          oriented[i][j] += type[i][k] * orientation[k][j];
         }
       }
-
-      var center = _this.bricks[0];
-
-      for (var _i = 0; _i < 3; ++_i) {
-        _this.bricks[_i + 1].x = center.x + oriented[_i][0] * brickSize;
-        _this.bricks[_i + 1].y = center.y + oriented[_i][1] * brickSize;
-      }
-
-      return _this;
-    };
-
-    for (var i = 0; i < 4; ++i) {
-      this.bricks.push(new Brick(this.startX, this.startY, Shape.prototype.parameters.colors[this.color].rgb, brickSize));
     }
 
-    this.applyOrientation();
+    var center = this.bricks[0];
+
+    for (var _i = 0; _i < 3; ++_i) {
+      this.bricks[_i + 1].x = center.x + oriented[_i][0] * brickSize;
+      this.bricks[_i + 1].y = center.y + oriented[_i][1] * brickSize;
+    }
 
     return this;
-  }
+  };
 
   Shape.prototype.parameters = Object.freeze({
     types: [{ name: 'I', matrix: [[0, -1], [0, 1], [0, 2]] }, { name: 'O', matrix: [[0, 1], [1, 0], [1, 1]] }, { name: 'Z', matrix: [[0, -1], [-1, 0], [1, -1]] }, { name: 'S', matrix: [[-1, -1], [0, -1], [1, 0]] }, { name: 'T', matrix: [[1, 0], [-1, 0], [0, 1]] }, { name: 'J', matrix: [[1, 0], [-1, 0], [-1, 1]] }, { name: 'L', matrix: [[1, 0], [-1, 0], [-1, -1]] }],
@@ -207,6 +199,10 @@ var Tetris = function () {
 
   function Board(game, boardWidth, boardHeight, brickSize, random) {
     var _this2 = this;
+
+    this.width = boardWidth;
+    this.height = boardHeight;
+    this.game = game;
 
     var colors = {
       normal: 'rgb(69,90,100)',
@@ -350,10 +346,112 @@ var Tetris = function () {
     };
   }
 
+  var RotateCommand = function () {
+    function RotateCommand() {
+      _classCallCheck(this, RotateCommand);
+    }
+
+    _createClass(RotateCommand, [{
+      key: 'execute',
+      value: function execute(board) {
+        console.log('RotateCommand executed');
+
+        var temp = new Shape(board.activeShape);
+
+        if (Shape.prototype.parameters.types[temp.type].name !== 'O') {
+          temp.orientaion = temp.orientaion === 3 ? 0 : ++temp.orientaion;
+          temp.applyOrientation();
+
+          for (var i = 0; i < 4; ++i) {
+            for (var j = 0; j < board.staticBricks.length; ++j) {
+              if (temp.bricks[i].x === board.staticBricks[j].x && temp.bricks[i].y === board.staticBricks[j].y) {
+                return;
+              }
+            }
+
+            if (temp.bricks[i].x >= board.width || temp.bricks[i].x <= 0 || temp.bricks[i].y >= board.height) {
+              return;
+            }
+          }
+        }
+
+        board.activeShape = temp;
+      }
+    }]);
+
+    return RotateCommand;
+  }();
+
+  var MoveLeftCommand = function () {
+    function MoveLeftCommand() {
+      _classCallCheck(this, MoveLeftCommand);
+    }
+
+    _createClass(MoveLeftCommand, [{
+      key: 'execute',
+      value: function execute(board) {
+        var _this3 = this;
+
+        console.log('MoveLeftCommand executed');
+
+        board.checkCollisions(function (collisions) {
+          if (!collisions.left) {
+            for (var i = 0; i < 4; ++i) {
+              _this3.bricks[i].x -= brickSize;
+            }
+          }
+        });
+      }
+    }]);
+
+    return MoveLeftCommand;
+  }();
+
+  var MoveRightCommand = function () {
+    function MoveRightCommand() {
+      _classCallCheck(this, MoveRightCommand);
+    }
+
+    _createClass(MoveRightCommand, [{
+      key: 'execute',
+      value: function execute(board) {
+        var _this4 = this;
+
+        console.log('MoveRightCommand executed');
+
+        board.checkCollisions(function (collisions) {
+          if (!collisions.right) {
+            for (var i = 0; i < 4; ++i) {
+              _this4.bricks[i].x += brickSize;
+            }
+          }
+        });
+      }
+    }]);
+
+    return MoveRightCommand;
+  }();
+
+  var DropCommand = function () {
+    function DropCommand() {
+      _classCallCheck(this, DropCommand);
+    }
+
+    _createClass(DropCommand, [{
+      key: 'execute',
+      value: function execute(board) {
+        console.log('DropCommand executed');
+        board.game.turboMode = true;
+      }
+    }]);
+
+    return DropCommand;
+  }();
+
   function Controls(leftKey, rightKey, rotateKey, dropKey) {
     var _ref;
 
-    return _ref = {}, _defineProperty(_ref, leftKey, Shape.prototype.actions.MOVE_LEFT), _defineProperty(_ref, rightKey, Shape.prototype.actions.MOVE_RIGHT), _defineProperty(_ref, rotateKey, Shape.prototype.actions.ROTATE), _defineProperty(_ref, dropKey, Shape.prototype.actions.DROP), _ref;
+    return _ref = {}, _defineProperty(_ref, leftKey, new MoveLeftCommand()), _defineProperty(_ref, rightKey, new MoveRightCommand()), _defineProperty(_ref, rotateKey, new RotateCommand()), _defineProperty(_ref, dropKey, new DropCommand()), _ref;
   }
 
   function Joystick(keyMap) {
@@ -464,15 +562,34 @@ var Tetris = function () {
     };
   }
 
+  var FallCommand = function () {
+    function FallCommand() {
+      _classCallCheck(this, FallCommand);
+    }
+
+    _createClass(FallCommand, [{
+      key: 'execute',
+      value: function execute(board) {
+        console.log('FallCommand executed');
+
+        this.bricks.forEach(function (brick) {
+          brick.y += brickSize;
+        });
+      }
+    }]);
+
+    return FallCommand;
+  }();
+
   function Game(config) {
-    var _this3 = this;
+    var _this5 = this;
 
     var context = config.context;
 
     var keyMaps = [new Controls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'), new Controls('KeyA', 'KeyD', 'KeyW', 'KeyS'), 
     new Controls('KeyH', 'KeyL', 'KeyK', 'KeyJ') 
-    ],
-        keyMap = Object.assign.apply(Object, keyMaps);
+    ];
+    var keyMap = Object.assign.apply(Object, keyMaps);
 
 
     var joystick = new Joystick(keyMap);
@@ -518,7 +635,7 @@ var Tetris = function () {
     var gravityIsActive = function gravityIsActive() {
       var gameSpeeds = [null, 27, 24, 16, 12, 8];
 
-      return _this3.turboMode || frameCount % gameSpeeds[difficulty] === 0;
+      return _this5.turboMode || frameCount % gameSpeeds[difficulty] === 0;
     };
 
     this.drawReplay = function () {
@@ -530,86 +647,40 @@ var Tetris = function () {
     };
 
     this.restart = function () {
-      _this3.random = new SeededRandom(_this3.randomSeed);
-      _this3.playerScore.set(0);
+      _this5.random = new SeededRandom(_this5.randomSeed);
+      _this5.playerScore.set(0);
       frameCount = 0;
       difficulty = 1;
-      _this3.turboMode = false;
-      board = new Board(_this3, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this3.random);
+      _this5.turboMode = false;
+      board = new Board(_this5, config.board.boardWidth, config.board.boardHeight, config.board.brickSize, _this5.random);
     };
 
     this.setRandomSeed = function (newSeed) {
-      _this3.randomSeed = newSeed;
+      _this5.randomSeed = newSeed;
     };
 
-    var processAction = function processAction(action) {
-      board.checkCollisions(function (collisions) {
-        board.activeShape.isFrozen = collisions.bottom;
-
-        switch (true) {
-          case action === Shape.prototype.actions.ROTATE && cantBeRotated():
-          case action === Shape.prototype.actions.MOVE_RIGHT && collisions.right:
-          case action === Shape.prototype.actions.MOVE_LEFT && collisions.left:
-          case action === Shape.prototype.actions.FALL && collisions.bottom:
-          case action === Shape.prototype.actions.DROP && collisions.bottom:
-            break;
-
-          default:
-            if (action === Shape.prototype.actions.DROP) {
-              _this3.turboMode = true;
-            }
-
-            board.activeShape.performAction(action);
-            break;
-        }
-
-        function cantBeRotated() {
-          var temp = board.spawnShape();
-
-          temp.orientaion = board.activeShape.orientaion;
-          temp.type = board.activeShape.type;
-
-          for (var i = 0; i < 4; ++i) {
-            Object.assign(temp.bricks[i], board.activeShape.bricks[i]);
-          }
-
-          temp.performAction(Shape.prototype.actions.ROTATE);
-
-          for (var _i2 = 0; _i2 < 4; ++_i2) {
-            for (var j = 0; j < board.staticBricks.length; ++j) {
-              if (temp.bricks[_i2].x === board.staticBricks[j].x && temp.bricks[_i2].y === board.staticBricks[j].y) {
-                return true;
-              }
-            }
-
-            if (temp.bricks[_i2].x >= config.board.boardWidth || temp.bricks[_i2].x <= 0 || temp.bricks[_i2].y >= config.board.boardHeight) {
-              return true;
-            }
-          }
-
-          return false;
-        }
-      });
-    };
-
-    var readAction = function readAction() {
+    var readCommand = function readCommand() {
       var nextKey = joystick.keyQueue.shift();
-      processAction(joystick.keyMap[nextKey]);
+      var command = joystick.keyMap[nextKey];
 
-      board.checkCollisions(function (collisions) {
-        board.activeShape.isFrozen = collisions.bottom;
-      });
+      if (command) {
+        command.execute.call(board.activeShape, board);
+      }
     };
 
     this.proceed = function () {
       ++frameCount;
       board.drawBackground(context);
 
-      if (_this3.onProceed !== undefined) {
-        _this3.onProceed();
+      if (_this5.onProceed !== undefined) {
+        _this5.onProceed();
       }
 
-      readAction();
+      readCommand();
+
+      board.checkCollisions(function (collisions) {
+        board.activeShape.isFrozen = collisions.bottom;
+      });
 
       if (board.activeShape.isFrozen) {
         for (var i = 0; i < 4; ++i) {
@@ -617,15 +688,15 @@ var Tetris = function () {
         }
 
         board.checkFilledRegions();
-        _this3.turboMode = false;
+        _this5.turboMode = false;
         board.activeShape = board.spawnShape();
 
         if (board.isFull()) {
-          _this3.restart();
+          _this5.restart();
         }
       } else {
         if (gravityIsActive()) {
-          processAction(Shape.prototype.actions.FALL);
+          new FallCommand().execute.call(board.activeShape, board);
         }
 
         board.activeShape.draw(context);
@@ -636,7 +707,7 @@ var Tetris = function () {
     };
 
     var mainLoop = function mainLoop() {
-      _this3.proceed();
+      _this5.proceed();
       requestAnimationFrame(mainLoop);
     };
 

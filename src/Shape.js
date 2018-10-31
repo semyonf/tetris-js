@@ -1,78 +1,21 @@
 import Brick from './Brick.js';
 
-export default function Shape(boardWidth, brickSize, random) {
+Shape.prototype._copyingConstructor = function (sourceShape) {
+  this.color = sourceShape.color
+  this.type = sourceShape.type
+  this.orientaion = sourceShape.orientaion
+
+  for (let i = 0; i < 4; ++i) {
+    this.bricks.push(new Brick(sourceShape.bricks[i]))
+  }
+}
+
+Shape.prototype._defaultConstructor = function (boardWidth, brickSize, random) {
   this.startX = boardWidth / 2;
   this.startY = brickSize;
-  this.isFrozen = false;
   this.color = random.nextInRange(Shape.prototype.parameters.colors.length);
   this.type = random.nextInRange(Shape.prototype.parameters.types.length);
   this.orientaion = random.nextInRange(Shape.prototype.parameters.orientations.length);
-  this.bricks = [];
-
-  this.draw = (context) => {
-    this.bricks.forEach((brick) => brick.draw(context));
-  };
-
-  this.performAction = (movement) => {
-    switch (movement) {
-      case Shape.prototype.actions.ROTATE:
-        if (Shape.prototype.parameters.types[this.type].name !== 'O') {
-          this.orientaion = (this.orientaion === 3) ? 0 : ++this.orientaion;
-          this.applyOrientation();
-        }
-        break;
-
-      case Shape.prototype.actions.FALL:
-        this.bricks.forEach(function (brick) {
-          brick.y += brickSize;
-        });
-        break;
-
-      case Shape.prototype.actions.MOVE_RIGHT:
-      case Shape.prototype.actions.MOVE_LEFT:
-        for (let i = 0; i < 4; ++i) {
-          if (movement === Shape.prototype.actions.MOVE_LEFT) {
-            this.bricks[i].x -= brickSize;
-          } else {
-            this.bricks[i].x += brickSize;
-          }
-        }
-        break;
-
-      case Shape.prototype.actions.DROP:
-        break;
-    }
-
-    return this;
-  };
-
-  this.applyOrientation = () => {
-    const
-      type = Shape.prototype.parameters.types[this.type].matrix,
-      orientation = Shape.prototype.parameters.orientations[this.orientaion].matrix;
-
-    let oriented = [];
-
-    // Dot product of a type matrix and an orientation matrix
-    for (let i = 0; i < 3; ++i) {
-      oriented[i] = [];
-      for (let j = 0; j < 2; ++j) {
-        oriented[i][j] = 0;
-        for (let k = 0; k < 2; ++k) {
-          oriented[i][j] += type[i][k] * orientation[k][j];
-        }
-      }
-    }
-
-    const center = this.bricks[0];
-
-    for (let i = 0; i < 3; ++i) {
-      this.bricks[i + 1].x = center.x + oriented[i][0] * brickSize;
-      this.bricks[i + 1].y = center.y + oriented[i][1] * brickSize;
-    }
-
-    return this;
-  };
 
   for (let i = 0; i < 4; ++i) {
     this.bricks.push(new Brick(
@@ -84,9 +27,54 @@ export default function Shape(boardWidth, brickSize, random) {
   }
 
   this.applyOrientation();
+}
+
+export default function Shape() {
+  this.bricks = [];
+  this.isFrozen = false;
+
+  if (arguments.length === 1 && arguments[0] instanceof Shape) {
+    this._copyingConstructor.apply(this, arguments)
+  } else {
+    this._defaultConstructor.apply(this, arguments)
+  }
+
+  this.draw = (context) => {
+    this.bricks.forEach((brick) => brick.draw(context));
+  };
+
+  this.executeCommand = (shapeCommand) => {
+    return shapeCommand.execute.call(this)
+  };
+}
+
+Shape.prototype.applyOrientation = function () {
+  const
+    type = Shape.prototype.parameters.types[this.type].matrix,
+    orientation = Shape.prototype.parameters.orientations[this.orientaion].matrix;
+
+  let oriented = [];
+
+  // Dot product of a type matrix and an orientation matrix
+  for (let i = 0; i < 3; ++i) {
+    oriented[i] = [];
+    for (let j = 0; j < 2; ++j) {
+      oriented[i][j] = 0;
+      for (let k = 0; k < 2; ++k) {
+        oriented[i][j] += type[i][k] * orientation[k][j];
+      }
+    }
+  }
+
+  const center = this.bricks[0];
+
+  for (let i = 0; i < 3; ++i) {
+    this.bricks[i + 1].x = center.x + oriented[i][0] * brickSize;
+    this.bricks[i + 1].y = center.y + oriented[i][1] * brickSize;
+  }
 
   return this;
-}
+};
 
 Shape.prototype.parameters = Object.freeze({
   types: [
