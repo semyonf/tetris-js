@@ -2,4 +2,4 @@
 node_modules
 .DS_Store
 debug
-dist/tetris.js*
+dist
