@@ -11,10 +11,10 @@ export default class Board {
   }
 
   constructor(
-    private readonly game: Game,
-    private readonly width: number,
-    private readonly height: number,
-    private readonly brickSize: number,
+    readonly game: Game,
+    readonly width: number,
+    readonly height: number,
+    readonly brickSize: number,
     private readonly random: any,
   ) {
     this.activeShape = this.spawnShape()
@@ -24,22 +24,22 @@ export default class Board {
     return new Shape(this.width, this.brickSize, this.random)
   }
 
-  public drawBackground(context) {
+  public drawBackground(context: CanvasRenderingContext2D) {
     context.fillStyle = this.game.turboMode ? this.colors.turbo : this.colors.normal
     context.fillRect(0, 0, this.width, this.height)
   }
 
-  public drawStaticBricks(context) {
+  public drawStaticBricks(context: CanvasRenderingContext2D) {
     this.staticBricks.forEach((staticBrick) => staticBrick.draw(context))
   }
 
-  public drawReplay(context) {
+  public drawReplay(context: CanvasRenderingContext2D) {
     context.fillStyle = 'white'
     context.font = '12px Courier'
     context.fillText('REPLAY...', 0, 20)
   }
 
-  public drawScore(context) {
+  public drawScore(context: CanvasRenderingContext2D) {
     context.fillStyle = 'white'
     context.font = '12px Courier'
     context.fillText('Score: ' + this.game.playerScore.get(), 0, 10)
@@ -69,7 +69,7 @@ export default class Board {
       bricksChecked += bricks.length
     }
 
-    let newBricks = []
+    let newBricks: Brick[] = []
     let rowsCleared = 0
 
     for (const row of rows) {
@@ -93,14 +93,14 @@ export default class Board {
    * todo: refactor
    * @param callback
    */
-  public checkCollisions(callback) {
-    const collisions = Object.seal({
+  public checkCollisions(callback: Function) {
+    const collisions: { [key: string]: boolean } = Object.seal({
       bottom: false,
       left: false,
       right: false,
     })
 
-    const checkAgainst = (obstacle, side) => {
+    const checkAgainst = (obstacle: string, side: string) => {
       // @ts-ignore
       return (brick) => {
         if (obstacle === 'board') {

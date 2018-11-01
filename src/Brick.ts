@@ -4,7 +4,7 @@ export default class Brick {
   private rgb: string
   private size: number
 
-  constructor(...args) {
+  constructor(...args: any[]) {
     if (args.length === 1 && args[0] instanceof Brick) {
       this._copyingConstructor.apply(this, args)
     } else {
@@ -12,7 +12,7 @@ export default class Brick {
     }
   }
 
-  public draw(context) {
+  public draw(context: CanvasRenderingContext2D) {
     context.fillStyle = this.rgb
     context.beginPath()
     context.moveTo(this.x, this.y)
@@ -31,14 +31,14 @@ export default class Brick {
     context.fill()
   }
 
-  private _defaultConstructor(x, y, rgb, size) {
+  private _defaultConstructor(x: number, y: number, rgb: string, size: number) {
     this.x = x
     this.y = y
     this.rgb = rgb
     this.size = size
   }
 
-  private _copyingConstructor(sourceBrick) {
+  private _copyingConstructor(sourceBrick: Brick) {
     this.x = sourceBrick.x
     this.y = sourceBrick.y
     this.rgb = sourceBrick.rgb
@@ -52,7 +52,7 @@ export default class Brick {
  * @param {number} factor
  * @returns {string}
  */
-export function modifyRgb(color, factor) {
+export function modifyRgb(color: string, factor: number) {
   const regexp = /rgb\((\d+) ?, ?(\d+) ?, ?(\d+)\)/g
   const matches = regexp.exec(color)
 

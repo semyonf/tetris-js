@@ -1,10 +1,12 @@
+import Game from './Game'
+import Joystick from './Joystick'
 import TapeItem from './TapeItem'
 
 export default class Recorder {
   public tape: TapeItem[]
   public lastFrame: number
 
-  constructor(public joystick, public game) {
+  constructor(public joystick: Joystick, public game: Game) {
     this.tape = []
     this.lastFrame = Infinity
   }
@@ -14,13 +16,13 @@ export default class Recorder {
     this.joystick.setCallback('Escape', undefined)
   }
 
-  public start() {
-    this.joystick.setCallback('anyKey', (key) => {
+  public record() {
+    this.joystick.setCallback('anyKey', (key: string) => {
       this.tape.push(new TapeItem(key, this.game.frameCount))
     })
 
     this.joystick.setCallback('Escape', () => {
-      this.joystick.stop()
+      this.joystick.disconnect()
       this.lastFrame = this.game.frameCount
       stop()
       this.tape.pop()
@@ -30,7 +32,7 @@ export default class Recorder {
     })
   }
 
-  public play = () => {
+  public play() {
     this.game.onProceed = () => {
       if (this.game.frameCount !== this.lastFrame) {
         this.game.drawReplay()
@@ -40,8 +42,8 @@ export default class Recorder {
         }
       } else {
         this.game.onProceed = undefined
-        this.joystick.start()
-        this.start()
+        this.joystick.connect()
+        this.record()
         this.game.restart()
       }
     }

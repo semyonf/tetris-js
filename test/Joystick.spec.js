@@ -13,7 +13,7 @@ describe('Joystick', () => {
   // });
 
   it('has the correct keyStates object', () => {
-    expect(joystick.keys).toEqual({
+    expect(joystick.keysStates).toEqual({
       'ArrowLeft': false,
       'ArrowRight': false,
       'ArrowUp': false,

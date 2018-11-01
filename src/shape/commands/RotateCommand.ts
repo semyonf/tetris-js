@@ -1,8 +1,9 @@
+import Board from '../../Board'
 import IShapeCommand from '../IShapeCommand'
 import Shape from '../Shape'
 
 export default class RotateCommand implements IShapeCommand {
-  public execute(this: Shape, board) {
+  public execute(this: Shape, board: Board) {
     const temp = new Shape(this)
 
     if (Shape.parameters.types[temp.type].name !== 'O') {

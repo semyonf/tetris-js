@@ -1,49 +1,46 @@
+// @ts-ignore
 import ParkMiller from 'park-miller'
 import Board from './Board'
+import {IGameConfig} from './IGameConfig'
 import Joystick from './Joystick'
 import KeyMap from './KeyMap'
 import Recorder from './Recorder'
 import FallCommand from './shape/commands/FallCommand'
 
 export default class Game {
-
   public playerScore: any
   public turboMode: boolean
+  public frameCount: number
+  public onProceed: any
+
   private randomSeed: any
   private fallCommand = new FallCommand()
   private random: any
-  private frameCount: number
-  private onProceed: any
   private difficulty: number
   private config: any
   private board: Board
-  private joystick: any
-  private recorder: any
+  private readonly joystick: Joystick
+  private recorder: Recorder
   private context: any
 
-  constructor(config) {
+  constructor(config: IGameConfig) {
     this.context = config.context
     this.config = config
 
-    const keyMaps = [
-      // @ts-ignore
-      new KeyMap('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'),
-      // @ts-ignore
-      new KeyMap('KeyA', 'KeyD', 'KeyW', 'KeyS'), // W-A-S-D
-      // @ts-ignore
-      new KeyMap('KeyH', 'KeyL', 'KeyK', 'KeyJ'),  // VIM
-    ]
-    const keyMap = Object.assign.apply(this, keyMaps)
+    this.joystick = new Joystick([
+      // todo: custom controls would go somewhere here...
+      new KeyMap(
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+      ),
+    ])
 
-    // todo: custom controls would go somewhere here...
-
-    // @ts-ignore
-    this.joystick = new Joystick(keyMap)
-    // @ts-ignore
     this.recorder = new Recorder(this.joystick, this)
 
-    this.joystick.start()
-    this.recorder.start()
+    this.joystick.connect()
+    this.recorder.record()
 
     this.randomSeed = +(new Date())
     this.random = new ParkMiller(this.randomSeed)
@@ -56,7 +53,7 @@ export default class Game {
         get() {
           return pplayerScore
         },
-        set(newScore) {
+        set(newScore: number) {
           pplayerScore = newScore
 
           scoreThresholds.some((threshold, index) => {
@@ -69,7 +66,7 @@ export default class Game {
             return false
           })
         },
-        add(extraScore) {
+        add(extraScore: number) {
           this.set(pplayerScore + extraScore)
         },
       }
@@ -108,7 +105,7 @@ export default class Game {
     )
   }
 
-  public setRandomSeed(newSeed) {
+  public setRandomSeed(newSeed: number) {
     this.randomSeed = newSeed
   }
 
@@ -122,7 +119,7 @@ export default class Game {
 
     this.readCommand()
 
-    this.board.checkCollisions((collisions) => {
+    this.board.checkCollisions((collisions: any) => {
       this.board.activeShape.isFrozen = collisions.bottom
     })
 
@@ -150,6 +147,11 @@ export default class Game {
     this.board.drawScore(this.context)
   }
 
+  private mainLoop() {
+    this.proceed()
+    requestAnimationFrame(this.mainLoop.bind(this))
+  }
+
   private gravityIsActive() {
     const gameSpeeds = [null, 27, 24, 16, 12, 8]
 
@@ -158,15 +160,10 @@ export default class Game {
 
   private readCommand() {
     const nextKey = this.joystick.keyQueue.shift()
-    const command = this.joystick.keyMap[nextKey]
+    const command = this.joystick.keyMaps[nextKey]
 
     if (command) {
       command.execute.call(this.board.activeShape, this.board)
     }
-  }
-
-  private mainLoop() {
-    this.proceed()
-    requestAnimationFrame(this.mainLoop.bind(this))
   }
 }

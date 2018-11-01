@@ -29,7 +29,7 @@ export default class Shape {
     ],
   })
 
-  public bricks = []
+  public bricks: Brick[] = []
   public isFrozen = false
   public orientation: number
   public type: number
@@ -37,7 +37,7 @@ export default class Shape {
   private startY: number
   private color: number
 
-  constructor(...args) {
+  constructor(...args: any[]) {
     if (args.length === 1 && args[0] instanceof Shape) {
       this._copyingConstructor.apply(this, args)
     } else {
@@ -45,7 +45,7 @@ export default class Shape {
     }
   }
 
-  public draw(context) {
+  public draw(context: CanvasRenderingContext2D) {
     for (const brick of this.bricks) {
       brick.draw(context)
     }
@@ -55,7 +55,7 @@ export default class Shape {
     const type = Shape.parameters.types[this.type].matrix
     const orientation = Shape.parameters.orientations[this.orientation].matrix
 
-    const oriented = []
+    const oriented: number[][] = []
 
     // Dot product of a type matrix and an orientation matrix
     for (let i = 0; i < 3; ++i) {
@@ -78,7 +78,7 @@ export default class Shape {
     return this
   }
 
-  private _defaultConstructor(boardWidth, brickSize, random) {
+  private _defaultConstructor(boardWidth: number, brickSize: number, random: any) {
     this.startX = boardWidth / 2
     this.startY = brickSize
     this.color = random.integerInRange(0, Shape.parameters.colors.length - 1)
@@ -97,7 +97,7 @@ export default class Shape {
     this.applyOrientation()
   }
 
-  private _copyingConstructor(sourceShape) {
+  private _copyingConstructor(sourceShape: Shape) {
     this.color = sourceShape.color
     this.type = sourceShape.type
     this.startX = sourceShape.startX
