@@ -1,13 +1,11 @@
 import Shape from "../Shape";
 
 export default class RotateCommand {
-  execute(board) {
-    // console.log('RotateCommand executed')
+  execute(this: Shape, board) {
+    const temp = new Shape(this)
 
-    const temp = new Shape(board.activeShape)
-
-    if (Shape.prototype.parameters.types[temp.type].name !== 'O') {
-      temp.orientaion = (temp.orientaion === 3) ? 0 : ++temp.orientaion;
+    if (Shape.parameters.types[temp.type].name !== 'O') {
+      temp.orientation = (temp.orientation === 3) ? 0 : ++temp.orientation;
       temp.applyOrientation();
 
       for (let i = 0; i < 4; ++i) {

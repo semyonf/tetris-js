@@ -5,7 +5,8 @@
   "main": "src/Game.js",
   "scripts": {
     "test": "jest --no-cache ./test/*.spec.js",
-    "postinstall": "gulp clean; rollup -c; gulp;"
+    "postinstall": "gulp clean; rollup -c; gulp;",
+    "dev": "webpack-dev-server --inline --progress --compress"
   },
   "babel": {
     "presets": [
