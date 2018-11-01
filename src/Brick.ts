@@ -1,6 +1,6 @@
 export default class Brick {
-  private x: number;
-  private y: number;
+  public x: number;
+  public y: number;
   private rgb: string;
   private size: number;
 

@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/Game.js',
+  entry: './src/Game',
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
