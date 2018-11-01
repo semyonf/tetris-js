@@ -1,59 +1,60 @@
-export default function Joystick(keyMap) {
-  const keyStates = Object.seal(
-    Object.assign({
-      Escape: false,
-      Enter: false,
-      anyKey: false,
-    }, keyMap),
-  )
+import KeyMap from './KeyMap'
 
-  Object.keys(keyStates).forEach((keyState) => keyStates[keyState] = false)
+export default class Joystick {
+  public keys: any
+  public keyQueue: any[]
+  private readonly callbacks: any
 
-  const callbacks = {anyKey: undefined}
-  const keyQueue = []
+  constructor(public keyMap: KeyMap) {
 
-  function keyEvents(e) {
+    this.keys = Object.seal(
+      Object.assign({
+        Escape: false,
+        Enter: false,
+        anyKey: false,
+      }, keyMap),
+    )
+    Object.keys(this.keys).forEach((keyState) => this.keys[keyState] = false)
+    this.callbacks = {anyKey: undefined}
+    this.keyQueue = []
+  }
+
+  public start() {
+    addEventListener('keyup', this.keyEvents)
+    addEventListener('keydown', this.keyEvents)
+  }
+
+  public stop() {
+    removeEventListener('keyup', this.keyEvents)
+    removeEventListener('keydown', this.keyEvents)
+  }
+
+  public setCallback(key, callback) {
+    this.callbacks[key] = callback
+  }
+
+  public keyEvents(e) {
     const isDown = (e.type === 'keydown')
     const keyCode = e.code
-    keyStates.anyKey = isDown
+    this.keys.anyKey = isDown
 
-    if (isDown && callbacks.anyKey !== undefined) {
-      callbacks.anyKey(keyCode)
+    if (isDown && this.callbacks.anyKey !== undefined) {
+      this.callbacks.anyKey(keyCode)
     }
 
-    if (keyStates[keyCode] !== undefined) {
+    if (this.keys[keyCode] !== undefined) {
       e.preventDefault()
-      keyStates[keyCode] = isDown
+      this.keys[keyCode] = isDown
 
       if (isDown) {
-        if (keyCode in keyMap) {
-          keyQueue.push(keyCode)
+        if (keyCode in this.keyMap) {
+          this.keyQueue.push(keyCode)
         }
 
-        if (callbacks[keyCode] !== undefined) {
-          callbacks[keyCode]()
+        if (this.callbacks[keyCode] !== undefined) {
+          this.callbacks[keyCode]()
         }
       }
     }
-  }
-
-  /**
-   * Public
-   */
-  return {
-    keys: keyStates,
-    keyMap,
-    keyQueue,
-    start() {
-      addEventListener('keyup', keyEvents)
-      addEventListener('keydown', keyEvents)
-    },
-    stop() {
-      removeEventListener('keyup', keyEvents)
-      removeEventListener('keydown', keyEvents)
-    },
-    setCallback(key, callback) {
-      callbacks[key] = callback
-    },
   }
 }
