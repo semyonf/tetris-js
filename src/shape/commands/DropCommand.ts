@@ -1,8 +1,8 @@
-import Shape from "../Shape";
 import IShapeCommand from "../IShapeCommand"
+import Shape from "../Shape"
 
 export default class DropCommand implements IShapeCommand {
-  execute(this: Shape, board) {
+  public execute(this: Shape, board): void {
     /**
      * Add some FX here for the `this` shape
      */

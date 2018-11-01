@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --no-cache ./test/*.spec.js",
     "postinstall": "gulp clean; rollup -c; gulp;",
+    "lint": "tslint -c tslint.json './src/**/*.ts' --fix",
     "dev": "webpack-dev-server --inline --progress --compress"
   },
   "babel": {
@@ -37,6 +38,7 @@
     "gulp-uglify": "^3.0.1",
     "jest": "^23.6.0",
     "ts-loader": "^5.3.0",
+    "tslint": "^5.11.0",
     "typescript": "^3.1.5",
     "webpack": "^4.23.1",
     "webpack-cli": "^3.1.2",

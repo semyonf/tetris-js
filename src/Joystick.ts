@@ -3,33 +3,35 @@ export default function Joystick(keyMap) {
     Object.assign({
       Escape: false,
       Enter: false,
-      anyKey: false
-    }, keyMap)
-  );
+      anyKey: false,
+    }, keyMap),
+  )
 
-  Object.keys(keyStates).forEach(keyState => keyStates[keyState] = false);
+  Object.keys(keyStates).forEach((keyState) => keyStates[keyState] = false)
 
-  const callbacks = {anyKey: undefined}, keyQueue = [];
+  const callbacks = {anyKey: undefined}
+  const keyQueue = []
 
   function keyEvents(e) {
-    const isDown = (e.type === 'keydown'), keyCode = e.code;
-    keyStates.anyKey = isDown;
+    const isDown = (e.type === "keydown")
+    const keyCode = e.code
+    keyStates.anyKey = isDown
 
     if (isDown && callbacks.anyKey !== undefined) {
-      callbacks.anyKey(keyCode);
+      callbacks.anyKey(keyCode)
     }
 
     if (keyStates[keyCode] !== undefined) {
-      e.preventDefault();
-      keyStates[keyCode] = isDown;
+      e.preventDefault()
+      keyStates[keyCode] = isDown
 
       if (isDown) {
         if (keyCode in keyMap) {
-          keyQueue.push(keyCode);
+          keyQueue.push(keyCode)
         }
 
         if (callbacks[keyCode] !== undefined) {
-          callbacks[keyCode]();
+          callbacks[keyCode]()
         }
       }
     }
@@ -43,15 +45,15 @@ export default function Joystick(keyMap) {
     keyMap,
     keyQueue,
     start() {
-      addEventListener('keyup', keyEvents);
-      addEventListener('keydown', keyEvents);
+      addEventListener("keyup", keyEvents)
+      addEventListener("keydown", keyEvents)
     },
     stop() {
-      removeEventListener('keyup', keyEvents);
-      removeEventListener('keydown', keyEvents);
+      removeEventListener("keyup", keyEvents)
+      removeEventListener("keydown", keyEvents)
     },
     setCallback(key, callback) {
-      callbacks[key] = callback;
-    }
-  };
+      callbacks[key] = callback
+    },
+  }
 }

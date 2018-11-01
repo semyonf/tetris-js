@@ -1,44 +1,44 @@
 export default function Recorder(joystick, game) {
-  const tape = [];
-  let lastFrame = Infinity;
+  const tape = []
+  let lastFrame = Infinity
 
   const start = () => {
-    joystick.setCallback('anyKey', (key) => {
-      tape.push({ key, frame: game.frameCount });
-    });
+    joystick.setCallback("anyKey", (key) => {
+      tape.push({ key, frame: game.frameCount })
+    })
 
-    joystick.setCallback('Escape', () => {
-      joystick.stop();
-      lastFrame = game.frameCount;
-      stop();
-      tape.pop();
-      play();
-      game.restart();
-      game.setRandomSeed(+(new Date()));
-    });
-  };
+    joystick.setCallback("Escape", () => {
+      joystick.stop()
+      lastFrame = game.frameCount
+      stop()
+      tape.pop()
+      play()
+      game.restart()
+      game.setRandomSeed(+(new Date()))
+    })
+  }
 
   const stop = () => {
-    joystick.setCallback('anyKey', undefined);
-    joystick.setCallback('Escape', undefined);
-  };
+    joystick.setCallback("anyKey", undefined)
+    joystick.setCallback("Escape", undefined)
+  }
 
   const play = () => {
     game.onProceed = () => {
       if (game.frameCount !== lastFrame) {
-        game.drawReplay();
+        game.drawReplay()
 
         if (tape.length && game.frameCount === tape[0].frame) {
-          joystick.keyQueue.push(tape.shift().key);
+          joystick.keyQueue.push(tape.shift().key)
         }
       } else {
-        game.onProceed = undefined;
-        joystick.start();
-        start();
-        game.restart();
+        game.onProceed = undefined
+        joystick.start()
+        start()
+        game.restart()
       }
-    };
-  };
+    }
+  }
 
   /**
    * Public
@@ -48,6 +48,6 @@ export default function Recorder(joystick, game) {
     lastFrame,
     start,
     stop,
-    play
-  };
+    play,
+  }
 }
