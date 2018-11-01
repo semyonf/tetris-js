@@ -10,13 +10,13 @@ export default class Shape {
       {name: 'yellow', rgb: 'rgb(255,235,59)'},
       {name: 'cyan', rgb: 'rgb(0,188,212)'},
       {name: 'pink', rgb: 'rgb(233,30,99)'},
-      {name: 'white', rgb: 'rgb(224,224,224)'},
+      {name: 'white', rgb: 'rgb(224,224,224)'}
     ],
     orientations: [
       {angle: 0, matrix: [[1, 0], [0, 1]]},
       {angle: 90, matrix: [[0, -1], [1, 0]]},
       {angle: 180, matrix: [[-1, 0], [0, -1]]},
-      {angle: 270, matrix: [[0, 1], [-1, 0]]},
+      {angle: 270, matrix: [[0, 1], [-1, 0]]}
     ],
     types: [
       {name: 'I', matrix: [[0, -1], [0, 1], [0, 2]]},
@@ -25,8 +25,8 @@ export default class Shape {
       {name: 'S', matrix: [[-1, -1], [0, -1], [1, 0]]},
       {name: 'T', matrix: [[1, 0], [-1, 0], [0, 1]]},
       {name: 'J', matrix: [[1, 0], [-1, 0], [-1, 1]]},
-      {name: 'L', matrix: [[1, 0], [-1, 0], [-1, -1]]},
-    ],
+      {name: 'L', matrix: [[1, 0], [-1, 0], [-1, -1]]}
+    ]
   })
 
   public bricks: Brick[] = []
@@ -90,7 +90,7 @@ export default class Shape {
         this.startX,
         this.startY,
         Shape.parameters.colors[this.color].rgb,
-        brickSize,
+        brickSize
       ))
     }
 

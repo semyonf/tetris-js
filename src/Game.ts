@@ -33,8 +33,8 @@ export default class Game {
         'ArrowLeft',
         'ArrowRight',
         'ArrowUp',
-        'ArrowDown',
-      ),
+        'ArrowDown'
+      )
     ])
 
     this.recorder = new Recorder(this.joystick, this)
@@ -68,7 +68,7 @@ export default class Game {
         },
         add(extraScore: number) {
           this.set(pplayerScore + extraScore)
-        },
+        }
       }
     })()
 
@@ -77,7 +77,7 @@ export default class Game {
       config.board.boardWidth,
       config.board.boardHeight,
       config.board.brickSize,
-      this.random,
+      this.random
     )
     this.frameCount = 0
     this.onProceed = undefined
@@ -101,7 +101,7 @@ export default class Game {
       this, this.config.board.boardWidth,
       this.config.board.boardHeight,
       this.config.board.brickSize,
-      this.random,
+      this.random
     )
   }
 

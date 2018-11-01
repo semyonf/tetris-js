@@ -3,7 +3,7 @@ export interface IGameConfig {
   board: {
     boardWidth: number,
     boardHeight: number,
-    brickSize: number,
+    brickSize: number
   },
   customControls: object[]
 }

@@ -5,7 +5,7 @@ export default class Joystick {
   public keysStates: { [key: string]: boolean } = {
     Escape: false,
     Enter: false,
-    anyKey: false,
+    anyKey: false
   }
   public keyMaps: { [key: string]: IShapeCommand } = {}
   public keyQueue: any[] = []
@@ -22,7 +22,7 @@ export default class Joystick {
 
     Object.assign(this.keysStates, this.keyMaps)
     Object.keys(this.keysStates).forEach(
-      (keyState) => this.keysStates[keyState] = false,
+      (keyState) => this.keysStates[keyState] = false
     )
   }
 
@@ -36,7 +36,7 @@ export default class Joystick {
     removeEventListener('keydown', this.boundOnKeyPressed)
   }
 
-  public setCallback(key: string, callback: Function) {
+  public setCallback(key: string, callback: (key?: string) => void) {
     this.callbacks[key] = callback
   }
 

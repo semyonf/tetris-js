@@ -59,7 +59,7 @@ export function modifyRgb(color: string, factor: number) {
   const colors = [
     matches[1],
     matches[2],
-    matches[3],
+    matches[3]
   ]
 
   colors.forEach((c, index, arr) => {

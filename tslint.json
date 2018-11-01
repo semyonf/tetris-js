@@ -11,6 +11,7 @@
     "object-literal-sort-keys": false,
     "no-bitwise": true,
     "no-conditional-assignment": true,
+    "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
     "no-consecutive-blank-lines": [true, 1],
     "no-console": {

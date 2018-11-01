@@ -7,7 +7,7 @@ export default class Board {
   public activeShape: Shape
   private readonly colors = {
     normal: 'rgb(69,90,100)',
-    turbo: 'rgba(69,90,100,0.12)',
+    turbo: 'rgba(69,90,100,0.12)'
   }
 
   constructor(
@@ -15,7 +15,7 @@ export default class Board {
     readonly width: number,
     readonly height: number,
     readonly brickSize: number,
-    private readonly random: any,
+    private readonly random: any
   ) {
     this.activeShape = this.spawnShape()
   }
@@ -63,7 +63,7 @@ export default class Board {
 
       rows.push({
         bricks,
-        isFull: bricks.length === this.width / this.brickSize,
+        isFull: bricks.length === this.width / this.brickSize
       })
 
       bricksChecked += bricks.length
@@ -91,13 +91,12 @@ export default class Board {
 
   /**
    * todo: refactor
-   * @param callback
    */
-  public checkCollisions(callback: Function) {
+  public checkCollisions(callback: (collisions: { [key: string]: boolean }) => any) {
     const collisions: { [key: string]: boolean } = Object.seal({
       bottom: false,
       left: false,
-      right: false,
+      right: false
     })
 
     const checkAgainst = (obstacle: string, side: string) => {
