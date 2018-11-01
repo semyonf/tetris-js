@@ -1,9 +1,11 @@
 const path = require('path');
 
+const env = process.env.NODE_ENV || 'production'
+
 module.exports = {
   entry: './src/Game',
-  mode: 'development',
-  devtool: 'inline-source-map',
+  mode: env,
+  devtool: env === 'development' ? 'inline-source-map' : false,
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: false,

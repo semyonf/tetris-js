@@ -1,6 +1,6 @@
+import Board from '../../Board'
 import IShapeCommand from '../IShapeCommand'
 import Shape from '../Shape'
-import Board from '../../Board'
 
 export default class DropCommand implements IShapeCommand {
   public execute(this: Shape, board: Board): void {

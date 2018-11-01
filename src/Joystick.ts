@@ -12,6 +12,9 @@ export default class Joystick {
 
   private readonly callbacks: any = {anyKey: undefined}
 
+  // todo: find a way around this crutch
+  private boundOnKeyPressed = this.onKeyPressed.bind(this)
+
   constructor(keyMaps: KeyMap[]) {
     for (const keyMap of keyMaps) {
       Object.assign(this.keyMaps, keyMap.get())
@@ -22,9 +25,6 @@ export default class Joystick {
       (keyState) => this.keysStates[keyState] = false,
     )
   }
-
-  // todo: find a way around this crutch
-  private boundOnKeyPressed = this.onKeyPressed.bind(this)
 
   public connect() {
     addEventListener('keyup', this.boundOnKeyPressed)
