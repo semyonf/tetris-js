@@ -28,12 +28,23 @@ export default class Game {
     this.config = config
 
     this.joystick = new Joystick([
-      // todo: custom controls would go somewhere here...
       new KeyMap(
         'ArrowLeft',
         'ArrowRight',
         'ArrowUp',
         'ArrowDown'
+      ),
+      new KeyMap(
+        'KeyH',
+        'KeyL',
+        'KeyK',
+        'KeyJ'
+      ),
+      new KeyMap(
+        'KeyA',
+        'KeyD',
+        'KeyW',
+        'KeyS'
       )
     ])
 

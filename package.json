@@ -1,8 +1,5 @@
 {
-  "name": "tetris-js",
-  "version": "1.0.0",
-  "description": "Tetris with VIM controls, HiDPI support and screen recording written in vanilla ES6!",
-  "main": "src/Game.js",
+  "private": true,
   "scripts": {
     "test": "jest --no-cache ./test/*.spec.js",
     "postinstall": "gulp clean; rollup -c; gulp;",
@@ -15,16 +12,8 @@
       "env"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/taxnuke/tetris-js.git"
-  },
   "author": "Semyon Fomin <taxnuke@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/taxnuke/tetris-js/issues"
-  },
-  "homepage": "https://github.com/taxnuke/tetris-js#readme",
   "devDependencies": {
     "cross-env": "^5.2.0",
     "jest": "^23.6.0",
