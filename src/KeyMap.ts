@@ -3,7 +3,7 @@ import MoveLeftCommand from './shape/commands/MoveLeftCommand';
 import MoveRightCommand from './shape/commands/MoveRightCommand';
 import DropCommand from './shape/commands/DropCommand';
 
-export default function Controls(leftKey, rightKey, rotateKey, dropKey) {
+export default function (leftKey, rightKey, rotateKey, dropKey) {
   return {
     [leftKey]: new MoveLeftCommand(),
     [rightKey]: new MoveRightCommand(),

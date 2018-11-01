@@ -9,7 +9,7 @@ export default function Joystick(keyMap) {
 
   Object.keys(keyStates).forEach(keyState => keyStates[keyState] = false);
 
-  const callbacks = {}, keyQueue = [];
+  const callbacks = {anyKey: undefined}, keyQueue = [];
 
   function keyEvents(e) {
     const isDown = (e.type === 'keydown'), keyCode = e.code;
