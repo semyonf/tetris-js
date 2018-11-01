@@ -1,6 +1,7 @@
 import Shape from "../Shape";
+import IShapeCommand from "../IShapeCommand";
 
-export default class RotateCommand {
+export default class RotateCommand implements IShapeCommand  {
   execute(this: Shape, board) {
     const temp = new Shape(this)
 
