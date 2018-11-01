@@ -1,5 +1,5 @@
-import IShapeCommand from "../IShapeCommand"
-import Shape from "../Shape"
+import IShapeCommand from '../IShapeCommand'
+import Shape from '../Shape'
 
 export default class MoveRightCommand implements IShapeCommand {
   public execute(this: Shape, board) {

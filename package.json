@@ -37,6 +37,7 @@
     "gulp-strip-comments": "^2.5.2",
     "gulp-uglify": "^3.0.1",
     "jest": "^23.6.0",
+    "park-miller": "^1.0.0",
     "ts-loader": "^5.3.0",
     "tslint": "^5.11.0",
     "typescript": "^3.1.5",

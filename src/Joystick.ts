@@ -13,7 +13,7 @@ export default function Joystick(keyMap) {
   const keyQueue = []
 
   function keyEvents(e) {
-    const isDown = (e.type === "keydown")
+    const isDown = (e.type === 'keydown')
     const keyCode = e.code
     keyStates.anyKey = isDown
 
@@ -45,12 +45,12 @@ export default function Joystick(keyMap) {
     keyMap,
     keyQueue,
     start() {
-      addEventListener("keyup", keyEvents)
-      addEventListener("keydown", keyEvents)
+      addEventListener('keyup', keyEvents)
+      addEventListener('keydown', keyEvents)
     },
     stop() {
-      removeEventListener("keyup", keyEvents)
-      removeEventListener("keydown", keyEvents)
+      removeEventListener('keyup', keyEvents)
+      removeEventListener('keydown', keyEvents)
     },
     setCallback(key, callback) {
       callbacks[key] = callback

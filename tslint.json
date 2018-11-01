@@ -5,6 +5,7 @@
       "options": [100]
     },
     "new-parens": true,
+    "quotemark": [true, "single"],
     "semicolon": [true, "never"],
     "no-arg": true,
     "object-literal-sort-keys": false,

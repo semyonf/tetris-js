@@ -1,13 +1,13 @@
-import Brick from "./Brick"
-import Game from "./Game"
-import Shape from "./shape/Shape"
+import Brick from './Brick'
+import Game from './Game'
+import Shape from './shape/Shape'
 
 export default class Board {
   public staticBricks: Brick[] = []
   public activeShape: Shape
   private readonly colors = {
-    normal: "rgb(69,90,100)",
-    turbo: "rgba(69,90,100,0.12)",
+    normal: 'rgb(69,90,100)',
+    turbo: 'rgba(69,90,100,0.12)',
   }
 
   constructor(
@@ -34,15 +34,15 @@ export default class Board {
   }
 
   public drawReplay(context) {
-    context.fillStyle = "white"
-    context.font = "12px Courier"
-    context.fillText("REPLAY...", 0, 20)
+    context.fillStyle = 'white'
+    context.font = '12px Courier'
+    context.fillText('REPLAY...', 0, 20)
   }
 
   public drawScore(context) {
-    context.fillStyle = "white"
-    context.font = "12px Courier"
-    context.fillText("Score: " + this.game.playerScore.get(), 0, 10)
+    context.fillStyle = 'white'
+    context.font = '12px Courier'
+    context.fillText('Score: ' + this.game.playerScore.get(), 0, 10)
   }
 
   public isFull() {
@@ -103,13 +103,13 @@ export default class Board {
     const checkAgainst = (obstacle, side) => {
       // @ts-ignore
       return (brick) => {
-        if (obstacle === "board") {
+        if (obstacle === 'board') {
           switch (side) {
-            case "bottom":
+            case 'bottom':
               return brick.y === this.height - this.brickSize
-            case "left":
+            case 'left':
               return brick.x === 0
-            case "right":
+            case 'right':
               return brick.x === this.width - this.brickSize
           }
         } else {
@@ -117,21 +117,21 @@ export default class Board {
 
           this.staticBricks.forEach((staticBrick) => {
             switch (side) {
-              case "bottom": {
+              case 'bottom': {
                 collision = collision ||
                   brick.y === staticBrick.y - this.brickSize &&
                   brick.x === staticBrick.x
                 break
               }
 
-              case "left": {
+              case 'left': {
                 collision = collision ||
                   brick.y === staticBrick.y &&
                   brick.x - this.brickSize === staticBrick.x
                 break
               }
 
-              case "right": {
+              case 'right': {
                 collision = collision ||
                   brick.y === staticBrick.y &&
                   brick.x + this.brickSize === staticBrick.x
@@ -146,10 +146,10 @@ export default class Board {
     }
 
     this.activeShape.bricks.forEach((brick) => {
-      ["bottom", "left", "right"].forEach((side) => {
+      ['bottom', 'left', 'right'].forEach((side) => {
         if (
-          checkAgainst("board", side)(brick) ||
-          checkAgainst("static", side)(brick)
+          checkAgainst('board', side)(brick) ||
+          checkAgainst('static', side)(brick)
         ) {
           collisions[side] = true
         }

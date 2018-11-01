@@ -3,11 +3,11 @@ export default function Recorder(joystick, game) {
   let lastFrame = Infinity
 
   const start = () => {
-    joystick.setCallback("anyKey", (key) => {
+    joystick.setCallback('anyKey', (key) => {
       tape.push({ key, frame: game.frameCount })
     })
 
-    joystick.setCallback("Escape", () => {
+    joystick.setCallback('Escape', () => {
       joystick.stop()
       lastFrame = game.frameCount
       stop()
@@ -19,8 +19,8 @@ export default function Recorder(joystick, game) {
   }
 
   const stop = () => {
-    joystick.setCallback("anyKey", undefined)
-    joystick.setCallback("Escape", undefined)
+    joystick.setCallback('anyKey', undefined)
+    joystick.setCallback('Escape', undefined)
   }
 
   const play = () => {

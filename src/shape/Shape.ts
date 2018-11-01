@@ -1,16 +1,16 @@
-import Brick from "../Brick"
+import Brick from '../Brick'
 
 export default class Shape {
   public static parameters = Object.freeze({
     colors: [
-      {name: "orange", rgb: "rgb(239,108,0)"},
-      {name: "red", rgb: "rgb(211,47,47)"},
-      {name: "green", rgb: "rgb(76,175,80)"},
-      {name: "blue", rgb: "rgb(33,150,243)"},
-      {name: "yellow", rgb: "rgb(255,235,59)"},
-      {name: "cyan", rgb: "rgb(0,188,212)"},
-      {name: "pink", rgb: "rgb(233,30,99)"},
-      {name: "white", rgb: "rgb(224,224,224)"},
+      {name: 'orange', rgb: 'rgb(239,108,0)'},
+      {name: 'red', rgb: 'rgb(211,47,47)'},
+      {name: 'green', rgb: 'rgb(76,175,80)'},
+      {name: 'blue', rgb: 'rgb(33,150,243)'},
+      {name: 'yellow', rgb: 'rgb(255,235,59)'},
+      {name: 'cyan', rgb: 'rgb(0,188,212)'},
+      {name: 'pink', rgb: 'rgb(233,30,99)'},
+      {name: 'white', rgb: 'rgb(224,224,224)'},
     ],
     orientations: [
       {angle: 0, matrix: [[1, 0], [0, 1]]},
@@ -19,15 +19,16 @@ export default class Shape {
       {angle: 270, matrix: [[0, 1], [-1, 0]]},
     ],
     types: [
-      {name: "I", matrix: [[0, -1], [0, 1], [0, 2]]},
-      {name: "O", matrix: [[0, 1], [1, 0], [1, 1]]},
-      {name: "Z", matrix: [[0, -1], [-1, 0], [1, -1]]},
-      {name: "S", matrix: [[-1, -1], [0, -1], [1, 0]]},
-      {name: "T", matrix: [[1, 0], [-1, 0], [0, 1]]},
-      {name: "J", matrix: [[1, 0], [-1, 0], [-1, 1]]},
-      {name: "L", matrix: [[1, 0], [-1, 0], [-1, -1]]},
+      {name: 'I', matrix: [[0, -1], [0, 1], [0, 2]]},
+      {name: 'O', matrix: [[0, 1], [1, 0], [1, 1]]},
+      {name: 'Z', matrix: [[0, -1], [-1, 0], [1, -1]]},
+      {name: 'S', matrix: [[-1, -1], [0, -1], [1, 0]]},
+      {name: 'T', matrix: [[1, 0], [-1, 0], [0, 1]]},
+      {name: 'J', matrix: [[1, 0], [-1, 0], [-1, 1]]},
+      {name: 'L', matrix: [[1, 0], [-1, 0], [-1, -1]]},
     ],
   })
+
   public bricks = []
   public isFrozen = false
   public orientation: number
@@ -49,6 +50,7 @@ export default class Shape {
       brick.draw(context)
     }
   }
+
   public applyOrientation() {
     const type = Shape.parameters.types[this.type].matrix
     const orientation = Shape.parameters.orientations[this.orientation].matrix
@@ -75,12 +77,13 @@ export default class Shape {
 
     return this
   }
+
   private _defaultConstructor(boardWidth, brickSize, random) {
     this.startX = boardWidth / 2
     this.startY = brickSize
-    this.color = random.nextInRange(Shape.parameters.colors.length)
-    this.type = random.nextInRange(Shape.parameters.types.length)
-    this.orientation = random.nextInRange(Shape.parameters.orientations.length)
+    this.color = random.integerInRange(0, Shape.parameters.colors.length - 1)
+    this.type = random.integerInRange(0, Shape.parameters.types.length - 1)
+    this.orientation = random.integerInRange(0, Shape.parameters.orientations.length - 1)
 
     for (let i = 0; i < 4; ++i) {
       this.bricks.push(new Brick(

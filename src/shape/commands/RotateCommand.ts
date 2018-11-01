@@ -1,11 +1,11 @@
-import IShapeCommand from "../IShapeCommand"
-import Shape from "../Shape"
+import IShapeCommand from '../IShapeCommand'
+import Shape from '../Shape'
 
 export default class RotateCommand implements IShapeCommand {
   public execute(this: Shape, board) {
     const temp = new Shape(this)
 
-    if (Shape.parameters.types[temp.type].name !== "O") {
+    if (Shape.parameters.types[temp.type].name !== 'O') {
       temp.orientation = (temp.orientation === 3) ? 0 : ++temp.orientation
       temp.applyOrientation()
 

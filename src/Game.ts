@@ -1,9 +1,9 @@
-import Board from "./Board"
-import Joystick from "./Joystick"
-import KeyMap from "./KeyMap"
-import Recorder from "./Recorder"
-import SeededRandom from "./SeededRandom"
-import FallCommand from "./shape/commands/FallCommand"
+import ParkMiller from 'park-miller'
+import Board from './Board'
+import Joystick from './Joystick'
+import KeyMap from './KeyMap'
+import Recorder from './Recorder'
+import FallCommand from './shape/commands/FallCommand'
 
 export default class Game {
 
@@ -27,11 +27,11 @@ export default class Game {
 
     const keyMaps = [
       // @ts-ignore
-      new KeyMap("ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"),
+      new KeyMap('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'),
       // @ts-ignore
-      new KeyMap("KeyA", "KeyD", "KeyW", "KeyS"), // W-A-S-D
+      new KeyMap('KeyA', 'KeyD', 'KeyW', 'KeyS'), // W-A-S-D
       // @ts-ignore
-      new KeyMap("KeyH", "KeyL", "KeyK", "KeyJ"),  // VIM
+      new KeyMap('KeyH', 'KeyL', 'KeyK', 'KeyJ'),  // VIM
     ]
     const keyMap = Object.assign.apply(this, keyMaps)
 
@@ -46,7 +46,7 @@ export default class Game {
     this.recorder.start()
 
     this.randomSeed = +(new Date())
-    this.random = new SeededRandom(this.randomSeed)
+    this.random = new ParkMiller(this.randomSeed)
 
     this.playerScore = (() => {
       let pplayerScore = 0
@@ -95,7 +95,7 @@ export default class Game {
   }
 
   public restart() {
-    this.random = new SeededRandom(this.randomSeed)
+    this.random = new ParkMiller(this.randomSeed)
     this.playerScore.set(0)
     this.frameCount = 0
     this.difficulty = 1
