@@ -14,16 +14,19 @@ export default class Game {
   public onProceed: any
 
   private randomSeed: any
-  private driver: Function = requestAnimationFrame.bind(window)
-  // private driver: Function = setTimeout.bind(window)
+  private clocks: { gpu: Function, timeout: Function} = {
+    gpu: requestAnimationFrame.bind(window),
+    timeout: setTimeout.bind(window)
+  }
+  private driver: Function = this.clocks.gpu
   private fallCommand = new FallCommand()
   private random: any
   private difficulty: number
   private config: any
   private board: Board
-  private readonly joystick: Joystick
   private recorder: Recorder
-  private context: any
+  private readonly joystick: Joystick
+  private readonly context: any
 
   constructor(config: IGameConfig) {
     this.context = config.context
@@ -98,6 +101,14 @@ export default class Game {
     this.turboMode = false
 
     this.mainLoop()
+  }
+
+  public setClock(d: string) {
+    if (d === 'timeout') {
+      this.driver = this.clocks.timeout
+    } else {
+      this.driver = this.clocks.gpu
+    }
   }
 
   public drawReplay() {
