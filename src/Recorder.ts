@@ -33,7 +33,6 @@ export default class Recorder {
   }
 
   public play() {
-    this.game.setClock('timeout')
     this.game.onProceed = () => {
       if (this.game.frameCount !== this.lastFrame) {
         this.game.drawReplay()
@@ -46,7 +45,6 @@ export default class Recorder {
         this.joystick.connect()
         this.record()
         this.game.restart()
-        this.game.setClock(null)
       }
     }
   }

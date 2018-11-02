@@ -18,7 +18,7 @@ export default class Game {
     gpu: requestAnimationFrame.bind(window),
     timeout: setTimeout.bind(window)
   }
-  private driver: Function = this.clocks.gpu
+  private clock: Function = this.clocks.gpu
   private fallCommand = new FallCommand()
   private random: any
   private difficulty: number
@@ -105,9 +105,9 @@ export default class Game {
 
   public setClock(d: string) {
     if (d === 'timeout') {
-      this.driver = this.clocks.timeout
+      this.clock = this.clocks.timeout
     } else {
-      this.driver = this.clocks.gpu
+      this.clock = this.clocks.gpu
     }
   }
 
@@ -173,7 +173,7 @@ export default class Game {
 
   private mainLoop() {
     this.proceed()
-    this.driver(this.mainLoop.bind(this))
+    this.clock(this.mainLoop.bind(this))
   }
 
   private gravityIsActive() {
