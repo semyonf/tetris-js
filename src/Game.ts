@@ -7,6 +7,8 @@ import KeyMap from './KeyMap'
 import Recorder from './Recorder'
 import FallCommand from './shape/commands/FallCommand'
 
+type Clock = (cb: () => void) => void
+
 export default class Game {
   public playerScore: any
   public turboMode: boolean
@@ -14,11 +16,11 @@ export default class Game {
   public onProceed: any
 
   private randomSeed: any
-  private clocks: { gpu: Function, timeout: Function} = {
+  private readonly clocks: { [key: string]: Clock } = {
     gpu: requestAnimationFrame.bind(window),
     timeout: setTimeout.bind(window)
   }
-  private clock: Function = this.clocks.gpu
+  private clock: Clock = this.clocks.gpu
   private fallCommand = new FallCommand()
   private random: any
   private difficulty: number
