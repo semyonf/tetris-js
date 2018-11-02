@@ -1,7 +1,8 @@
-import Brick from './Brick'
-import Board from './Board'
+import Board from '../Board'
+import Brick from '../Brick'
+import IRenderer from './IRenderer'
 
-export default class Renderer {
+export default class CanvasRenderer implements IRenderer {
   private readonly context: CanvasRenderingContext2D
 
   constructor(context: CanvasRenderingContext2D) {

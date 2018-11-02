@@ -5,7 +5,7 @@ import Shape from './shape/Shape'
 export default class Board {
   public staticBricks: Brick[] = []
   public activeShape: Shape
-  readonly colors = {
+  public readonly colors = {
     normal: 'rgb(69,90,100)',
     turbo: 'rgba(69,90,100,0.12)'
   }

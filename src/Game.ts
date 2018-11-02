@@ -1,11 +1,13 @@
 // @ts-ignore
 import ParkMiller from 'park-miller'
 import Board from './Board'
-import {IGameConfig} from './IGameConfig'
+import IGameConfig from './IGameConfig'
 import Joystick from './Joystick'
 import KeyMap from './KeyMap'
 import Recorder from './Recorder'
-import Renderer from './Renderer'
+import CanvasRenderer from './rendering/CanvasRenderer'
+import IRenderer from './rendering/IRenderer'
+import VirtualRenderer from './rendering/VirtualRenderer'
 import FallCommand from './shape/commands/FallCommand'
 
 type Clock = (cb: () => void) => void
@@ -14,13 +16,14 @@ export default class Game {
   public playerScore: any
   public turboMode: boolean
   public frameCount: number
-  public onProceed: any
-
-  private randomSeed: any
-  private readonly clocks: { [key: string]: Clock } = {
+  public onProceed: () => void | undefined
+  public renderer: IRenderer
+  public readonly clocks: { [key: string]: Clock } = Object.freeze({
     gpu: requestAnimationFrame.bind(window),
     timeout: setTimeout.bind(window)
-  }
+  })
+
+  private randomSeed: number
   private clock: Clock = this.clocks.gpu
   private fallCommand = new FallCommand()
   private random: any
@@ -29,12 +32,16 @@ export default class Game {
   private board: Board
   private recorder: Recorder
   private readonly joystick: Joystick
-  private readonly context: any
-  public renderer: Renderer
 
   constructor(config: IGameConfig) {
-    this.context = config.context
-    this.renderer = new Renderer(this.context)
+    if (config.debug === true) {
+      this.renderer = new VirtualRenderer()
+    } else if (config.context) {
+      this.renderer = new CanvasRenderer(config.context)
+    } else {
+      throw new Error('No renderer selected!')
+    }
+
     this.config = config
 
     this.joystick = new Joystick([
@@ -169,13 +176,13 @@ export default class Game {
         this.fallCommand.execute.call(this.board.activeShape, this.board)
       }
 
-      this.board.activeShape.bricks.forEach(brick => {
+      this.board.activeShape.bricks.forEach((brick) => {
         this.renderer.drawBrick(brick)
       })
     }
 
     this.renderer.drawScore(this.playerScore.get())
-    this.board.staticBricks.forEach(brick => {
+    this.board.staticBricks.forEach((brick) => {
       this.renderer.drawBrick(brick)
     })
   }
