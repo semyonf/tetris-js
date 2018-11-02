@@ -35,7 +35,7 @@ export default class Game {
 
   constructor(config: IGameConfig) {
     if (config.debug === true) {
-      this.renderer = new VirtualRenderer()
+      this.renderer = new VirtualRenderer(this, config.spy)
     } else if (config.context) {
       this.renderer = new CanvasRenderer(config.context)
     } else {
