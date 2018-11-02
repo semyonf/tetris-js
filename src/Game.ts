@@ -14,6 +14,8 @@ export default class Game {
   public onProceed: any
 
   private randomSeed: any
+  private driver: Function = requestAnimationFrame.bind(window)
+  // private driver: Function = setTimeout.bind(window)
   private fallCommand = new FallCommand()
   private random: any
   private difficulty: number
@@ -160,11 +162,11 @@ export default class Game {
 
   private mainLoop() {
     this.proceed()
-    requestAnimationFrame(this.mainLoop.bind(this))
+    this.driver(this.mainLoop.bind(this))
   }
 
   private gravityIsActive() {
-    const gameSpeeds = [null, 27, 24, 16, 12, 8]
+    const gameSpeeds = [null, 32, 16, 8, 4, 2]
 
     return this.turboMode || this.frameCount % gameSpeeds[this.difficulty] === 0
   }
