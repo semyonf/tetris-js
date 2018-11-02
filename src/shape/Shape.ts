@@ -47,12 +47,6 @@ export default class Shape {
     }
   }
 
-  public draw(context: CanvasRenderingContext2D) {
-    for (const brick of this.bricks) {
-      brick.draw(context)
-    }
-  }
-
   public applyOrientation() {
     const type = Shape.parameters.types[this.type].matrix
     const orientation = Shape.parameters.orientations[this.orientation].matrix

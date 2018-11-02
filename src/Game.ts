@@ -5,6 +5,7 @@ import {IGameConfig} from './IGameConfig'
 import Joystick from './Joystick'
 import KeyMap from './KeyMap'
 import Recorder from './Recorder'
+import Renderer from './Renderer'
 import FallCommand from './shape/commands/FallCommand'
 
 type Clock = (cb: () => void) => void
@@ -29,9 +30,11 @@ export default class Game {
   private recorder: Recorder
   private readonly joystick: Joystick
   private readonly context: any
+  public renderer: Renderer
 
   constructor(config: IGameConfig) {
     this.context = config.context
+    this.renderer = new Renderer(this.context)
     this.config = config
 
     this.joystick = new Joystick([
@@ -114,7 +117,7 @@ export default class Game {
   }
 
   public drawReplay() {
-    this.board.drawReplay(this.context)
+    this.renderer.drawReplay()
   }
 
   public restart() {
@@ -137,7 +140,7 @@ export default class Game {
 
   public proceed() {
     this.frameCount++
-    this.board.drawBackground(this.context)
+    this.renderer.drawBoard(this.board)
 
     if (this.onProceed !== undefined) {
       this.onProceed()
@@ -166,11 +169,15 @@ export default class Game {
         this.fallCommand.execute.call(this.board.activeShape, this.board)
       }
 
-      this.board.activeShape.draw(this.context)
+      this.board.activeShape.bricks.forEach(brick => {
+        this.renderer.drawBrick(brick)
+      })
     }
 
-    this.board.drawStaticBricks(this.context)
-    this.board.drawScore(this.context)
+    this.renderer.drawScore(this.playerScore.get())
+    this.board.staticBricks.forEach(brick => {
+      this.renderer.drawBrick(brick)
+    })
   }
 
   private mainLoop() {

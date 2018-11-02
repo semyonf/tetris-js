@@ -5,16 +5,16 @@ import Shape from './shape/Shape'
 export default class Board {
   public staticBricks: Brick[] = []
   public activeShape: Shape
-  private readonly colors = {
+  readonly colors = {
     normal: 'rgb(69,90,100)',
     turbo: 'rgba(69,90,100,0.12)'
   }
 
   constructor(
-    readonly game: Game,
-    readonly width: number,
-    readonly height: number,
-    readonly brickSize: number,
+    public readonly game: Game,
+    public readonly width: number,
+    public readonly height: number,
+    public readonly brickSize: number,
     private readonly random: any
   ) {
     this.activeShape = this.spawnShape()
@@ -22,27 +22,6 @@ export default class Board {
 
   public spawnShape() {
     return new Shape(this.width, this.brickSize, this.random)
-  }
-
-  public drawBackground(context: CanvasRenderingContext2D) {
-    context.fillStyle = this.game.turboMode ? this.colors.turbo : this.colors.normal
-    context.fillRect(0, 0, this.width, this.height)
-  }
-
-  public drawStaticBricks(context: CanvasRenderingContext2D) {
-    this.staticBricks.forEach((staticBrick) => staticBrick.draw(context))
-  }
-
-  public drawReplay(context: CanvasRenderingContext2D) {
-    context.fillStyle = 'white'
-    context.font = '12px Courier'
-    context.fillText('REPLAY...', 0, 20)
-  }
-
-  public drawScore(context: CanvasRenderingContext2D) {
-    context.fillStyle = 'white'
-    context.font = '12px Courier'
-    context.fillText('Score: ' + this.game.playerScore.get(), 0, 10)
   }
 
   public isFull() {
