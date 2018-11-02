@@ -37,11 +37,13 @@ export default class Shape {
   private startY: number
   private color: number
 
-  constructor(...args: any[]) {
-    if (args.length === 1 && args[0] instanceof Shape) {
-      this._copyingConstructor.apply(this, args)
+  constructor(sourceShape: Shape)
+  constructor(boardWidth: number, brickSize: number, random: any)
+  constructor() {
+    if (arguments.length === 1) {
+      this._copyingConstructor.apply(this, arguments)
     } else {
-      this._defaultConstructor.apply(this, args)
+      this._defaultConstructor.apply(this, arguments)
     }
   }
 

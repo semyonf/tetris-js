@@ -4,11 +4,13 @@ export default class Brick {
   private rgb: string
   private size: number
 
-  constructor(...args: any[]) {
-    if (args.length === 1 && args[0] instanceof Brick) {
-      this._copyingConstructor.apply(this, args)
+  constructor(brick: Brick)
+  constructor(x: number, y: number, rgb: string, size: number)
+  constructor() {
+    if (arguments.length === 1) {
+      this._copyingConstructor.apply(this, arguments)
     } else {
-      this._defaultConstructor.apply(this, args)
+      this._defaultConstructor.apply(this, arguments)
     }
   }
 
