@@ -5,6 +5,7 @@
     "module": "es6",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "target": "es6",
     "noImplicitReturns": true,
     "noImplicitAny": true,

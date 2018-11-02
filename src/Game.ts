@@ -16,12 +16,14 @@ export default class Game {
   public playerScore: any
   public turboMode: boolean
   public frameCount: number
-  public onProceed: () => void | undefined
+  public onProceed: () => void | undefined = undefined
   public renderer: IRenderer
   public readonly clocks: { [key: string]: Clock } = Object.freeze({
     gpu: requestAnimationFrame.bind(window),
     timeout: setTimeout.bind(window)
   })
+  public recorder: Recorder
+  public readonly joystick: Joystick
 
   private randomSeed: number
   private clock: Clock = this.clocks.gpu
@@ -30,18 +32,8 @@ export default class Game {
   private difficulty: number
   private config: any
   private board: Board
-  private recorder: Recorder
-  private readonly joystick: Joystick
 
   constructor(config: IGameConfig) {
-    if (config.debug === true) {
-      this.renderer = new VirtualRenderer(this, config.spy)
-    } else if (config.context) {
-      this.renderer = new CanvasRenderer(config.context)
-    } else {
-      throw new Error('No renderer selected!')
-    }
-
     this.config = config
 
     this.joystick = new Joystick([
@@ -71,6 +63,15 @@ export default class Game {
     this.recorder.record()
 
     this.randomSeed = +(new Date())
+
+    if (config.debug === true) {
+      this.renderer = new VirtualRenderer(this, config.spy)
+    } else if (config.context) {
+      this.renderer = new CanvasRenderer(config.context)
+    } else {
+      throw new Error('No renderer selected!')
+    }
+
     this.random = new ParkMiller(this.randomSeed)
 
     this.playerScore = (() => {
@@ -108,7 +109,6 @@ export default class Game {
       this.random
     )
     this.frameCount = 0
-    this.onProceed = undefined
     this.difficulty = 1
     this.turboMode = false
 

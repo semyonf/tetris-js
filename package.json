@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "jest --no-cache ./test/*.spec.*",
+    "test": "jest --env=jsdom --no-cache ./test/*.spec.*",
     "lint": "tslint -c tslint.json './src/**/*.ts' --fix",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --progress --compress",
     "build": "webpack"

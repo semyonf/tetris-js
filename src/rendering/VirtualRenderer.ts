@@ -4,12 +4,14 @@ import Game from '../Game'
 import IRenderer from './IRenderer'
 
 export default class VirtualRenderer implements IRenderer {
-  private readonly game: Game
   private readonly spy: any
 
   constructor(game: Game, spy: any) {
-    this.game = game
-    this.game.setClock('timeout')
+    game.setClock('timeout')
+    game.setRandomSeed(spy.injection.seed)
+    game.recorder.tape = spy.injection.tape
+    game.recorder.stop()
+    game.recorder.play()
     this.spy = spy
 
     console.warn('Debug mode is active!')
@@ -28,6 +30,6 @@ export default class VirtualRenderer implements IRenderer {
   }
 
   public drawScore(score: number): void {
-    this.spy.drawScore()
+    this.spy.drawScore(score)
   }
 }
