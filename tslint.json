@@ -10,6 +10,7 @@
     "no-arg": true,
     "object-literal-sort-keys": false,
     "no-bitwise": true,
+    "member-access": true,
     "no-conditional-assignment": true,
     "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
