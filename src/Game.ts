@@ -9,13 +9,14 @@ import CanvasRenderer from './rendering/CanvasRenderer'
 import IRenderer from './rendering/IRenderer'
 import VirtualRenderer from './rendering/VirtualRenderer'
 import FallCommand from './shape/commands/FallCommand'
+import ScoreManager from './ScoreManager'
 
 type Clock = (cb: () => void) => void
 
 export default class Game {
-  public playerScore: any
-  public turboMode: boolean
-  public frameCount: number
+  public scoreManager: ScoreManager = new ScoreManager()
+  public turboMode: boolean = false
+  public frameCount: number = 0
   public onProceed: () => void | undefined = undefined
   public renderer: IRenderer
   public readonly clocks: { [key: string]: Clock } = Object.freeze({
@@ -24,12 +25,10 @@ export default class Game {
   })
   public recorder: Recorder
   public readonly joystick: Joystick
-
-  private randomSeed: number
+  private randomSeed: number = +(new Date())
   private clock: Clock = this.clocks.gpu
   private fallCommand = new FallCommand()
   private random: any
-  private difficulty: number
   private config: any
   private board: Board
 
@@ -62,8 +61,6 @@ export default class Game {
     this.joystick.connect()
     this.recorder.record()
 
-    this.randomSeed = +(new Date())
-
     if (config.debug === true) {
       this.renderer = new VirtualRenderer(this, config.spy)
     } else if (config.context) {
@@ -74,33 +71,6 @@ export default class Game {
 
     this.random = new ParkMiller(this.randomSeed)
 
-    this.playerScore = (() => {
-      let pplayerScore = 0
-      const scoreThresholds = [149, 49, 39, 9, 0]
-
-      return {
-        get() {
-          return pplayerScore
-        },
-        set(newScore: number) {
-          pplayerScore = newScore
-
-          scoreThresholds.some((threshold, index) => {
-            if (newScore >= threshold) {
-              this.difficulty = 5 - index
-
-              return true
-            }
-
-            return false
-          })
-        },
-        add(extraScore: number) {
-          this.set(pplayerScore + extraScore)
-        }
-      }
-    })()
-
     this.board = new Board(
       this,
       config.board.boardWidth,
@@ -108,9 +78,6 @@ export default class Game {
       config.board.brickSize,
       this.random
     )
-    this.frameCount = 0
-    this.difficulty = 1
-    this.turboMode = false
 
     this.mainLoop()
   }
@@ -129,9 +96,8 @@ export default class Game {
 
   public restart() {
     this.random = new ParkMiller(this.randomSeed)
-    this.playerScore.set(0)
+    this.scoreManager.setScore(0)
     this.frameCount = 0
-    this.difficulty = 1
     this.turboMode = false
     this.board = new Board(
       this, this.config.board.boardWidth,
@@ -181,7 +147,7 @@ export default class Game {
       })
     }
 
-    this.renderer.drawScore(this.playerScore.get())
+    this.renderer.drawScore(this.scoreManager.getScore())
     this.board.staticBricks.forEach((brick) => {
       this.renderer.drawBrick(brick)
     })
@@ -195,7 +161,7 @@ export default class Game {
   private gravityIsActive() {
     const gameSpeeds = [null, 32, 16, 8, 4, 2]
 
-    return this.turboMode || this.frameCount % gameSpeeds[this.difficulty] === 0
+    return this.turboMode || this.frameCount % gameSpeeds[this.scoreManager.getLevel()] === 0
   }
 
   private readCommand() {

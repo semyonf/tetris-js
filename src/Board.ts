@@ -55,7 +55,7 @@ export default class Board {
       if (row.isFull) {
         row.bricks = []
         ++rowsCleared
-        this.game.playerScore.add(rowsCleared)
+        this.game.scoreManager.add(rowsCleared)
       } else {
         row.bricks.forEach((brick) => {
           brick.y += rowsCleared * this.brickSize
