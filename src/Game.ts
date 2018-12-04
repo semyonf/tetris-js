@@ -8,8 +8,8 @@ import Recorder from './Recorder'
 import CanvasRenderer from './rendering/CanvasRenderer'
 import IRenderer from './rendering/IRenderer'
 import VirtualRenderer from './rendering/VirtualRenderer'
-import FallCommand from './shape/commands/FallCommand'
 import ScoreManager from './ScoreManager'
+import FallCommand from './shape/commands/FallCommand'
 
 type Clock = (cb: () => void) => void
 

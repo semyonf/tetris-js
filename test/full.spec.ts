@@ -1,14 +1,20 @@
 import Game from '../src/Game'
 
-import resources from './resources.json'
+import resources from './resources'
 
 describe('Logic', () => {
   it('is ok', done => {
     const spy = {
       injection: resources,
-      drawBoard: () => {},
-      drawReplay: () => {},
-      drawBrick: () => {},
+      drawBoard: (): () => void => {
+        return undefined
+      },
+      drawReplay: (): () => void => {
+        return undefined
+      },
+      drawBrick: (): () => void => {
+        return undefined
+      },
       drawScore: (score: number) => {
         if (score === 7) {
           done()

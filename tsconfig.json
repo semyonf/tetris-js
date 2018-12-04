@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "allowJs": true,
+    "allowJs": false,
     "module": "es6",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -10,5 +10,8 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "exclude": [
+    "test"
+  ]
 }
