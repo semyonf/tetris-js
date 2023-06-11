@@ -9,7 +9,8 @@
   ],
   "env": { "node": true },
   "rules": {
-    "no-restricted-imports": ["error", { "patterns": ["dist"] }]
+    "prefer-spread": 0,
+    "prefer-rest-params": 0
   },
   "overrides": [
     {

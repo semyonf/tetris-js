@@ -2,16 +2,17 @@
   "compilerOptions": {
     "sourceMap": true,
     "allowJs": false,
-    "module": "es6",
+    "skipLibCheck": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "es6",
     "noImplicitReturns": true,
     "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist"
   },
   "exclude": [
-    "test"
+    "src/test/**/*"
   ]
 }

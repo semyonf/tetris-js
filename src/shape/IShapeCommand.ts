@@ -1,6 +1,6 @@
-import Board from '../Board'
-import Shape from './Shape'
+import Board from '../Board';
+import Shape from './Shape';
 
 export default interface IShapeCommand {
-  execute(this: Shape, board: Board): void
+  execute(this: Shape, board: Board): void;
 }
