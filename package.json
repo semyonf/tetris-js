@@ -1,41 +1,43 @@
 {
   "private": true,
   "version": "0.0.4",
-  "scripts": {
-    "test": "jest --env=jsdom --no-cache ./test/*.spec.*",
-    "lint": "tslint -c tslint.json './src/**/*.ts' --fix",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open",
-    "build": "webpack",
-    "release": "standard-version"
+  "source": "src/index.ts",
+  "main": "dist/tetris.js",
+  "types": "dist/tetris.d.ts",
+  "targets": {
+    "main": {
+      "includeNodeModules": true
+    }
   },
-  "babel": {
-    "presets": [
-      "env"
-    ]
+  "scripts": {
+    "test": "jest --env=jsdom --no-cache src/test/*.spec.*",
+    "test:cov": "jest --coverage",
+    "format": "prettier --write 'src/**/*.{ts,js,css,md,json}'",
+    "lint": "eslint --fix src/**/*.ts",
+    "release": "standard-version",
+    "typecheck": "tsc --noEmit",
+    "build": "parcel build"
   },
   "author": "Semyon Fomin <semyonf@icloud.com>",
   "license": "MIT",
+  "dependencies": {
+    "park-miller": "1.0.0"
+  },
   "devDependencies": {
-    "@tsconfig/recommended": "1.0.2",
+    "@parcel/packager-ts": "2.9.2",
+    "@parcel/transformer-typescript-types": "2.9.2",
     "@types/jest": "27.0.3",
     "@types/jsdom": "16.2.13",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.5",
-    "babel-preset-env": "1.7.0",
-    "cross-env": "5.2.0",
     "eslint": "8.19.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.2.1",
     "jest": "27.4.3",
-    "park-miller": "1.0.0",
+    "parcel": "2.9.2",
     "prettier": "2.7.1",
     "standard-version": "9.5.0",
     "ts-jest": "27.0.7",
-    "ts-loader": "5.3.1",
-    "tslint": "5.11.0",
-    "typescript": "4.5.2",
-    "webpack": "4.27.0",
-    "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.11"
+    "typescript": "4.5.2"
   }
 }

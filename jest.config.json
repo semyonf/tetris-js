@@ -1,4 +1,5 @@
 {
   "preset": "ts-jest",
-  "testEnvironment": "jsdom"
+  "testEnvironment": "jsdom",
+  "collectCoverageFrom": ["src/**/*.ts", "!src/test/**/*.ts"]
 }
