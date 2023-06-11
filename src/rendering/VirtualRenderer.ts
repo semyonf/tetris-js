@@ -8,8 +8,7 @@ export default class VirtualRenderer implements IRenderer {
     game.setClock('timeout');
     game.setRandomSeed(spy.injection.seed);
     game.recorder.tape = spy.injection.tape;
-    game.recorder.stop();
-    game.recorder.play();
+    game.stop();
     this.spy = spy;
 
     console.warn('Debug mode is active!');

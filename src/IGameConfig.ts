@@ -7,5 +7,11 @@ export default interface IGameConfig {
     boardHeight: number;
     brickSize: number;
   };
-  customControls?: object[];
+  onScreenControls?: (a: {
+    left: CallableFunction;
+    right: CallableFunction;
+    up: CallableFunction;
+    down: CallableFunction;
+    escape: CallableFunction;
+  }) => void;
 }

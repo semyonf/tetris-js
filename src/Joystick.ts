@@ -1,68 +1,58 @@
-import KeyMap from './KeyMap';
-import IShapeCommand from './shape/IShapeCommand';
+const buttons = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'] as const;
+
+export type Button = typeof buttons[number];
 
 export default class Joystick {
-  public keysStates: { [key: string]: boolean } = {
-    Escape: false,
-    Enter: false,
-    anyKey: false,
+  public buttonStates: { [key in Button]: boolean } = {
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+    ArrowUp: false,
   };
-  public keyMaps: { [key: string]: IShapeCommand } = {};
-  public keyQueue: any[] = [];
 
-  private readonly callbacks: any = { anyKey: undefined };
+  public lastPressedButton: Button | null = null;
 
-  // todo: find a way around this crutch
-  private boundOnKeyPressed = this.onKeyPressed.bind(this);
+  private onKeyPressed = (e: KeyboardEvent) => {
+    const isDown = e.type === 'keydown';
+    const keyCode = e.code;
 
-  constructor(keyMaps: KeyMap[]) {
-    for (const keyMap of keyMaps) {
-      Object.assign(this.keyMaps, keyMap.get());
+    if (!keyCodeIsKnown(keyCode)) {
+      return;
     }
 
-    Object.assign(this.keysStates, this.keyMaps);
-    Object.keys(this.keysStates).forEach(
-      (keyState) => (this.keysStates[keyState] = false),
-    );
+    e.preventDefault();
+
+    this.buttonStates[keyCode] = isDown;
+
+    if (!isDown) {
+      return;
+    }
+
+    this.postButtonPress(keyCode);
+  };
+
+  public postButtonPress(keyCode: Button) {
+    this.lastPressedButton = keyCode;
+    this.onButtonPressCb(keyCode);
   }
 
+  private onButtonPressCb: (button: Button) => unknown;
+
   public connect() {
-    addEventListener('keyup', this.boundOnKeyPressed);
-    addEventListener('keydown', this.boundOnKeyPressed);
+    addEventListener('keyup', this.onKeyPressed);
+    addEventListener('keydown', this.onKeyPressed);
   }
 
   public disconnect() {
-    removeEventListener('keyup', this.boundOnKeyPressed);
-    removeEventListener('keydown', this.boundOnKeyPressed);
+    removeEventListener('keyup', this.onKeyPressed);
+    removeEventListener('keydown', this.onKeyPressed);
   }
 
-  public setCallback(key: string, callback: (key?: string) => void) {
-    this.callbacks[key] = callback;
+  setOnButtonPressCb(onButtonPressCb: (button: Button) => unknown): void {
+    this.onButtonPressCb = onButtonPressCb;
   }
+}
 
-  private onKeyPressed(e: KeyboardEvent) {
-    const isDown = e.type === 'keydown';
-    const keyCode = e.code;
-    this.keysStates.anyKey = isDown;
-
-    if (isDown && this.callbacks.anyKey !== undefined) {
-      this.callbacks.anyKey(keyCode);
-    }
-
-    if (this.keysStates[keyCode] !== undefined) {
-      e.preventDefault();
-
-      this.keysStates[keyCode] = isDown;
-
-      if (isDown) {
-        if (keyCode in this.keysStates) {
-          this.keyQueue.push(keyCode);
-        }
-
-        if (this.callbacks[keyCode] !== undefined) {
-          this.callbacks[keyCode]();
-        }
-      }
-    }
-  }
+function keyCodeIsKnown(keyCode: string): keyCode is Button {
+  return buttons.includes(keyCode as Button);
 }

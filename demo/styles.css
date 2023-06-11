@@ -1,0 +1,55 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: slategrey;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+canvas#board {
+  margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  border: 1px solid darkslategrey;
+  display: inline-flex;
+}
+
+button {
+  border-radius: 2px;
+  border: none;
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  font-size: 14px;
+}
+
+button:active {
+  box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+
+.top {
+  transform: rotate(-90deg);
+}
+
+.bottom {
+  transform: rotate(90deg);
+}
+
+.left {
+  transform: rotate(180deg);
+}
+
+
+aside {
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  gap: 8px;
+  display: inline-flex;
+  flex-direction: column;
+}
