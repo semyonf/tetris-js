@@ -2,7 +2,7 @@
   "private": true,
   "author": "Semyon Fomin <semyonf@icloud.com>",
   "license": "MIT",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "source": "src/index.ts",
   "main": "dist/tetris.js",
   "types": "dist/tetris.d.ts",
