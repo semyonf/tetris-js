@@ -1,4 +1,4 @@
-import TapeItem from '../TapeItem';
+import TapeItem from '../tape-item';
 
 interface IResource {
   seed: number;

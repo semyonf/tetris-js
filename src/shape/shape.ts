@@ -1,8 +1,8 @@
-import Brick from '../Brick';
+import Brick from '../brick';
 import ParkMiller from 'park-miller';
 
 export default class Shape {
-  public static parameters = Object.freeze({
+  public static parameters = {
     colors: [
       { name: 'orange', rgb: 'rgb(239,108,0)' },
       { name: 'red', rgb: 'rgb(211,47,47)' },
@@ -101,7 +101,7 @@ export default class Shape {
         ],
       },
     ],
-  });
+  } as const;
 
   public bricks: Brick[] = [];
   public isFrozen = false;
@@ -124,19 +124,7 @@ export default class Shape {
   public applyOrientation() {
     const type = Shape.parameters.types[this.type].matrix;
     const orientation = Shape.parameters.orientations[this.orientation].matrix;
-
-    const oriented: number[][] = [];
-
-    // Dot product of a type matrix and an orientation matrix
-    for (let i = 0; i < 3; ++i) {
-      oriented[i] = [];
-      for (let j = 0; j < 2; ++j) {
-        oriented[i][j] = 0;
-        for (let k = 0; k < 2; ++k) {
-          oriented[i][j] += type[i][k] * orientation[k][j];
-        }
-      }
-    }
+    const oriented = this.getRotatedShape(type, orientation);
 
     const center = this.bricks[0];
 
@@ -146,6 +134,25 @@ export default class Shape {
     }
 
     return this;
+  }
+
+  private getRotatedShape(
+    shape: typeof Shape.parameters.types[number]['matrix'],
+    rotation: typeof Shape.parameters.orientations[number]['matrix'],
+  ) {
+    const rotatedShape: number[][] = [];
+
+    for (let i = 0; i < 3; ++i) {
+      rotatedShape[i] = [];
+      for (let j = 0; j < 2; ++j) {
+        rotatedShape[i][j] = 0;
+        for (let k = 0; k < 2; ++k) {
+          rotatedShape[i][j] += shape[i][k] * rotation[k][j];
+        }
+      }
+    }
+
+    return rotatedShape;
   }
 
   private _defaultConstructor(

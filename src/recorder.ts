@@ -1,6 +1,6 @@
-import Game from './Game';
-import Joystick, { Button } from './Joystick';
-import TapeItem from './TapeItem';
+import Game from './game';
+import Joystick, { Button } from './joystick';
+import TapeItem from './tape-item';
 
 export default class Recorder {
   public tape: TapeItem[] = [];

@@ -1,7 +1,5 @@
-export default interface IGameConfig {
+export default interface GameConfig {
   context?: CanvasRenderingContext2D;
-  debug?: boolean | undefined;
-  spy?: any;
   board: {
     boardWidth: number;
     boardHeight: number;

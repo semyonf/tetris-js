@@ -13,6 +13,6 @@
     "outDir": "dist"
   },
   "exclude": [
-    "src/test/**/*"
+    "src/_test/**/*"
   ]
 }

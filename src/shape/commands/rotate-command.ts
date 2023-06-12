@@ -1,8 +1,8 @@
-import Board from '../../Board';
-import IShapeCommand from '../IShapeCommand';
-import Shape from '../Shape';
+import Board from '../../board';
+import ShapeCommand from '../shape-command';
+import Shape from '../shape';
 
-export default class RotateCommand implements IShapeCommand {
+export default class RotateCommand implements ShapeCommand {
   public execute(this: Shape, board: Board) {
     const temp = new Shape(this);
 

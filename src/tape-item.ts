@@ -1,4 +1,4 @@
-import { Button } from './Joystick';
+import { Button } from './joystick';
 
 export default class TapeItem {
   public key: Button;

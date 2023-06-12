@@ -1,5 +1,6 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
-  "collectCoverageFrom": ["src/**/*.ts", "!src/test/**/*.ts"]
+  "rootDir": "src/_test",
+  "collectCoverageFrom": ["src/**/*.ts", "!src/_test/**/*.ts"]
 }

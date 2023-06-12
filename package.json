@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "test": "jest --env=jsdom --no-cache src/test/*.spec.*",
+    "test": "jest --env=jsdom --no-cache src/_test/*.spec.*",
     "test:cov": "jest --coverage",
     "format": "prettier --write 'src/**/*.{ts,js,css,md,json}'",
     "lint": "eslint --fix src/**/*.ts",

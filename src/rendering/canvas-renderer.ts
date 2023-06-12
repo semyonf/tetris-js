@@ -1,11 +1,14 @@
-import Board from '../Board';
-import Brick from '../Brick';
-import IRenderer from './IRenderer';
+import Board from '../board';
+import Brick from '../brick';
+import Renderer from './renderer';
 
-export default class CanvasRenderer implements IRenderer {
+export default class CanvasRenderer extends Renderer {
   private readonly context: CanvasRenderingContext2D;
 
+  frameClock = requestAnimationFrame.bind(window);
+
   constructor(context: CanvasRenderingContext2D) {
+    super();
     this.context = context;
   }
 

@@ -1,20 +1,17 @@
 import ParkMiller from 'park-miller';
-import Board from './Board';
-import IGameConfig from './IGameConfig';
-import Joystick, { Button } from './Joystick';
-import Recorder from './Recorder';
-import CanvasRenderer from './rendering/CanvasRenderer';
-import IRenderer from './rendering/IRenderer';
-import VirtualRenderer from './rendering/VirtualRenderer';
-import ScoreManager from './ScoreManager';
-import FallCommand from './shape/commands/FallCommand';
-import IShapeCommand from './shape/IShapeCommand';
-import MoveLeftCommand from './shape/commands/MoveLeftCommand';
-import MoveRightCommand from './shape/commands/MoveRightCommand';
-import RotateCommand from './shape/commands/RotateCommand';
-import DropCommand from './shape/commands/DropCommand';
-
-type Clock = (cb: () => void) => void;
+import Board, { Collisions } from './board';
+import GameConfig from './game-config';
+import Joystick, { Button } from './joystick';
+import Recorder from './recorder';
+import CanvasRenderer from './rendering/canvas-renderer';
+import Renderer from './rendering/renderer';
+import ScoreManager from './score-manager';
+import FallCommand from './shape/commands/fall-command';
+import ShapeCommand from './shape/shape-command';
+import MoveLeftCommand from './shape/commands/move-left-command';
+import MoveRightCommand from './shape/commands/move-right-command';
+import RotateCommand from './shape/commands/rotate-command';
+import DropCommand from './shape/commands/drop-command';
 
 export default class Game {
   public turboMode = false;
@@ -24,31 +21,22 @@ export default class Game {
     return this._frameCount;
   }
 
-  public onProceedCb?: CallableFunction = undefined;
-
-  public readonly scoreManager = new ScoreManager();
-  public readonly renderer: IRenderer;
-  public readonly joystick = new Joystick();
-  public readonly recorder = new Recorder(this.joystick, this);
-
-  private randomSeed = +new Date();
-  private fallCommand = new FallCommand();
+  private readonly joystick = new Joystick();
+  private readonly fallCommand = new FallCommand();
+  private onProceedCb?: CallableFunction = undefined;
   private randomNumberGenerator: ParkMiller;
+  private randomSeed = +new Date();
   private board: Board;
 
-  private readonly commandMap: { [key in Button]: IShapeCommand } = {
+  public readonly scoreManager = new ScoreManager();
+  public readonly recorder = new Recorder(this.joystick, this);
+
+  private readonly commandMap: { [key in Button]: ShapeCommand } = {
     ArrowDown: new DropCommand(),
     ArrowLeft: new MoveLeftCommand(),
     ArrowRight: new MoveRightCommand(),
     ArrowUp: new RotateCommand(),
   };
-
-  public readonly clocks: { [key: string]: Clock } = {
-    gpu: requestAnimationFrame.bind(window),
-    timeout: setTimeout.bind(window),
-  };
-
-  private clock = this.clocks.gpu;
 
   stop() {
     const tape = this.recorder.stopRecording();
@@ -71,8 +59,13 @@ export default class Game {
     };
   }
 
-  constructor(private readonly config: IGameConfig) {
+  constructor(
+    public readonly config: GameConfig,
+    public readonly renderer: Renderer = new CanvasRenderer(config.context),
+  ) {
     this.joystick.connect();
+
+    renderer.setup(this);
 
     addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.code !== 'Escape') {
@@ -95,14 +88,6 @@ export default class Game {
 
     this.recorder.startRecording();
 
-    if (config.debug === true) {
-      this.renderer = new VirtualRenderer(this, config.spy);
-    } else if (config.context) {
-      this.renderer = new CanvasRenderer(config.context);
-    } else {
-      throw new Error('No renderer selected!');
-    }
-
     this.randomNumberGenerator = new ParkMiller(this.randomSeed);
 
     this.board = new Board(
@@ -114,14 +99,6 @@ export default class Game {
     );
 
     this.mainLoop();
-  }
-
-  public setClock(d: string) {
-    if (d === 'timeout') {
-      this.clock = this.clocks.timeout;
-    } else {
-      this.clock = this.clocks.gpu;
-    }
   }
 
   public drawReplay() {
@@ -158,7 +135,7 @@ export default class Game {
 
     this.readNextCommand();
 
-    this.board.checkCollisions((collisions: any) => {
+    this.board.checkCollisions((collisions: Collisions) => {
       this.board.activeShape.isFrozen = collisions.bottom;
     });
 
@@ -190,7 +167,7 @@ export default class Game {
 
   private mainLoop() {
     this.proceed();
-    this.clock(this.mainLoop.bind(this));
+    this.renderer.frameClock(this.mainLoop.bind(this));
   }
 
   private gravityIsActive() {

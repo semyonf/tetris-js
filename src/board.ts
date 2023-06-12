@@ -1,6 +1,11 @@
-import Brick from './Brick';
-import Game from './Game';
-import Shape from './shape/Shape';
+import Brick from './brick';
+import Game from './game';
+import Shape from './shape/shape';
+import ParkMiller from 'park-miller';
+
+const sides = ['bottom', 'left', 'right'] as const;
+
+export type Collisions = { [key in typeof sides[number]]: boolean };
 
 export default class Board {
   public staticBricks: Brick[] = [];
@@ -15,7 +20,7 @@ export default class Board {
     public readonly width: number,
     public readonly height: number,
     public readonly brickSize: number,
-    private readonly random: any,
+    private readonly random: ParkMiller,
   ) {
     this.activeShape = this.spawnShape();
   }
@@ -71,18 +76,15 @@ export default class Board {
   /**
    * todo: refactor
    */
-  public checkCollisions(
-    callback: (collisions: { [key: string]: boolean }) => any,
-  ) {
-    const collisions: { [key: string]: boolean } = Object.seal({
+  public checkCollisions(callback: (collisions: Collisions) => void) {
+    const collisions: Collisions = {
       bottom: false,
       left: false,
       right: false,
-    });
+    };
 
-    const checkAgainst = (obstacle: string, side: string) => {
-      // @ts-ignore
-      return (brick) => {
+    const checkAgainst = (obstacle: string, side: keyof typeof collisions) => {
+      return (brick: Brick) => {
         if (obstacle === 'board') {
           switch (side) {
             case 'bottom':
@@ -129,7 +131,7 @@ export default class Board {
     };
 
     this.activeShape.bricks.forEach((brick) => {
-      ['bottom', 'left', 'right'].forEach((side) => {
+      sides.forEach((side) => {
         if (
           checkAgainst('board', side)(brick) ||
           checkAgainst('static', side)(brick)

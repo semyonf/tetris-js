@@ -1,6 +1,7 @@
-import Game from '../Game';
+import Game from '../game';
 
 import resources from './resources';
+import VirtualRenderer from '../rendering/virtual-renderer';
 
 describe('Logic', () => {
   it('is ok', (done) => {
@@ -28,14 +29,17 @@ describe('Logic', () => {
     const boardWidth = brickSize * boardCols;
     const boardHeight = brickSize * boardRows;
 
-    new Game({
-      debug: true,
-      spy,
-      board: {
-        boardWidth,
-        boardHeight,
-        brickSize,
+    const renderer = new VirtualRenderer(spy);
+
+    new Game(
+      {
+        board: {
+          boardWidth,
+          boardHeight,
+          brickSize,
+        },
       },
-    });
+      renderer,
+    );
   }, 10000);
 });
