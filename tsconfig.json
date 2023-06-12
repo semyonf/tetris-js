@@ -1,4 +1,5 @@
 {
+  // TODO: configure
   "compilerOptions": {
     "sourceMap": true,
     "allowJs": false,
