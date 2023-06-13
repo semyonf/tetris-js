@@ -3,6 +3,7 @@ const buttons = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'] as const;
 export type Button = typeof buttons[number];
 
 export default class Joystick {
+  private reactToButtons = false;
   public buttonStates: { [key in Button]: boolean } = {
     ArrowDown: false,
     ArrowLeft: false,
@@ -32,6 +33,10 @@ export default class Joystick {
   };
 
   public postButtonPress(keyCode: Button) {
+    if (!this.reactToButtons) {
+      return;
+    }
+
     this.lastPressedButton = keyCode;
     this.onButtonPressCb(keyCode);
   }
@@ -41,11 +46,13 @@ export default class Joystick {
   public connect() {
     addEventListener('keyup', this.onKeyPressed);
     addEventListener('keydown', this.onKeyPressed);
+    this.reactToButtons = true;
   }
 
   public disconnect() {
     removeEventListener('keyup', this.onKeyPressed);
     removeEventListener('keydown', this.onKeyPressed);
+    this.reactToButtons = false;
   }
 
   setOnButtonPressCb(onButtonPressCb: (button: Button) => unknown): void {
