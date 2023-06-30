@@ -32,20 +32,23 @@ export default class CanvasRenderer extends Renderer {
   }
 
   public drawBrick(brick: Brick) {
-    this.context.fillStyle = brick.rgb;
+    this.context.fillStyle = brick.colorRgb;
     this.context.beginPath();
     this.context.moveTo(brick.x, brick.y);
-    this.context.lineTo(brick.x + brick.size - 1, brick.y);
-    this.context.lineTo(brick.x, brick.y + brick.size - 1);
+    this.context.lineTo(brick.x + brick.sideLength - 1, brick.y);
+    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
     this.context.closePath();
     this.context.fill();
 
-    this.context.fillStyle = this.modifyRgb(brick.rgb, 0.9);
+    this.context.fillStyle = this.modifyRgb(brick.colorRgb, 0.9);
     this.context.beginPath();
-    this.context.moveTo(brick.x + brick.size - 1, brick.y);
-    this.context.lineTo(brick.x, brick.y + brick.size - 1);
-    this.context.lineTo(brick.x, brick.y + brick.size - 1);
-    this.context.lineTo(brick.x + brick.size - 1, brick.y + brick.size - 1);
+    this.context.moveTo(brick.x + brick.sideLength - 1, brick.y);
+    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
+    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
+    this.context.lineTo(
+      brick.x + brick.sideLength - 1,
+      brick.y + brick.sideLength - 1,
+    );
     this.context.closePath();
     this.context.fill();
   }

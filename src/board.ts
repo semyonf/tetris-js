@@ -3,7 +3,13 @@ import Game from './game';
 import Shape from './shape/shape';
 import ParkMiller from 'park-miller';
 
-const sides = ['bottom', 'left', 'right'] as const;
+export enum Sides {
+  Bottom = 'bottom',
+  Left = 'left',
+  Right = 'right',
+}
+
+export const sides = [Sides.Bottom, Sides.Left, Sides.Right] as const;
 
 export type Collisions = { [key in typeof sides[number]]: boolean };
 
@@ -71,76 +77,5 @@ export default class Board {
     }
 
     this.staticBricks = newBricks;
-  }
-
-  /**
-   * todo: refactor
-   */
-  public checkCollisions(callback: (collisions: Collisions) => void) {
-    const collisions: Collisions = {
-      bottom: false,
-      left: false,
-      right: false,
-    };
-
-    const checkAgainst = (obstacle: string, side: keyof typeof collisions) => {
-      return (brick: Brick) => {
-        if (obstacle === 'board') {
-          switch (side) {
-            case 'bottom':
-              return brick.y === this.height - this.brickSize;
-            case 'left':
-              return brick.x === 0;
-            case 'right':
-              return brick.x === this.width - this.brickSize;
-          }
-        } else {
-          let collision = false;
-
-          this.staticBricks.forEach((staticBrick) => {
-            switch (side) {
-              case 'bottom': {
-                collision =
-                  collision ||
-                  (brick.y === staticBrick.y - this.brickSize &&
-                    brick.x === staticBrick.x);
-                break;
-              }
-
-              case 'left': {
-                collision =
-                  collision ||
-                  (brick.y === staticBrick.y &&
-                    brick.x - this.brickSize === staticBrick.x);
-                break;
-              }
-
-              case 'right': {
-                collision =
-                  collision ||
-                  (brick.y === staticBrick.y &&
-                    brick.x + this.brickSize === staticBrick.x);
-                break;
-              }
-            }
-          });
-
-          return collision;
-        }
-      };
-    };
-
-    this.activeShape.bricks.forEach((brick) => {
-      sides.forEach((side) => {
-        if (
-          checkAgainst('board', side)(brick) ||
-          checkAgainst('static', side)(brick)
-        ) {
-          collisions[side] = true;
-        }
-      });
-    });
-
-    callback(collisions);
   }
 }

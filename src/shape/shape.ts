@@ -1,5 +1,6 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
+import { Collisions, Sides, sides } from '../board';
 
 export default class Shape {
   public static parameters = {
@@ -119,6 +120,30 @@ export default class Shape {
     } else {
       this._defaultConstructor.apply(this, arguments);
     }
+  }
+
+  public checkCollisions(
+    staticBricks: Brick[],
+    boardWidth: number,
+    boardHeight: number,
+  ) {
+    const collisions: Collisions = {
+      bottom: false,
+      left: false,
+      right: false,
+    };
+
+    for (const brick of this.bricks) {
+      const bricksCollisions = brick.collidesWithBricks(staticBricks);
+
+      collisions.left ||= brick.x === 0 || bricksCollisions.left;
+      collisions.right ||=
+        brick.x === boardWidth - brick.sideLength || bricksCollisions.left;
+      collisions.bottom ||=
+        brick.y === boardHeight - brick.sideLength || bricksCollisions.bottom;
+    }
+
+    return collisions;
   }
 
   public applyOrientation() {

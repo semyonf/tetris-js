@@ -135,9 +135,13 @@ export default class Game {
 
     this.readNextCommand();
 
-    this.board.checkCollisions((collisions: Collisions) => {
-      this.board.activeShape.isFrozen = collisions.bottom;
-    });
+    const collisions = this.board.activeShape.checkCollisions(
+      this.board.staticBricks,
+      this.board.width,
+      this.board.height,
+    );
+
+    this.board.activeShape.isFrozen = collisions.bottom;
 
     if (this.board.activeShape.isFrozen) {
       for (let i = 0; i < 4; ++i) {
