@@ -136,7 +136,7 @@ export default class Game {
     this.readNextCommand();
 
     const collisions = this.board.activeShape.checkCollisions(
-      this.board.staticBricks,
+      this.board.frozenBricks,
       this.board.width,
       this.board.height,
     );
@@ -145,7 +145,7 @@ export default class Game {
 
     if (this.board.activeShape.isFrozen) {
       for (let i = 0; i < 4; ++i) {
-        this.board.staticBricks.push(this.board.activeShape.bricks.pop());
+        this.board.frozenBricks.push(this.board.activeShape.bricks.pop());
       }
 
       this.board.checkFilledRegions();
@@ -166,7 +166,7 @@ export default class Game {
     }
 
     this.renderer.drawScore(this.scoreManager.getScore());
-    this.board.staticBricks.forEach((brick) => this.renderer.drawBrick(brick));
+    this.board.frozenBricks.forEach((brick) => this.renderer.drawBrick(brick));
   }
 
   private mainLoop() {

@@ -13,7 +13,7 @@ export default class RotateCommand implements ShapeCommand {
     potentialShape.rotate();
 
     const collisions = potentialShape.checkCollisions(
-      board.staticBricks,
+      board.frozenBricks,
       board.width,
       board.height,
     );

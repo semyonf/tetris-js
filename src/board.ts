@@ -14,7 +14,7 @@ export const sides = [Sides.Bottom, Sides.Left, Sides.Right] as const;
 export type Collisions = { [key in typeof sides[number]]: boolean };
 
 export default class Board {
-  public staticBricks: Brick[] = [];
+  public frozenBricks: Brick[] = [];
   public activeShape: Shape;
   public readonly colors = {
     normal: 'rgb(69,90,100)',
@@ -36,7 +36,7 @@ export default class Board {
   }
 
   public isFull() {
-    return this.staticBricks.some((brick) => brick.y < this.brickSize * 2);
+    return this.frozenBricks.some((brick) => brick.y < this.brickSize * 2);
   }
 
   public checkFilledRegions() {
@@ -46,10 +46,10 @@ export default class Board {
 
     for (
       let i = this.height - this.brickSize;
-      bricksChecked !== this.staticBricks.length;
+      bricksChecked !== this.frozenBricks.length;
       i -= this.brickSize
     ) {
-      bricks = this.staticBricks.filter((brick) => brick.y === i);
+      bricks = this.frozenBricks.filter((brick) => brick.y === i);
 
       rows.push({
         bricks,
@@ -76,6 +76,6 @@ export default class Board {
       newBricks = newBricks.concat(row.bricks);
     }
 
-    this.staticBricks = newBricks;
+    this.frozenBricks = newBricks;
   }
 }

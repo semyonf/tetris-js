@@ -5,7 +5,7 @@ import Shape from '../shape';
 export default class MoveRightCommand implements ShapeCommand {
   public execute(this: Shape, board: Board) {
     const collisions = this.checkCollisions(
-      board.staticBricks,
+      board.frozenBricks,
       board.width,
       board.height,
     );

@@ -142,7 +142,7 @@ export default class Shape {
   }
 
   public checkCollisions(
-    staticBricks: Brick[],
+    frozenBricks: Brick[],
     boardWidth: number,
     boardHeight: number,
   ) {
@@ -153,7 +153,7 @@ export default class Shape {
     };
 
     for (const brick of this.bricks) {
-      const bricksCollisions = brick.collidesWithBricks(staticBricks);
+      const bricksCollisions = brick.collidesWithBricks(frozenBricks);
 
       collisions.left ||= brick.x === 0 || bricksCollisions.left;
       collisions.right ||=
