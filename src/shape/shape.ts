@@ -141,19 +141,15 @@ export default class Shape {
     }
   }
 
-  public checkCollisions(
-    frozenBricks: Brick[],
+  public collidesWith(
+    bricks: Brick[],
     boardWidth: number,
     boardHeight: number,
   ) {
-    const collisions: Collisions = {
-      bottom: false,
-      left: false,
-      right: false,
-    };
+    const collisions: Collisions = { bottom: false, left: false, right: false };
 
     for (const brick of this.bricks) {
-      const bricksCollisions = brick.collidesWithBricks(frozenBricks);
+      const bricksCollisions = brick.collidesWith(bricks);
 
       collisions.left ||= brick.x === 0 || bricksCollisions.left;
       collisions.right ||=

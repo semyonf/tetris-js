@@ -16,7 +16,7 @@ export default class Brick {
     }
   }
 
-  collidesWithBricks(bricks: Brick[]): Collisions {
+  collidesWith(bricks: Brick[]): Collisions {
     const collisions: Collisions = { bottom: false, left: false, right: false };
 
     for (const brick of bricks) {

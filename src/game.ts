@@ -135,7 +135,7 @@ export default class Game {
 
     this.readNextCommand();
 
-    const collisions = this.board.activeShape.checkCollisions(
+    const collisions = this.board.activeShape.collidesWith(
       this.board.frozenBricks,
       this.board.width,
       this.board.height,
