@@ -1,4 +1,4 @@
-import { Collisions, Sides, sides } from './board';
+import { Collisions } from './board';
 
 export default class Brick {
   public x: number;

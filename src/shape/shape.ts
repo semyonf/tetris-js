@@ -1,6 +1,6 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
-import { Collisions, Sides, sides } from '../board';
+import { Collisions } from '../board';
 
 const shapeColors: {
   name: string;

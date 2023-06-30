@@ -1,4 +1,4 @@
-import Board, { Collisions } from '../../board';
+import Board from '../../board';
 import ShapeCommand from '../shape-command';
 import Shape from '../shape';
 

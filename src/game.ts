@@ -1,5 +1,5 @@
 import ParkMiller from 'park-miller';
-import Board, { Collisions } from './board';
+import Board from './board';
 import GameConfig from './game-config';
 import Joystick, { Button } from './joystick';
 import Recorder from './recorder';
