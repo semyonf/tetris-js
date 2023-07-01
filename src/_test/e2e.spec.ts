@@ -1,12 +1,12 @@
 import Game from '../game';
 
-import resources from './resources';
+import { savedGame } from './savedGameData';
 import VirtualRenderer from '../rendering/virtual-renderer';
 
 describe('Logic', () => {
   it('is ok', (done) => {
     const spy = {
-      injection: resources,
+      injection: savedGame,
       drawBoard: (): (() => void) => {
         return undefined;
       },
