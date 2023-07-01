@@ -4,7 +4,7 @@ import Shape from '../shape';
 
 export default class RotateCommand implements ShapeCommand {
   public execute(this: Shape, board: Board) {
-    const potentialShape = new Shape(this);
+    const potentialShape = this.copy();
 
     if (this.radialSymmetry) {
       return;

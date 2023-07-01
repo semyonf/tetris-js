@@ -1,6 +1,6 @@
 import Brick from './brick';
 import Game from './game';
-import Shape from './shape/shape';
+import Shape, { ShapeFactory } from './shape/shape';
 import ParkMiller from 'park-miller';
 
 export enum Sides {
@@ -27,12 +27,13 @@ export default class Board {
     public readonly height: number,
     public readonly brickSize: number,
     private readonly random: ParkMiller,
+    private shapeFactory = new ShapeFactory(random),
   ) {
     this.activeShape = this.spawnShape();
   }
 
   public spawnShape() {
-    return new Shape(this.width, this.brickSize, this.random);
+    return this.shapeFactory.createShapeForBoard(this, this.brickSize);
   }
 
   public isFull() {

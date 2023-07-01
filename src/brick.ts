@@ -1,20 +1,12 @@
 import { Collisions } from './board';
 
 export default class Brick {
-  public x: number;
-  public y: number;
-  public colorRgb: string;
-  public sideLength: number;
-
-  constructor(brick: Brick);
-  constructor(x: number, y: number, rgb: string, size: number);
-  constructor() {
-    if (arguments.length === 1) {
-      this._copyingConstructor.apply(this, arguments);
-    } else {
-      this._defaultConstructor.apply(this, arguments);
-    }
-  }
+  constructor(
+    public x: number,
+    public y: number,
+    public readonly colorRgb: string,
+    public readonly sideLength: number,
+  ) {}
 
   collidesWith(bricks: Brick[]): Collisions {
     const collisions: Collisions = { bottom: false, left: false, right: false };
@@ -31,22 +23,7 @@ export default class Brick {
     return collisions;
   }
 
-  private _defaultConstructor(
-    xCoord: number,
-    yCoord: number,
-    colorRgb: string,
-    sideLength: number,
-  ) {
-    this.x = xCoord;
-    this.y = yCoord;
-    this.colorRgb = colorRgb;
-    this.sideLength = sideLength;
-  }
-
-  private _copyingConstructor(sourceBrick: Brick) {
-    this.x = sourceBrick.x;
-    this.y = sourceBrick.y;
-    this.colorRgb = sourceBrick.colorRgb;
-    this.sideLength = sourceBrick.sideLength;
+  copy() {
+    return new Brick(this.x, this.y, this.colorRgb, this.sideLength);
   }
 }

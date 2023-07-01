@@ -1,6 +1,18 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
-import { Collisions } from '../board';
+import Board, { Collisions } from '../board';
+
+export class ShapeFactory {
+  constructor(private prng: ParkMiller) {}
+
+  createShapeForBoard(board: Board, brickSize: number) {
+    const color = this.prng.integerInRange(0, shapeColors.length - 1);
+    const type = this.prng.integerInRange(0, shapeTypes.length - 1);
+    const rotations = this.prng.integerInRange(0, shapeOrientations.length - 1);
+
+    return new Shape(board.width / 2, brickSize, color, type, rotations);
+  }
+}
 
 const shapeColors: {
   name: string;
@@ -120,24 +132,35 @@ const shapeTypes: Array<{
 export default class Shape {
   public bricks: Brick[] = [];
   public isFrozen = false;
-  // 1 rotation = 90 degrees
-  public rotations: number;
-  public type: number;
-  private startX: number;
-  private startY: number;
-  private color: number;
 
   get radialSymmetry() {
     return shapeTypes[this.type].radiallySymmetrical;
   }
 
-  constructor(sourceShape: Shape);
-  constructor(boardWidth: number, brickSize: number, random: ParkMiller);
-  constructor() {
-    if (arguments.length === 1) {
-      this._copyingConstructor.apply(this, arguments);
+  constructor(
+    private startX: number,
+    private startY: number,
+    private color: number,
+    private type: number,
+    // 1 rotation = 90 degrees
+    private rotations: number,
+    bricks?: Brick[],
+  ) {
+    if (bricks) {
+      this.bricks = bricks;
     } else {
-      this._defaultConstructor.apply(this, arguments);
+      for (let i = 0; i < 4; ++i) {
+        this.bricks.push(
+          new Brick(
+            this.startX,
+            this.startY,
+            shapeColors[this.color].rgb,
+            startY,
+          ),
+        );
+      }
+
+      this.applyOrientation();
     }
   }
 
@@ -170,12 +193,11 @@ export default class Shape {
     const type = shapeTypes[this.type].matrix;
     const orientation = shapeOrientations[this.rotations % 4].matrix;
     const orientedShape = this.getOrientedShape(type, orientation);
-
-    const center = this.bricks[0];
+    const [centerBrick] = this.bricks;
 
     for (let i = 0; i < 3; ++i) {
-      this.bricks[i + 1].x = center.x + orientedShape[i][0] * this.startY;
-      this.bricks[i + 1].y = center.y + orientedShape[i][1] * this.startY;
+      this.bricks[i + 1].x = centerBrick.x + orientedShape[i][0] * this.startY;
+      this.bricks[i + 1].y = centerBrick.y + orientedShape[i][1] * this.startY;
     }
 
     return this;
@@ -200,40 +222,14 @@ export default class Shape {
     return orientedShape;
   }
 
-  private _defaultConstructor(
-    boardWidth: number,
-    brickSize: number,
-    random: ParkMiller,
-  ) {
-    this.startX = boardWidth / 2;
-    this.startY = brickSize;
-    this.color = random.integerInRange(0, shapeColors.length - 1);
-    this.type = random.integerInRange(0, shapeTypes.length - 1);
-    this.rotations = random.integerInRange(0, shapeOrientations.length - 1);
-
-    for (let i = 0; i < 4; ++i) {
-      this.bricks.push(
-        new Brick(
-          this.startX,
-          this.startY,
-          shapeColors[this.color].rgb,
-          brickSize,
-        ),
-      );
-    }
-
-    this.applyOrientation();
-  }
-
-  private _copyingConstructor(sourceShape: Shape) {
-    this.color = sourceShape.color;
-    this.type = sourceShape.type;
-    this.startX = sourceShape.startX;
-    this.startY = sourceShape.startY;
-    this.rotations = sourceShape.rotations;
-
-    for (let i = 0; i < 4; ++i) {
-      this.bricks.push(new Brick(sourceShape.bricks[i]));
-    }
+  public copy() {
+    return new Shape(
+      this.startX,
+      this.startY,
+      this.color,
+      this.type,
+      this.rotations,
+      this.bricks.map((brick) => brick.copy()),
+    );
   }
 }
