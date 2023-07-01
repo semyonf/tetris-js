@@ -24,7 +24,6 @@ export default class Game {
 
   private readonly joystick = new Joystick();
   private readonly fallCommand = new FallCommand();
-  private onProceedCb?: CallableFunction = undefined;
   private prng: ParkMiller;
   private randomSeed = +new Date();
   private board: Board;
@@ -39,30 +38,16 @@ export default class Game {
     ArrowUp: new RotateCommand(),
   };
 
+  private ejectedTape?: TapeItem[];
+  private previouslastFrame?: number;
+  private replay = false;
+
   stopAndReplay() {
-    const tape = this.recorder.finishRecording();
-    const lastFrame = this._frameCount;
+    this.ejectedTape = this.recorder.finishRecording();
+    this.previouslastFrame = this._frameCount;
     this.restart();
     this.joystick.disconnect();
-
-    this.wireOnProceedCb(lastFrame, tape);
-  }
-
-  private wireOnProceedCb(lastFrame: number, tape: TapeItem[]) {
-    this.onProceedCb = () => {
-      if (this._frameCount !== lastFrame) {
-        this.drawReplay();
-
-        // TODO: handle frame drops
-        if (tape.length && this._frameCount >= tape[0].frame) {
-          this.joystick.lastPressedButton = tape.shift().key;
-        }
-      } else {
-        this.onProceedCb = undefined;
-        this.setRandomSeed(+new Date());
-        this.restart();
-      }
-    };
+    this.replay = true;
   }
 
   constructor(
@@ -77,7 +62,9 @@ export default class Game {
         return;
       } else {
         e.preventDefault();
-        this.stopAndReplay();
+        if (!this.replay) {
+          this.stopAndReplay();
+        }
       }
     });
 
@@ -121,8 +108,20 @@ export default class Game {
     this._frameCount++;
     this.renderer.drawBoard(this.board);
 
-    if (this.onProceedCb) {
-      this.onProceedCb();
+    if (this.replay) {
+      if (this._frameCount !== this.previouslastFrame) {
+        this.drawReplay();
+        const tape = this.ejectedTape;
+
+        // TODO: handle frame drops
+        if (tape.length && this._frameCount >= tape[0].frame) {
+          this.joystick.lastPressedButton = tape.shift().key;
+        }
+      } else {
+        this.replay = false;
+        this.setRandomSeed(+new Date());
+        this.restart();
+      }
     }
 
     this.readNextCommand();
