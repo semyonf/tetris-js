@@ -1,12 +1,11 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
-import Board from '../board';
 import { boardCols } from '../constants';
 
 export class ShapeFactory {
   constructor(private prng: ParkMiller) {}
 
-  createShapeForBoard(board: Board) {
+  createShape() {
     const color = this.prng.integerInRange(0, shapeColors.length - 1);
     const type = this.prng.integerInRange(0, shapeTypes.length - 1);
     const rotations = this.prng.integerInRange(0, shapeOrientations.length - 1);

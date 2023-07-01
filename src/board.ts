@@ -22,7 +22,7 @@ export default class Board {
   }
 
   public spawnShape() {
-    return this.shapeFactory.createShapeForBoard(this);
+    return this.shapeFactory.createShape();
   }
 
   public isFull() {
