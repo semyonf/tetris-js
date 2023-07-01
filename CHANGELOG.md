@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/semyonf/tetris-js/compare/v0.0.7...v0.0.8) (2023-07-01)
+
+
+### Bug Fixes
+
+* frame drops no longer corrupt recordings ([f0c0d34](https://github.com/semyonf/tetris-js/commit/f0c0d341727506dbe57c347d3af8bad087e1947f))
+
 ### [0.0.7](https://github.com/semyonf/tetris-js/compare/v0.0.6...v0.0.7) (2023-06-30)
 
 ### [0.0.6](https://github.com/semyonf/tetris-js/compare/v0.0.5...v0.0.6) (2023-06-13)
