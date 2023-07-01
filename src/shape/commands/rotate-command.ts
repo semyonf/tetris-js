@@ -12,13 +12,13 @@ export default class RotateCommand implements ShapeCommand {
 
     potentialShape.rotate();
 
-    const collisions = potentialShape.collidesWith(
+    const collisions = potentialShape.collidesWithSomething(
       board.frozenBricks,
       board.width,
       board.height,
     );
 
-    if (Object.values(collisions).some((v) => v)) {
+    if (collisions) {
       return;
     }
 

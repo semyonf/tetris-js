@@ -3,16 +3,6 @@ import Game from './game';
 import Shape, { ShapeFactory } from './shape/shape';
 import ParkMiller from 'park-miller';
 
-export enum Sides {
-  Bottom = 'bottom',
-  Left = 'left',
-  Right = 'right',
-}
-
-export const sides = [Sides.Bottom, Sides.Left, Sides.Right] as const;
-
-export type Collisions = { [key in typeof sides[number]]: boolean };
-
 export default class Board {
   public frozenBricks: Brick[] = [];
   public activeShape: Shape;
@@ -40,7 +30,7 @@ export default class Board {
     return this.frozenBricks.some((brick) => brick.y < this.brickSize * 2);
   }
 
-  public checkFilledRegions() {
+  public checkForFilledRegions() {
     const rows = [];
     let bricks;
     let bricksChecked = 0;
@@ -69,9 +59,9 @@ export default class Board {
         ++rowsCleared;
         this.game.scoreManager.add(rowsCleared);
       } else {
-        row.bricks.forEach((brick) => {
+        for (const brick of row.bricks) {
           brick.y += rowsCleared * this.brickSize;
-        });
+        }
       }
 
       newBricks = newBricks.concat(row.bricks);

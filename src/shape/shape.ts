@@ -1,6 +1,6 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
-import Board, { Collisions } from '../board';
+import Board from '../board';
 
 export class ShapeFactory {
   constructor(private prng: ParkMiller) {}
@@ -164,24 +164,18 @@ export default class Shape {
     }
   }
 
-  public collidesWith(
-    bricks: Brick[],
+  public collidesWithSomething(
+    frozenBricks: Brick[],
     boardWidth: number,
     boardHeight: number,
-  ) {
-    const collisions: Collisions = { bottom: false, left: false, right: false };
+  ): boolean {
+    return this.bricks.some((ownBrick) => {
+      if (ownBrick.collidesWith(frozenBricks)) {
+        return true;
+      }
 
-    for (const brick of this.bricks) {
-      const bricksCollisions = brick.collidesWith(bricks);
-
-      collisions.left ||= brick.x === 0 || bricksCollisions.left;
-      collisions.right ||=
-        brick.x === boardWidth - brick.sideLength || bricksCollisions.left;
-      collisions.bottom ||=
-        brick.y === boardHeight - brick.sideLength || bricksCollisions.bottom;
-    }
-
-    return collisions;
+      return ownBrick.collidesWithBoundaries(boardWidth, boardHeight);
+    });
   }
 
   rotate() {

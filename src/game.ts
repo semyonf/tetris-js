@@ -138,37 +138,22 @@ export default class Game {
 
     this.readNextCommand();
 
-    const collisions = this.board.activeShape.collidesWith(
-      this.board.frozenBricks,
-      this.board.width,
-      this.board.height,
-    );
+    if (this.gravityIsActive()) {
+      this.fallCommand.execute.call(this.board.activeShape, this.board);
+    }
 
-    this.board.activeShape.isFrozen = collisions.bottom;
-
-    if (this.board.activeShape.isFrozen) {
-      this.handleFrozen();
-    } else {
-      if (this.gravityIsActive()) {
-        this.fallCommand.execute.call(this.board.activeShape, this.board);
-      }
-
-      for (const brick of this.board.activeShape.bricks) {
-        this.renderer.drawBrick(brick);
-      }
+    for (const brick of this.board.activeShape.bricks) {
+      this.renderer.drawBrick(brick);
     }
 
     this.renderer.drawScore(this.scoreManager.getScore());
     this.board.frozenBricks.forEach((brick) => this.renderer.drawBrick(brick));
   }
 
-  private handleFrozen() {
-    for (let i = 0; i < 4; ++i) {
-      this.board.frozenBricks.push(this.board.activeShape.bricks.pop());
-    }
-
-    this.board.checkFilledRegions();
+  public handleFrozen() {
     this.turboMode = false;
+    this.board.frozenBricks.push(...this.board.activeShape.bricks);
+    this.board.checkForFilledRegions();
     this.board.activeShape = this.board.spawnShape();
 
     if (this.board.isFull()) {

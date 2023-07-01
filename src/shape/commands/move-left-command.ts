@@ -4,16 +4,22 @@ import Shape from '../shape';
 
 export default class MoveLeftCommand implements ShapeCommand {
   public execute(this: Shape, board: Board) {
-    const collisions = this.collidesWith(
-      board.frozenBricks,
-      board.width,
-      board.height,
-    );
+    const potentialShape = this.copy();
 
-    if (!collisions.left) {
-      for (let i = 0; i < 4; ++i) {
-        this.bricks[i].x -= board.brickSize;
-      }
+    for (const brick of potentialShape.bricks) {
+      brick.x -= board.brickSize;
     }
+
+    if (
+      potentialShape.collidesWithSomething(
+        board.frozenBricks,
+        board.width,
+        board.height,
+      )
+    ) {
+      return;
+    }
+
+    board.activeShape = potentialShape;
   }
 }

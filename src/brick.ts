@@ -1,5 +1,3 @@
-import { Collisions } from './board';
-
 export default class Brick {
   constructor(
     public x: number,
@@ -8,19 +6,16 @@ export default class Brick {
     public readonly sideLength: number,
   ) {}
 
-  collidesWith(bricks: Brick[]): Collisions {
-    const collisions: Collisions = { bottom: false, left: false, right: false };
+  collidesWith(bricks: Brick[]): boolean {
+    return bricks.some((brick) => brick.x === this.x && brick.y === this.y);
+  }
 
-    for (const brick of bricks) {
-      collisions.left ||=
-        this.y === brick.y && this.x - this.sideLength === brick.x;
-      collisions.right ||=
-        this.y === brick.y && this.x + this.sideLength === brick.x;
-      collisions.bottom ||=
-        this.y === brick.y - this.sideLength && this.x === brick.x;
-    }
-
-    return collisions;
+  collidesWithBoundaries(boardWidth: number, boardHeight: number): boolean {
+    return (
+      this.x < 0 ||
+      this.x > boardWidth - this.sideLength ||
+      this.y > boardHeight - this.sideLength
+    );
   }
 
   copy() {
