@@ -19,11 +19,10 @@
     "release": "standard-version",
     "typecheck": "tsc --noEmit",
     "build": "parcel build",
-    "dev": "parcel serve demo/index.html"
+    "dev": "open demo/index.html"
   },
   "dependencies": {
-    "park-miller": "1.1.0",
-    "typed-inject": "^4.0.0"
+    "park-miller": "1.1.0"
   },
   "devDependencies": {
     "@parcel/packager-ts": "2.9.2",
