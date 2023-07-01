@@ -1,6 +1,7 @@
 {
   // TODO: configure
   "compilerOptions": {
+    "noUnusedLocals": true,
     "sourceMap": true,
     "allowJs": false,
     "skipLibCheck": true,

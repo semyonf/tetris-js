@@ -26,7 +26,7 @@ export default class Board {
     public readonly width: number,
     public readonly height: number,
     public readonly brickSize: number,
-    private readonly random: ParkMiller,
+    random: ParkMiller,
     private shapeFactory = new ShapeFactory(random),
   ) {
     this.activeShape = this.spawnShape();

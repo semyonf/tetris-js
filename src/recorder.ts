@@ -7,7 +7,7 @@ export default class Recorder {
 
   constructor(public joystick: Joystick, public game: Game) {}
 
-  public stopRecording() {
+  public finishRecording() {
     const oldTape = this.tape;
     this.tape = [];
 

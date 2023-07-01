@@ -11,7 +11,7 @@ export default class VirtualRenderer extends Renderer {
   setup(game: Game) {
     game.setRandomSeed(this.spy.injection.seed);
     game.recorder.tape = this.spy.injection.tape;
-    game.stop();
+    game.stopAndReplay();
   }
 
   public drawBoard(): void {
