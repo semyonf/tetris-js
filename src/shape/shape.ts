@@ -1,16 +1,17 @@
 import Brick from '../brick';
 import ParkMiller from 'park-miller';
 import Board from '../board';
+import { boardCols } from '../constants';
 
 export class ShapeFactory {
   constructor(private prng: ParkMiller) {}
 
-  createShapeForBoard(board: Board, brickSize: number) {
+  createShapeForBoard(board: Board) {
     const color = this.prng.integerInRange(0, shapeColors.length - 1);
     const type = this.prng.integerInRange(0, shapeTypes.length - 1);
     const rotations = this.prng.integerInRange(0, shapeOrientations.length - 1);
 
-    return new Shape(board.width / 2, brickSize, color, type, rotations);
+    return new Shape(boardCols / 2, color, type, rotations);
   }
 }
 
@@ -139,7 +140,6 @@ export default class Shape {
 
   constructor(
     private startX: number,
-    private startY: number,
     private color: number,
     private type: number,
     // 1 rotation = 90 degrees
@@ -151,12 +151,7 @@ export default class Shape {
     } else {
       for (let i = 0; i < 4; ++i) {
         this.bricks.push(
-          new Brick(
-            this.startX,
-            this.startY,
-            shapeColors[this.color].rgb,
-            startY,
-          ),
+          new Brick(boardCols / 2, 1, shapeColors[this.color].rgb),
         );
       }
 
@@ -166,15 +161,15 @@ export default class Shape {
 
   public collidesWithSomething(
     frozenBricks: Brick[],
-    boardWidth: number,
-    boardHeight: number,
+    cols: number,
+    rows: number,
   ): boolean {
     return this.bricks.some((ownBrick) => {
       if (ownBrick.collidesWith(frozenBricks)) {
         return true;
       }
 
-      return ownBrick.collidesWithBoundaries(boardWidth, boardHeight);
+      return ownBrick.collidesWithBoundaries(cols, rows);
     });
   }
 
@@ -190,8 +185,8 @@ export default class Shape {
     const [centerBrick] = this.bricks;
 
     for (let i = 0; i < 3; ++i) {
-      this.bricks[i + 1].x = centerBrick.x + orientedShape[i][0] * this.startY;
-      this.bricks[i + 1].y = centerBrick.y + orientedShape[i][1] * this.startY;
+      this.bricks[i + 1].x = centerBrick.x + orientedShape[i][0];
+      this.bricks[i + 1].y = centerBrick.y + orientedShape[i][1];
     }
 
     return this;
@@ -219,7 +214,6 @@ export default class Shape {
   public copy() {
     return new Shape(
       this.startX,
-      this.startY,
       this.color,
       this.type,
       this.rotations,

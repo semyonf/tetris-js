@@ -23,23 +23,8 @@ describe('Logic', () => {
       },
     };
 
-    const brickSize = 20;
-    const boardRows = 22;
-    const boardCols = 10;
-    const boardWidth = brickSize * boardCols;
-    const boardHeight = brickSize * boardRows;
-
     const renderer = new VirtualRenderer(spy);
 
-    new Game(
-      {
-        board: {
-          boardWidth,
-          boardHeight,
-          brickSize,
-        },
-      },
-      renderer,
-    );
+    new Game({}, renderer);
   }, 10000);
 });

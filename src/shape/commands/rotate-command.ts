@@ -1,6 +1,7 @@
 import Board from '../../board';
 import ShapeCommand from '../shape-command';
 import Shape from '../shape';
+import { boardCols, boardRows } from '../../constants';
 
 export default class RotateCommand implements ShapeCommand {
   public execute(this: Shape, board: Board) {
@@ -14,8 +15,8 @@ export default class RotateCommand implements ShapeCommand {
 
     const collisions = potentialShape.collidesWithSomething(
       board.frozenBricks,
-      board.width,
-      board.height,
+      boardCols,
+      boardRows,
     );
 
     if (collisions) {

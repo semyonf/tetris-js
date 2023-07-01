@@ -16,7 +16,7 @@ export default class CanvasRenderer extends Renderer {
     this.context.fillStyle = board.game.turboMode
       ? board.colors.turbo
       : board.colors.normal;
-    this.context.fillRect(0, 0, board.width, board.height);
+    this.context.fillRect(0, 0, 150, 300);
   }
 
   public drawReplay() {
@@ -34,21 +34,18 @@ export default class CanvasRenderer extends Renderer {
   public drawBrick(brick: Brick) {
     this.context.fillStyle = brick.colorRgb;
     this.context.beginPath();
-    this.context.moveTo(brick.x, brick.y);
-    this.context.lineTo(brick.x + brick.sideLength - 1, brick.y);
-    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
+    this.context.moveTo(brick.x * 15, brick.y * 15);
+    this.context.lineTo(brick.x * 15 + 15 - 1, brick.y * 15);
+    this.context.lineTo(brick.x * 15, brick.y * 15 + 15 - 1);
     this.context.closePath();
     this.context.fill();
 
     this.context.fillStyle = this.modifyRgb(brick.colorRgb, 0.9);
     this.context.beginPath();
-    this.context.moveTo(brick.x + brick.sideLength - 1, brick.y);
-    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
-    this.context.lineTo(brick.x, brick.y + brick.sideLength - 1);
-    this.context.lineTo(
-      brick.x + brick.sideLength - 1,
-      brick.y + brick.sideLength - 1,
-    );
+    this.context.moveTo(brick.x * 15 + 15 - 1, brick.y * 15);
+    this.context.lineTo(brick.x * 15, brick.y * 15 + 15 - 1);
+    this.context.lineTo(brick.x * 15, brick.y * 15 + 15 - 1);
+    this.context.lineTo(brick.x * 15 + 15 - 1, brick.y * 15 + 15 - 1);
     this.context.closePath();
     this.context.fill();
   }

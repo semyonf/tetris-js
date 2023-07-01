@@ -2,6 +2,7 @@ import Brick from './brick';
 import Game from './game';
 import Shape, { ShapeFactory } from './shape/shape';
 import ParkMiller from 'park-miller';
+import { boardCols, boardRows } from './constants';
 
 export default class Board {
   public frozenBricks: Brick[] = [];
@@ -13,9 +14,7 @@ export default class Board {
 
   constructor(
     public readonly game: Game,
-    public readonly width: number,
-    public readonly height: number,
-    public readonly brickSize: number,
+
     random: ParkMiller,
     private shapeFactory = new ShapeFactory(random),
   ) {
@@ -23,11 +22,11 @@ export default class Board {
   }
 
   public spawnShape() {
-    return this.shapeFactory.createShapeForBoard(this, this.brickSize);
+    return this.shapeFactory.createShapeForBoard(this);
   }
 
   public isFull() {
-    return this.frozenBricks.some((brick) => brick.y < this.brickSize * 2);
+    return this.frozenBricks.some((brick) => brick.y < 2);
   }
 
   public checkForFilledRegions() {
@@ -36,15 +35,15 @@ export default class Board {
     let bricksChecked = 0;
 
     for (
-      let i = this.height - this.brickSize;
+      let i = boardRows - 1;
       bricksChecked !== this.frozenBricks.length;
-      i -= this.brickSize
+      i -= 1
     ) {
       bricks = this.frozenBricks.filter((brick) => brick.y === i);
 
       rows.push({
         bricks,
-        isFull: bricks.length === this.width / this.brickSize,
+        isFull: bricks.length === boardCols,
       });
 
       bricksChecked += bricks.length;
@@ -60,7 +59,7 @@ export default class Board {
         this.game.scoreManager.add(rowsCleared);
       } else {
         for (const brick of row.bricks) {
-          brick.y += rowsCleared * this.brickSize;
+          brick.y += rowsCleared;
         }
       }
 

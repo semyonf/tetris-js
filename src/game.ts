@@ -94,13 +94,7 @@ export default class Game {
     this.recorder.startRecording();
     this.prng = new ParkMiller(this.randomSeed);
 
-    this.board = new Board(
-      this,
-      config.board.boardWidth,
-      config.board.boardHeight,
-      config.board.brickSize,
-      this.prng,
-    );
+    this.board = new Board(this, this.prng);
 
     this.mainLoop();
   }
@@ -114,13 +108,7 @@ export default class Game {
     this.scoreManager.setScore(0);
     this._frameCount = 0;
     this.turboMode = false;
-    this.board = new Board(
-      this,
-      this.config.board.boardWidth,
-      this.config.board.boardHeight,
-      this.config.board.brickSize,
-      this.prng,
-    );
+    this.board = new Board(this, this.prng);
     this.joystick.connect();
     this.recorder.startRecording();
   }
