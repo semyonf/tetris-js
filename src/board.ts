@@ -30,25 +30,7 @@ export default class Board {
   }
 
   public checkForFilledRegions() {
-    const rows = [];
-    let bricks;
-    let bricksChecked = 0;
-
-    for (
-      let i = boardRows - 1;
-      bricksChecked !== this.frozenBricks.length;
-      i -= 1
-    ) {
-      bricks = this.frozenBricks.filter((brick) => brick.y === i);
-
-      rows.push({
-        bricks,
-        isFull: bricks.length === boardCols,
-      });
-
-      bricksChecked += bricks.length;
-    }
-
+    const rows = this.extractRows();
     let newBricks: Brick[] = [];
     let rowsCleared = 0;
 
@@ -67,5 +49,22 @@ export default class Board {
     }
 
     this.frozenBricks = newBricks;
+  }
+
+  private extractRows() {
+    const rows = [];
+    let bricks;
+    let bricksChecked = 0;
+
+    for (
+      let i = boardRows - 1;
+      bricksChecked !== this.frozenBricks.length;
+      i -= 1
+    ) {
+      bricks = this.frozenBricks.filter((brick) => brick.y === i);
+      rows.push({ bricks, isFull: bricks.length === boardCols });
+      bricksChecked += bricks.length;
+    }
+    return rows;
   }
 }
