@@ -5,3 +5,6 @@
 Press `Escape` to stop the game and watch a replay!
 
 ![gameplay](https://github.com/semyonf/tetris-js/blob/master/gameplay.gif)
+
+> **Note**  
+> The game is only designed to run in 60hz to maintain replays consistently and efficiently
