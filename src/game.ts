@@ -53,7 +53,8 @@ export default class Game {
       if (this._frameCount !== lastFrame) {
         this.drawReplay();
 
-        if (tape.length && this._frameCount === tape[0].frame) {
+        // TODO: handle frame drops
+        if (tape.length && this._frameCount >= tape[0].frame) {
           this.joystick.lastPressedButton = tape.shift().key;
         }
       } else {
