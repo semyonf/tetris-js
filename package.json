@@ -12,8 +12,7 @@
     }
   },
   "scripts": {
-    "test": "jest --env=jsdom --no-cache src/_test/*.spec.*",
-    "test:cov": "jest --env=jsdom --no-cache src/_test/*.spec.* --coverage",
+    "test": "jest --no-cache src/_test/*.spec.*",
     "format": "prettier --write 'src/**/*.{ts,js,css,md,json}'",
     "lint": "eslint --fix src/**/*.ts",
     "release": "standard-version",

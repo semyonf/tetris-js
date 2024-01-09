@@ -1,5 +1,12 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
-  "collectCoverageFrom": ["src/**/*.ts", "!src/_test/**/*.ts"]
+  "coverageReporters": [
+    "lcovonly",
+    "text"
+  ],
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "!src/_test/**/*.ts"
+  ]
 }

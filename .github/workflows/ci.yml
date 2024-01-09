@@ -2,9 +2,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 name: CI
 
@@ -17,11 +14,11 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run test:cov
+      - run: npm ci --ignore-scripts
+      - run: npm run test -- --coverage
 
       - name: CodeClimate
         if: ${{ github.ref == 'refs/heads/master' }}
-        uses: paambaati/codeclimate-action@v2.7.5
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
