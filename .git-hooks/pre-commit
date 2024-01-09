@@ -1,0 +1,8 @@
+#!/bin/sh
+
+npm run lint
+npm run format
+
+# because exit code is ignored unless you || exit 1
+# see https://stackoverflow.com/a/46443474/5197983
+npm test || exit 1
