@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/semyonf/tetris-js/compare/v0.0.9...v0.0.10) (2024-01-12)
+
+
+### Bug Fixes
+
+* enable Parcel optimization ([9665fc5](https://github.com/semyonf/tetris-js/commit/9665fc5cb5853a8e749bd6e87674a8f1ac29f81e))
+
 ### [0.0.9](https://github.com/semyonf/tetris-js/compare/v0.0.8...v0.0.9) (2023-07-01)
 
 ### [0.0.8](https://github.com/semyonf/tetris-js/compare/v0.0.7...v0.0.8) (2023-07-01)
