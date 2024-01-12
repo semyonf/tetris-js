@@ -19,8 +19,7 @@
     "lint": "eslint --fix src/**/*.ts",
     "release": "standard-version",
     "typecheck": "tsc --noEmit",
-    "build": "parcel build",
-    "dev": "open demo/index.html"
+    "build": "parcel build"
   },
   "dependencies": {
     "park-miller": "1.1.0"
