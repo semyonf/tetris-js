@@ -8,7 +8,8 @@
   "types": "dist/tetris.d.ts",
   "targets": {
     "main": {
-      "includeNodeModules": true
+      "includeNodeModules": true,
+      "optimize": true
     }
   },
   "scripts": {
