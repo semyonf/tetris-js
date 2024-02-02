@@ -1,18 +1,7 @@
 {
-  // TODO: configure
+  "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "noUnusedLocals": true,
-    "sourceMap": true,
-    "allowJs": false,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "target": "es6",
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true,
-    "outDir": "dist"
+    "lib": ["dom", "dom.iterable", "esnext"],
   },
   "exclude": [
     "src/_test/**/*"

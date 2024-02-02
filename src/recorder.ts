@@ -1,11 +1,11 @@
-import Game from './game';
+import Tetris from './tetris';
 import Joystick, { Button } from './joystick';
 import TapeItem from './tape-item';
 
 export default class Recorder {
   public tape: TapeItem[] = [];
 
-  constructor(public joystick: Joystick, public game: Game) {}
+  constructor(public joystick: Joystick, public game: Tetris) {}
 
   public finishRecording() {
     const oldTape = this.tape;

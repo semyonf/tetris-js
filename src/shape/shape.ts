@@ -1,14 +1,14 @@
 import Brick from '../brick';
-import ParkMiller from 'park-miller';
 import { boardCols } from '../constants';
+import { ParkMiller } from '../park-miller';
 
 export class ShapeFactory {
   constructor(private prng: ParkMiller) {}
 
   createShape() {
-    const color = this.prng.integerInRange(0, shapeColors.length - 1);
-    const type = this.prng.integerInRange(0, shapeTypes.length - 1);
-    const rotations = this.prng.integerInRange(0, shapeOrientations.length - 1);
+    const color = this.prng.nextInt(0, shapeColors.length - 1);
+    const type = this.prng.nextInt(0, shapeTypes.length - 1);
+    const rotations = this.prng.nextInt(0, shapeOrientations.length - 1);
 
     return new Shape(boardCols / 2, color, type, rotations);
   }

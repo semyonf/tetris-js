@@ -1,4 +1,4 @@
-import Game from '../game';
+import Tetris from '../tetris';
 
 import { savedGame } from './savedGameData';
 import VirtualRenderer from '../rendering/virtual-renderer';
@@ -25,6 +25,6 @@ describe('Logic', () => {
 
     const renderer = new VirtualRenderer(spy);
 
-    new Game({}, renderer);
+    new Tetris({}, renderer);
   }, 10000);
 });

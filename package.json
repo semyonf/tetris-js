@@ -8,7 +8,6 @@
   "types": "dist/tetris.d.ts",
   "targets": {
     "main": {
-      "includeNodeModules": true,
       "optimize": true
     }
   },
@@ -19,14 +18,11 @@
     "lint": "eslint --fix src/**/*.ts",
     "release": "standard-version",
     "typecheck": "tsc --noEmit",
-    "build": "parcel build"
-  },
-  "dependencies": {
-    "park-miller": "1.1.0"
+    "dev": "vite src --open",
+    "build": "vite build --outDir dist --emptyOutDir"
   },
   "devDependencies": {
-    "@parcel/packager-ts": "2.9.2",
-    "@parcel/transformer-typescript-types": "2.9.2",
+    "@tsconfig/strictest": "2.0.2",
     "@types/jest": "27.0.3",
     "@types/jsdom": "16.2.13",
     "@typescript-eslint/eslint-plugin": "5.30.5",
@@ -35,10 +31,10 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.2.1",
     "jest": "27.4.3",
-    "parcel": "2.9.2",
     "prettier": "2.7.1",
     "standard-version": "9.5.0",
     "ts-jest": "27.0.7",
-    "typescript": "4.5.2"
+    "typescript": "4.5.2",
+    "vite": "5.0.12"
   }
 }

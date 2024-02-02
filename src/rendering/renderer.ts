@@ -1,6 +1,6 @@
 import Board from '../board';
 import Brick from '../brick';
-import Game from '../game';
+import Tetris from '../tetris';
 
 export default abstract class Renderer {
   abstract drawBoard(board: Board): void;
@@ -8,5 +8,5 @@ export default abstract class Renderer {
   abstract drawReplay(): void;
   abstract drawScore(score: number): void;
   abstract readonly frameClock: (cb: () => void) => void;
-  setup(_game: Game) {}
+  setup(_game: Tetris) {}
 }

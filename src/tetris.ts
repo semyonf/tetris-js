@@ -1,4 +1,3 @@
-import ParkMiller from 'park-miller';
 import Board from './board';
 import GameConfig from './game-config';
 import Joystick, { Button } from './joystick';
@@ -13,8 +12,9 @@ import MoveRightCommand from './shape/commands/move-right-command';
 import RotateCommand from './shape/commands/rotate-command';
 import DropCommand from './shape/commands/drop-command';
 import TapeItem from './tape-item';
+import { ParkMiller } from './park-miller';
 
-export default class Game {
+export default class Tetris {
   public turboMode = false;
 
   private _frameCount = 0;

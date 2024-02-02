@@ -1,8 +1,8 @@
 import Brick from './brick';
-import Game from './game';
+import Tetris from './tetris';
 import Shape, { ShapeFactory } from './shape/shape';
-import ParkMiller from 'park-miller';
 import { boardCols, boardRows } from './constants';
+import { ParkMiller } from './park-miller';
 
 export default class Board {
   public frozenBricks: Brick[] = [];
@@ -13,7 +13,7 @@ export default class Board {
   };
 
   constructor(
-    public readonly game: Game,
+    public readonly game: Tetris,
 
     random: ParkMiller,
     private shapeFactory = new ShapeFactory(random),
