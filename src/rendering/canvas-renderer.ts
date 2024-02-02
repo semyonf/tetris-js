@@ -58,11 +58,11 @@ export default class CanvasRenderer extends Renderer {
    */
   private modifyRgb(color: string, factor: number) {
     const regexp = /rgb\((\d+) ?, ?(\d+) ?, ?(\d+)\)/g;
-    const matches = regexp.exec(color);
-
-    const colors = [matches[1], matches[2], matches[3]];
+    const [r, g, b] = regexp.exec(color) as RegExpExecArray;
+    const colors = [r, g, b];
 
     colors.forEach((c, index, arr) => {
+      // fixme
       // @ts-expect-error hack
       arr[index] = Math.floor(c * factor);
     });

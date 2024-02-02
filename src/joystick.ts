@@ -38,10 +38,10 @@ export default class Joystick {
     }
 
     this.lastPressedButton = keyCode;
-    this.onButtonPressCb(keyCode);
+    this.onButtonPressCb?.call(this, keyCode);
   }
 
-  private onButtonPressCb: (button: Button) => unknown;
+  private onButtonPressCb?: (button: Button) => unknown;
 
   public connect() {
     addEventListener('keyup', this.onKeyPressed);

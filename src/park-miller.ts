@@ -1,10 +1,9 @@
 /**
  * https://www.npmjs.com/package/park-miller
- * with updated MINSTD value as suggested by Park, Miller and Stockmeyer
+ * with an updated MINSTD value as suggested by Park, Miller and Stockmeyer
  */
-
-const MAX_INT32 = 2147483647;
 const MINSTD = 48271;
+const MAX_INT32 = 2147483647;
 
 export class ParkMiller {
   private seed: number;

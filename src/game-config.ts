@@ -1,5 +1,5 @@
 export default interface GameConfig {
-  context?: CanvasRenderingContext2D;
+  context: CanvasRenderingContext2D;
   onScreenControls?: (a: {
     left: CallableFunction;
     right: CallableFunction;

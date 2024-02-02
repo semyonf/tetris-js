@@ -3,22 +3,17 @@
   "author": "Semyon Fomin <semyonf@icloud.com>",
   "license": "MIT",
   "version": "0.0.10",
-  "source": "src/index.ts",
-  "main": "dist/tetris.js",
+  "files": ["dist"],
+  "main": "dist/tetris.umd.js",
   "types": "dist/tetris.d.ts",
-  "targets": {
-    "main": {
-      "optimize": true
-    }
-  },
   "scripts": {
     "postinstall": "git config core.hooksPath .git-hooks",
     "test": "jest --no-cache src/_test/*.spec.*",
     "format": "prettier --write 'src/**/*.{ts,js,css,md,json}'",
     "lint": "eslint --fix src/**/*.ts",
     "release": "standard-version",
-    "typecheck": "tsc --noEmit",
     "dev": "vite src --open",
+    "prebuild": "tsc --noEmit",
     "build": "vite build --outDir dist --emptyOutDir"
   },
   "devDependencies": {
@@ -35,6 +30,7 @@
     "standard-version": "9.5.0",
     "ts-jest": "27.0.7",
     "typescript": "4.5.2",
-    "vite": "5.0.12"
+    "vite": "5.0.12",
+    "vite-plugin-dts": "3.7.2"
   }
 }

@@ -2,8 +2,8 @@
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES6",
   },
-  "exclude": [
-    "src/_test/**/*"
-  ]
+  "include": ["src"],
+  "exclude": ["src/_test/**/*"]
 }

@@ -8,7 +8,7 @@ export default class VirtualRenderer extends Renderer {
     super();
   }
 
-  setup(game: Tetris) {
+  override setup(game: Tetris) {
     game.setRandomSeed(this.spy.injection.seed);
     game.recorder.tape = this.spy.injection.tape;
     game.stopAndReplay();

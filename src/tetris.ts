@@ -18,6 +18,7 @@ export default class Tetris {
   public turboMode = false;
 
   private _frameCount = 0;
+
   get frameCount(): number {
     return this._frameCount;
   }
@@ -39,12 +40,12 @@ export default class Tetris {
   };
 
   private ejectedTape?: TapeItem[];
-  private previouslastFrame?: number;
+  private previousLastFrame?: number;
   private replay = false;
 
   stopAndReplay() {
     this.ejectedTape = this.recorder.finishRecording();
-    this.previouslastFrame = this._frameCount;
+    this.previousLastFrame = this._frameCount;
     this.restart();
     this.joystick.disconnect();
     this.replay = true;
@@ -109,7 +110,7 @@ export default class Tetris {
     this.renderer.drawBoard(this.board);
 
     if (this.replay) {
-      if (this._frameCount !== this.previouslastFrame) {
+      if (this._frameCount !== this.previousLastFrame) {
         this.drawReplay();
         const tape = this.ejectedTape;
 
@@ -155,7 +156,7 @@ export default class Tetris {
   }
 
   private gravityIsActive() {
-    const gameSpeeds = [null, 32, 16, 8, 4, 2];
+    const gameSpeeds = [null, 32, 16, 8, 4, 2] as const;
 
     return (
       this.turboMode ||
