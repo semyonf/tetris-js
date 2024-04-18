@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "postinstall": "git config core.hooksPath .git-hooks",
+    "prepare": "git config core.hooksPath .git-hooks || echo 'Not in a git repo'",
     "test": "jest --no-cache src/_test/*.spec.*",
     "format": "prettier --write 'src/**/*.{ts,js,css,md,json}'",
     "lint": "eslint --fix src/**/*.ts",
